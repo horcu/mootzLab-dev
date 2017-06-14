@@ -1,0 +1,11 @@
+spa@1.0.0 C:\Users\Horatio\Downloads\vue-spapt1-master\vue-spapt1-master
++-- extract-text-webpack-plugin@2.1.2  invalid
+| +-- async@2.4.1 
+| +-- loader-utils@1.1.0 
+| +-- schema-utils@0.3.0 
+| | `-- ajv@5.1.5 
+| `-- webpack-sources@1.0.1 
+|   `-- source-list-map@2.0.0 
++-- UNMET PEER DEPENDENCY sinon@1.17.7
+`-- UNMET PEER DEPENDENCY webpack@1.15.0
+
