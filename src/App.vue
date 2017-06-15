@@ -27,7 +27,7 @@
 
 
             <!--settings-->
-            <li data-toggle="control-sidebar" class="e-tab pull-right" data-placement="bottom" title="settings">
+            <li v-on:click="toggleSettingsNav" data-toggle="control-sidebar" class="e-tab pull-right" data-placement="bottom" title="settings">
               <a>
                 <small>settings </small>
                 &nbsp<img src="/static/img/gear.png" class="right-btn"></a>
@@ -52,12 +52,17 @@
                 <img id="rtc-session" src="/static/img/webcam.png" alt="lab sessions"/>
               </a>
             </li>
-            <li>
-              <a data-toggle="tooltip" data-placement="bottom" title="sessions" class="pull-right">
-                <router-link v-bind:to="'/about'">
+
+            <li  v-on:click="toggleCommentsNav">
+              <a data-toggle="tooltip" data-placement="bottom" title="comments" class="pull-right">
+
                   <small>comments</small>
-                  &nbsp<img src="/static/img/information.png" alt="about"/></router-link>
+                  &nbsp<img src="/static/img/information.png" alt="about"/>
               </a>
+            </li>
+            <li class="go-lab">
+              <input type="text" class="form-control" placeholder="/lab/" value=""/>
+                <!--<router-link v-bind:to="'/lab/'"></router-link>-->
             </li>
 
           </ul>
@@ -71,196 +76,204 @@
     </router-view>
 
     <!-- Control Sidebar -->
-    <aside id="sidebar-settings" class="hidden control-sidebar-settings control-sidebar control-sidebar-light">
-      <!-- Create the tabs -->
-      <ul class="nav nav-tabs nav-justified control-sidebar-tabs">
-        <li><a href="#control-sidebar-home-tab" data-toggle="tab"><i class="fa fa-home"></i></a></li>
-        <li><a href="#control-sidebar-settings-tab" data-toggle="tab"><i class="fa fa-gears"></i></a></li>
+    <aside id="sidebar-settings" class="control-sidebar-settings control-sidebar control-sidebar-light">
+      <ul class="nav nav-pills no-padding no-margin">
+        <li v-on:click="toggleCommentsNav" data-toggle="tooltip" data-placement="bottom" title="hide"
+            class="pull-right disabled">
+          <a> <img id="close-comments-window" width="12px" height="12px" src="/static/img/cancel.png"
+                   alt="build"/></a>
+        </li>
       </ul>
-      <!-- Tab panes -->
-      <div class="tab-content">
-        <!-- Home tab content -->
-        <div class="tab-pane" id="control-sidebar-home-tab">
-          <h3 class="control-sidebar-heading">Recent Activity</h3>
-          <ul class="control-sidebar-menu">
-            <li>
-              <a href="javascript::;">
-                <i class="menu-icon fa fa-birthday-cake bg-red"></i>
+      <!--&lt;!&ndash; Create the tabs &ndash;&gt;-->
+      <!--<ul class="nav nav-tabs nav-justified control-sidebar-tabs">-->
+        <!--<li><a href="#control-sidebar-home-tab" data-toggle="tab"><i class="fa fa-home"></i></a></li>-->
+        <!--<li><a href="#control-sidebar-settings-tab" data-toggle="tab"><i class="fa fa-gears"></i></a></li>-->
+      <!--</ul>-->
+      <!--&lt;!&ndash; Tab panes &ndash;&gt;-->
+      <!--<div class="tab-content">-->
+        <!--&lt;!&ndash; Home tab content &ndash;&gt;-->
+        <!--<div class="tab-pane" id="control-sidebar-home-tab">-->
+          <!--<h3 class="control-sidebar-heading">Recent Activity</h3>-->
+          <!--<ul class="control-sidebar-menu">-->
+            <!--<li>-->
+              <!--<a href="javascript::;">-->
+                <!--<i class="menu-icon fa fa-birthday-cake bg-red"></i>-->
 
-                <div class="menu-info">
-                  <h4 class="control-sidebar-subheading">Langdon's Birthday</h4>
+                <!--<div class="menu-info">-->
+                  <!--<h4 class="control-sidebar-subheading">Langdon's Birthday</h4>-->
 
-                  <p>Will be 23 on April 24th</p>
-                </div>
-              </a>
-            </li>
-            <li>
-              <a href="javascript::;">
-                <i class="menu-icon fa fa-user bg-yellow"></i>
+                  <!--<p>Will be 23 on April 24th</p>-->
+                <!--</div>-->
+              <!--</a>-->
+            <!--</li>-->
+            <!--<li>-->
+              <!--<a href="javascript::;">-->
+                <!--<i class="menu-icon fa fa-user bg-yellow"></i>-->
 
-                <div class="menu-info">
-                  <h4 class="control-sidebar-subheading">Frodo Updated His Profile</h4>
+                <!--<div class="menu-info">-->
+                  <!--<h4 class="control-sidebar-subheading">Frodo Updated His Profile</h4>-->
 
-                  <p>New phone +1(800)555-1234</p>
-                </div>
-              </a>
-            </li>
-            <li>
-              <a href="javascript::;">
-                <i class="menu-icon fa fa-envelope-o bg-light-blue"></i>
+                  <!--<p>New phone +1(800)555-1234</p>-->
+                <!--</div>-->
+              <!--</a>-->
+            <!--</li>-->
+            <!--<li>-->
+              <!--<a href="javascript::;">-->
+                <!--<i class="menu-icon fa fa-envelope-o bg-light-blue"></i>-->
 
-                <div class="menu-info">
-                  <h4 class="control-sidebar-subheading">Nora Joined Mailing List</h4>
+                <!--<div class="menu-info">-->
+                  <!--<h4 class="control-sidebar-subheading">Nora Joined Mailing List</h4>-->
 
-                  <p>nora@example.com</p>
-                </div>
-              </a>
-            </li>
-            <li>
-              <a href="javascript::;">
-                <i class="menu-icon fa fa-file-code-o bg-green"></i>
+                  <!--<p>nora@example.com</p>-->
+                <!--</div>-->
+              <!--</a>-->
+            <!--</li>-->
+            <!--<li>-->
+              <!--<a href="javascript::;">-->
+                <!--<i class="menu-icon fa fa-file-code-o bg-green"></i>-->
 
-                <div class="menu-info">
-                  <h4 class="control-sidebar-subheading">Cron Job 254 Executed</h4>
+                <!--<div class="menu-info">-->
+                  <!--<h4 class="control-sidebar-subheading">Cron Job 254 Executed</h4>-->
 
-                  <p>Execution time 5 seconds</p>
-                </div>
-              </a>
-            </li>
-          </ul>
-          <!-- /.control-sidebar-menu -->
+                  <!--<p>Execution time 5 seconds</p>-->
+                <!--</div>-->
+              <!--</a>-->
+            <!--</li>-->
+          <!--</ul>-->
+          <!--&lt;!&ndash; /.control-sidebar-menu &ndash;&gt;-->
 
-          <h3 class="control-sidebar-heading">Tasks Progress</h3>
-          <ul class="control-sidebar-menu">
-            <li>
-              <a href="javascript::;">
-                <h4 class="control-sidebar-subheading">
-                  Custom Template Design
-                  <span class="label label-danger pull-right">70%</span>
-                </h4>
+          <!--<h3 class="control-sidebar-heading">Tasks Progress</h3>-->
+          <!--<ul class="control-sidebar-menu">-->
+            <!--<li>-->
+              <!--<a href="javascript::;">-->
+                <!--<h4 class="control-sidebar-subheading">-->
+                  <!--Custom Template Design-->
+                  <!--<span class="label label-danger pull-right">70%</span>-->
+                <!--</h4>-->
 
-                <div class="progress progress-xxs">
-                  <div class="progress-bar progress-bar-danger" style="width: 70%"></div>
-                </div>
-              </a>
-            </li>
-            <li>
-              <a href="javascript::;">
-                <h4 class="control-sidebar-subheading">
-                  Update Resume
-                  <span class="label label-success pull-right">95%</span>
-                </h4>
+                <!--<div class="progress progress-xxs">-->
+                  <!--<div class="progress-bar progress-bar-danger" style="width: 70%"></div>-->
+                <!--</div>-->
+              <!--</a>-->
+            <!--</li>-->
+            <!--<li>-->
+              <!--<a href="javascript::;">-->
+                <!--<h4 class="control-sidebar-subheading">-->
+                  <!--Update Resume-->
+                  <!--<span class="label label-success pull-right">95%</span>-->
+                <!--</h4>-->
 
-                <div class="progress progress-xxs">
-                  <div class="progress-bar progress-bar-success" style="width: 95%"></div>
-                </div>
-              </a>
-            </li>
-            <li>
-              <a href="javascript::;">
-                <h4 class="control-sidebar-subheading">
-                  Laravel Integration
-                  <span class="label label-warning pull-right">50%</span>
-                </h4>
+                <!--<div class="progress progress-xxs">-->
+                  <!--<div class="progress-bar progress-bar-success" style="width: 95%"></div>-->
+                <!--</div>-->
+              <!--</a>-->
+            <!--</li>-->
+            <!--<li>-->
+              <!--<a href="javascript::;">-->
+                <!--<h4 class="control-sidebar-subheading">-->
+                  <!--Laravel Integration-->
+                  <!--<span class="label label-warning pull-right">50%</span>-->
+                <!--</h4>-->
 
-                <div class="progress progress-xxs">
-                  <div class="progress-bar progress-bar-warning" style="width: 50%"></div>
-                </div>
-              </a>
-            </li>
-            <li>
-              <a href="javascript::;">
-                <h4 class="control-sidebar-subheading">
-                  Back End Framework
-                  <span class="label label-primary pull-right">68%</span>
-                </h4>
+                <!--<div class="progress progress-xxs">-->
+                  <!--<div class="progress-bar progress-bar-warning" style="width: 50%"></div>-->
+                <!--</div>-->
+              <!--</a>-->
+            <!--</li>-->
+            <!--<li>-->
+              <!--<a href="javascript::;">-->
+                <!--<h4 class="control-sidebar-subheading">-->
+                  <!--Back End Framework-->
+                  <!--<span class="label label-primary pull-right">68%</span>-->
+                <!--</h4>-->
 
-                <div class="progress progress-xxs">
-                  <div class="progress-bar progress-bar-primary" style="width: 68%"></div>
-                </div>
-              </a>
-            </li>
-          </ul>
-          <!-- /.control-sidebar-menu -->
+                <!--<div class="progress progress-xxs">-->
+                  <!--<div class="progress-bar progress-bar-primary" style="width: 68%"></div>-->
+                <!--</div>-->
+              <!--</a>-->
+            <!--</li>-->
+          <!--</ul>-->
+          <!--&lt;!&ndash; /.control-sidebar-menu &ndash;&gt;-->
 
-        </div>
-        <!-- /.tab-pane -->
-        <!-- Stats tab content -->
-        <div class="tab-pane" id="control-sidebar-stats-tab">Stats Tab Content</div>
-        <!-- /.tab-pane -->
-        <!-- Settings tab content -->
-        <div class="tab-pane" id="control-sidebar-settings-tab">
-          <form method="post">
-            <h3 class="control-sidebar-heading">General Settings</h3>
+        <!--</div>-->
+        <!--&lt;!&ndash; /.tab-pane &ndash;&gt;-->
+        <!--&lt;!&ndash; Stats tab content &ndash;&gt;-->
+        <!--<div class="tab-pane" id="control-sidebar-stats-tab">Stats Tab Content</div>-->
+        <!--&lt;!&ndash; /.tab-pane &ndash;&gt;-->
+        <!--&lt;!&ndash; Settings tab content &ndash;&gt;-->
+        <!--<div class="tab-pane" id="control-sidebar-settings-tab">-->
+          <!--<form method="post">-->
+            <!--<h3 class="control-sidebar-heading">General Settings</h3>-->
 
-            <div class="form-group">
-              <label class="control-sidebar-subheading">
-                Report panel usage
-                <input type="checkbox" class="pull-right" checked>
-              </label>
+            <!--<div class="form-group">-->
+              <!--<label class="control-sidebar-subheading">-->
+                <!--Report panel usage-->
+                <!--<input type="checkbox" class="pull-right" checked>-->
+              <!--</label>-->
 
-              <p>
-                Some information about this general settings option
-              </p>
-            </div>
-            <!-- /.form-group -->
+              <!--<p>-->
+                <!--Some information about this general settings option-->
+              <!--</p>-->
+            <!--</div>-->
+            <!--&lt;!&ndash; /.form-group &ndash;&gt;-->
 
-            <div class="form-group">
-              <label class="control-sidebar-subheading">
-                Allow mail redirect
-                <input type="checkbox" class="pull-right" checked>
-              </label>
+            <!--<div class="form-group">-->
+              <!--<label class="control-sidebar-subheading">-->
+                <!--Allow mail redirect-->
+                <!--<input type="checkbox" class="pull-right" checked>-->
+              <!--</label>-->
 
-              <p>
-                Other sets of options are available
-              </p>
-            </div>
-            <!-- /.form-group -->
+              <!--<p>-->
+                <!--Other sets of options are available-->
+              <!--</p>-->
+            <!--</div>-->
+            <!--&lt;!&ndash; /.form-group &ndash;&gt;-->
 
-            <div class="form-group">
-              <label class="control-sidebar-subheading">
-                Expose author name in posts
-                <input type="checkbox" class="pull-right" checked>
-              </label>
+            <!--<div class="form-group">-->
+              <!--<label class="control-sidebar-subheading">-->
+                <!--Expose author name in posts-->
+                <!--<input type="checkbox" class="pull-right" checked>-->
+              <!--</label>-->
 
-              <p>
-                Allow the user to show his name in blog posts
-              </p>
-            </div>
-            <!-- /.form-group -->
+              <!--<p>-->
+                <!--Allow the user to show his name in blog posts-->
+              <!--</p>-->
+            <!--</div>-->
+            <!--&lt;!&ndash; /.form-group &ndash;&gt;-->
 
-            <h3 class="control-sidebar-heading">Chat Settings</h3>
+            <!--<h3 class="control-sidebar-heading">Chat Settings</h3>-->
 
-            <div class="form-group">
-              <label class="control-sidebar-subheading">
-                Show me as online
-                <input type="checkbox" class="pull-right" checked>
-              </label>
-            </div>
-            <!-- /.form-group -->
+            <!--<div class="form-group">-->
+              <!--<label class="control-sidebar-subheading">-->
+                <!--Show me as online-->
+                <!--<input type="checkbox" class="pull-right" checked>-->
+              <!--</label>-->
+            <!--</div>-->
+            <!--&lt;!&ndash; /.form-group &ndash;&gt;-->
 
-            <div class="form-group">
-              <label class="control-sidebar-subheading">
-                Turn off notifications
-                <input type="checkbox" class="pull-right">
-              </label>
-            </div>
-            <!-- /.form-group -->
+            <!--<div class="form-group">-->
+              <!--<label class="control-sidebar-subheading">-->
+                <!--Turn off notifications-->
+                <!--<input type="checkbox" class="pull-right">-->
+              <!--</label>-->
+            <!--</div>-->
+            <!--&lt;!&ndash; /.form-group &ndash;&gt;-->
 
-            <div class="form-group">
-              <label class="control-sidebar-subheading">
-                Delete chat history
-                <a href="javascript::;" class="text-red pull-right"><i class="fa fa-trash-o"></i></a>
-              </label>
-            </div>
-            <!-- /.form-group -->
-          </form>
-        </div>
-        <!-- /.tab-pane -->
-      </div>
+            <!--<div class="form-group">-->
+              <!--<label class="control-sidebar-subheading">-->
+                <!--Delete chat history-->
+                <!--<a href="javascript::;" class="text-red pull-right"><i class="fa fa-trash-o"></i></a>-->
+              <!--</label>-->
+            <!--</div>-->
+            <!--&lt;!&ndash; /.form-group &ndash;&gt;-->
+          <!--</form>-->
+        <!--</div>-->
+        <!--&lt;!&ndash; /.tab-pane &ndash;&gt;-->
+      <!--</div>-->
     </aside>
 
   </div>
+
 </template>
 
 <script>
@@ -271,6 +284,10 @@
 
   export default {
     name: 'app',
+   data: function() {
+      return {
+      }
+   },
     template: a => a(App),
     render: r => r(App),
     methods: {
@@ -287,13 +304,23 @@
 
         } else {
           _resize(sb_asgn, '40%', '400')
-          _resize('#editor','55%', '400')
+          _resize('#editor','60%', '400')
           _replaceImage('img#exp-img', '/static/img/expand-right.png' )
 
-          if ($(sbv).css('width') > '5%') {
-            _resize(sb_vid, '0', 400)
-          }
         }
+      },
+      toggleCommentsNav: function (e) {
+        let sb_asgn = '#sidebar-assignments'
+        let sb_vid = '#sidebar-videos'
+
+        if (_isOpened(sb_asgn)){
+          _resize(sb_asgn,'0', '400')
+        }
+
+        if (_isOpened(sb_vid)){
+          _resize(sb_vid,'0', '400')
+        }
+
       },
       toggleSessionsNav: function (e) {
         let sb_asgn = '#sidebar-assignments'
@@ -308,21 +335,18 @@
 
         } else {
           _resize(sb_vid, '40%', '400')
-          _resize('#editor','55%', '400')
+          _resize('#editor','60%', '400')
           _replaceImage('img#exp-img', '/static/img/expand-right.png' )
 
-          if ($(sb_asgn).css('width') > '5%') {
-            _resize(sb_asgn, '0', 400)
-          }
         }
       },
       toggleSettingsNav: function(e){
         let settBox = $('#sidebar-settings')
 
         if (_isOpened(settBox)) {
-          _close(settBox)
+          _resize(settBox, '0', 400)
         }else{
-
+          _resize(settBox, '40%', 400)
         }
       }
     }
@@ -342,7 +366,7 @@
   }
 
   function _replaceImage(el, newSrc){
-    $(el).attr('src', newSrc)
+    $(el).fadeOut(700).stop(500).attr('src', newSrc).fadeIn()
   }
 
   function addUserWebcam (videos, div) {
@@ -362,6 +386,16 @@
   @import '/static/css/skins/_all-skins.css';
   @import '/static/css/skins/skin-green-light.css';
   @import '/static/css/peez.css';
+
+  #editor-controls li.go-lab input{
+    margin-top: 10px;
+  }
+
+  #editor-controls li.go-lab input:hover {
+  background-color: whitesmoke;
+    border: 1px solid transparent;
+
+  }
 
   .main-header a.logo {
     text-decoration: none;

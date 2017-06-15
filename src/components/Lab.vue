@@ -38,10 +38,12 @@
                 <li class="col-lg-5">
                   <span class="pull-left" id="compiled-msg">
 
-                  <a  v-on:onclick="showErrorPopover()"  data-toggle="tooltip" data-placement="bottom" title="exceptions"  class="ex-tab exception-tab pull-right">
+                  <a v-on:click="toggleAssignmentNav" data-toggle="tooltip" data-placement="bottom" title="exceptions"
+                     class="ex-tab exception-tab pull-right">
                     <img id="exp-img" width="15px" height="15px" src="/static/img/expand-right.png" alt="exceptions"/>
                   </a>
-                      <a id="error-icon-div" v-on:click="toggleAssignmentNav" data-toggle="tooltip" data-placement="bottom" title="expand" class="ex-tab expand-tab pull-right">
+                      <a id="error-icon-div" data-toggle="tooltip"
+                         data-placement="bottom" title="expand" class="ex-tab expand-tab pull-right">
                     <img id="err-img" width="15px" height="15px" src="/static/img/warning.png" alt="exception"/>
                   </a>
                     </span>
@@ -55,19 +57,27 @@
               <div id="code-tab" class="tab-pane fade in active">
                 <div id="editor" class="ace-Katzenmilch">
                 </div>
-                <div id="comments-tab">
-                  <button  class="btn btn-circle btn-sm comment-btn"
-                          data-toggle="popover"><img width="15px" height="15px" src="/static/img/heart.png" />
-                  </button>
+                <div id="comments-tab" class="hidden">
+                  <div id="comments-tab-top-menu">
+                    <ul class="list-group">
 
-                  <button class="btn btn-circle btn-sm comment-btn"
-                          data-toggle="popover"><img width="15px" height="15px" src="/static/img/speech-bubble.png" />
-                  </button>
-
-                  <button class="btn btn-circle btn-sm comment-btn"
-                          data-toggle="popover"><img width="15px" height="15px" src="/static/img/push-pin.png" />
-                  </button>
-
+                      <li class="list-group-item">
+                        <a>
+                          <img id="make-code-comment" width="18px" height="18px" src="/static/img/speech-bubble.png"/>
+                        </a>
+                      </li>
+                      <li v-on:click="makeSnippetFromSelection()" class="list-group-item">
+                        <a>
+                          <img id="save-code-snippet" width="18px" height="18px" src="/static/img/push-pin.png"/>
+                        </a>
+                      </li>
+                      <li class="list-group-item">
+                        <a>
+                          <img id="like-code-section" width="15px" height="15px" src="/static/img/heart.png"/>
+                        </a>
+                      </li>
+                    </ul>
+                  </div>
                 </div>
               </div>
             </div>
@@ -86,6 +96,14 @@
                    alt="build"/></a>
         </li>
       </ul>
+      <!--<div class="test slider" data-slick='{"slidesToShow": 4, "slidesToScroll": 4}'>-->
+        <!--<div><h3>1</h3></div>-->
+        <!--<div><h3>2</h3></div>-->
+        <!--<div><h3>3</h3></div>-->
+        <!--<div><h3>4</h3></div>-->
+        <!--<div><h3>5</h3></div>-->
+        <!--<div><h3>6</h3></div>-->
+      <!--</div>-->
     </aside>
 
     <!-- Videos Control Sidebar -->
@@ -125,6 +143,44 @@
 
         </div>
 
+      </div>
+
+    </aside>
+
+    <!-- Videos Control Sidebar -->
+    <aside id="sidebar-comments" class="control-sidebar-comments control-sidebar-light">
+      <ul class="nav nav-pills no-padding no-margin">
+        <li v-on:click="toggleCommentsNav" data-toggle="tooltip" data-placement="bottom" title="hide"
+            class="pull-right disabled">
+          <a> <img id="close-comments-window" width="12px" height="12px" src="/static/img/cancel.png"
+                   alt="build"/></a>
+        </li>
+      </ul>
+
+      <div id="comments-section">
+
+        <div class="box-body l-vid-box">
+
+          <div id="panel-comments" class="hidden panel panel-default">
+            <div class="panel-body">
+              <div class="hidden" id="local-vid"></div>
+            </div>
+            <!--video section footer with icons-->
+            <div class="small-box small-box-footer">
+              <button type="button" class="btn btn-box-tool pull-right" data-toggle="tooltip"
+                      title="Contacts" data-widget="chat-pane-toggle">
+                <i class="fa fa-comments"></i>
+              </button>
+              <button type="button" class="btn btn-box-tool pull-right" data-toggle="tooltip"
+                      title="video" data-widget="chat-pane-toggle">
+                <i class="fa fa-video-camera"></i>
+              </button>
+            </div>
+          </div>
+
+        </div>
+
+      <span>comment stream....</span>
       </div>
 
     </aside>
@@ -172,27 +228,6 @@
 
   ace.config.set('basePath', 'static/ace/');
 
-
-
-  let vids = $('#remote-vids')
-  initSlickCarousel(vids);
-
-  $.when(editor !== undefined).then(function () {
-    editor.getSession().on('change', function(e) {
-      Lab.saveCodeToFirebase(1)
-      alert('saving')
-    });
-
-    editor.getSession().selection.on('changeSelection', function(e) {
-      alert('selection made')
-    });
-
-    editor.getSession().selection.on('changeCursor', function(e) {
-      alert('cursor changed')
-    });
-  })
-
-
   export default {
     name: 'lab',
     data() {
@@ -212,6 +247,13 @@
         },
         readyCallback: function () {
           syncEditorWithLab()
+          this.initEditorEvents()
+
+          //webrtc init
+          this.initWebRtc(getWebRtc())
+
+          //slick carousel init
+          this.initSlickCarousel($('#remote-vids'));
         },
         asObject: false
       },
@@ -257,8 +299,61 @@
       }
     },
     methods: {
+      find: function (word, dir) {
+        editor = ace.edit("editor");
+        editor.find(word, {
+          backwards: dir === 'back',
+          wrap: false,
+          caseSensitive: false,
+          wholeWord: false,
+          regExp: false
+        });
+
+        return dir === 'back' ? editor.findPrevious() : editor.findNext()
+      },
+      readOnly: function (val) {
+        editor = ace.edit("editor");
+        editor.setReadOnly(val);
+      },
       getLiveCode: function () {
         return this.liveCode[0]
+      },
+      getSelectedCodeInfo: function () {
+        editor = ace.edit("editor");
+      },
+      getCurcorPosition: function () {
+        editor = ace.edit("editor");
+        return editor.selection.getCursor();
+      },
+      makeSnippetFromSelection: function () {
+        editor = ace.edit("editor");
+        let selectedText = editor.session.getTextRange(editor.getSelectionRange());
+        alert(selectedText)
+        let cursorBox = $('div.ace_cursor')
+
+        cursorBox.animate({
+          'background-color': 'green',
+          'border': '1px dotted #ebebeb',
+          'border-radius': '6px'
+        }, 400)
+      },
+      initEditorEvents: function () {
+        editor = ace.edit("editor");
+
+        editor.getSession().on('change', function (e) {
+          $('#comments-tab-top-menu').stop().hide()
+        });
+
+        editor.getSession().selection.on('changeSelection', function (e) {
+          // alert('selection made')
+          //this.makeSnippetFromSelection()
+        });
+
+        editor.getSession().selection.on('changeCursor', function (e) {
+          //   alert('cursor changed')
+          $('#comments-tab-top-menu').stop().show()
+
+        });
       },
       saveCodeToFirebase: function (probId) {
         let codeEntry = editor.getValue()
@@ -272,49 +367,151 @@
         let childTemplate = `/${roomName}/${userName}/code/`
         this.$firebaseRefs.labs.child(childTemplate).update(codeToSubmit)
       },
-
       toggleAssignmentNav: function () {
         App.methods.toggleAssignmentNav()
       },
       toggleSessionsNav: function () {
         App.methods.toggleSessionsNav()
+      },
+      toggleCommentsNav: function () {
+        App.methods.toggleCommentsNav()
+      },
+      toggleSettingsNav: function () {
+        App.methods.toggleSettingsNav()
+      },
+      initWebRtc: function (webrtc) {
+
+        // a peer video has been added
+        webrtc.on('videoAdded', function (video, peer) {
+
+          console.log('video added', peer);
+          console.log('video added', peer.nick);
+
+          let remotes = document.getElementById('remote-vids');
+          if (remotes) {
+
+            let container = document.createElement('div')
+            container.className = 'videoContainer';
+            container.id = 'container_' + webrtc.getDomId(peer);
+            container.appendChild(video);
+
+            let htmlWrapper = '<div class="box-body l-vid-box"><button id="local-vid-popper" type="button" class="btn btn-default btn-circle btn-lg" data-toggle="popover">P</button><div id="panel-local-vid" class="hidden panel panel-default"><div class="panel-body">'
+              + container
+              + '</div>div class="small-box small-box-footer"><button type="button" class="btn btn-box-tool pull-right" data-toggle="tooltip"title="Contacts" data-widget="chat-pane-toggle">'
+              + '<i class="fa fa-comments"></i></button><button type="button" class="btn btn-box-tool pull-right" data-toggle="tooltip" title="video" data-widget="chat-pane-toggle">'
+              + '<i class="fa fa-video-camera"></i></button></div></div></div>';
+
+            // suppress contextmenu
+            video.oncontextmenu = function () {
+              return false;
+            };
+
+            remotes.appendChild(htmlWrapper);
+
+            // show the ice connection state
+            if (peer && peer.pc) {
+              let connstate = document.createElement('div');
+              connstate.className = 'connectionstate';
+              container.appendChild(connstate);
+              peer.pc.on('iceConnectionStateChange', function (event) {
+                switch (peer.pc.iceConnectionState) {
+                  case 'checking':
+                    connstate.innerText = 'Connecting to peer...';
+                    break;
+                  case 'connected':
+                  case 'completed': // on caller side
+                    connstate.innerText = 'Connection established.';
+                    break;
+                  case 'disconnected':
+                    connstate.innerText = 'Disconnected.';
+                    break;
+                  case 'failed':
+                    break;
+                  case 'closed':
+                    connstate.innerText = 'Connection closed.';
+                    break;
+                }
+              });
+            }
+          }
+        });
+        // a peer has been removed
+        webrtc.on('videoRemoved', function (video, peer) {
+          console.log('video removed ', peer);
+          let remotes = document.getElementById('remote-vids');
+          let el = document.getElementById(peer ? 'container_' + webrtc.getDomId(peer) : 'localScreenContainer');
+          if (remotes && el) {
+            remotes.removeChild(el);
+          }
+        });
+
+        // local p2p/ice failure
+        webrtc.on('iceFailed', function (peer) {
+          let connstate = document.querySelector('#container_' + webrtc.getDomId(peer) + ' .connectionstate');
+          console.log('local fail', connstate);
+          if (connstate) {
+            connstate.innerText = 'Connection failed.';
+            fileinput.disabled = 'disabled';
+          }
+        });
+
+        // remote p2p/ice failure
+        webrtc.on('connectivityError', function (peer) {
+          let connstate = document.querySelector('#container_' + webrtc.getDomId(peer) + ' .connectionstate');
+          console.log('remote fail', connstate);
+          if (connstate) {
+            connstate.innerText = 'Connection failed.';
+            fileinput.disabled = 'disabled';
+          }
+        });
+      },
+      initSlickCarousel: function (videos) {
+        videos.slick({
+          centerMode: true,
+          variableWidth: true,
+          fade: true,
+          dots: true,
+          infinite: true,
+          centerPadding: '60px',
+          autoplay: false,
+          cssEase: 'linear',
+          adaptiveHeight: true,
+          speed: 300,
+          slidesToShow: 3,
+          responsive: [
+            {
+              breakpoint: 768,
+              settings: {
+                arrows: false,
+                centerMode: true,
+                centerPadding: '40px',
+                slidesToShow: 3
+              }
+            },
+            {
+              breakpoint: 480,
+              settings: {
+                arrows: false,
+                centerMode: true,
+                centerPadding: '40px',
+                slidesToShow: 1
+              }
+            }
+          ]
+        });
       }
     }
   }
 
-  function initSlickCarousel (videos) {
-    videos.slick({
-      centerMode: true,
-      variableWidth: true,
-      fade : true,
-      dots: true,
-      infinite: true,
-      centerPadding: '60px',
-      autoplay: false,
-      cssEase: 'linear',
-      adaptiveHeight: true,
-      speed: 300,
-      slidesToShow: 3,
-      responsive: [
-        {
-          breakpoint: 768,
-          settings: {
-            arrows: false,
-            centerMode: true,
-            centerPadding: '40px',
-            slidesToShow: 3
-          }
-        },
-        {
-          breakpoint: 480,
-          settings: {
-            arrows: false,
-            centerMode: true,
-            centerPadding: '40px',
-            slidesToShow: 1
-          }
-        }
-      ]
+  function getWebRtc () {
+    return new SimpleWebRTC({
+      // the id/element dom element that will hold "our" video
+      localVideoEl: 'local-vid',
+      // the id/element dom element that will hold remote videos
+      remoteVideosEl: 'remote-vids',
+      // immediately ask for camera access
+      autoRequestMedia: true,
+      nick: userName
     });
   }
 
@@ -353,11 +550,12 @@
           if (childSnapshot.key === 'code') {
             let v = childSnapshot.val()
 
-            editor.getSession().setMode("ace/mode/java");
-            $('#editor').animate({'font-size': '14px'}, 200)
+            //editor.getSession().setMode("ace/mode/java");
+            $('#editor').css({'font-size': '14px'})
             editor.getSession().setUseWorker(true);
-            editor.setTheme('ace/theme/ambiance');
+            //editor.setTheme('ace/theme/ambiance');
             editor.setHighlightActiveLine(true);
+            editor.getSession().setUseSoftTabs(true);
             editor.setShowPrintMargin(false);
             editor.setValue(v.text);
 
@@ -388,24 +586,53 @@
 
 <style scoped>
   @import "/static/ace/theme-monokai.css";
+  @import "/static/slick/slick.css";
+  @import "/static/slick/slick-theme.css";
 
-  .comment-btn{
+
+
+  #comments-tab {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    left: 50%;
+    width: 200px;
+    height: 50px;
+    background-color: whitesmoke;
+    min-height: 30px;
+    z-index: 1000;
+    -webkit-transition: right .3s ease-in-out;
+    -o-transition: right .3s ease-in-out;
+    transition: right .3s ease-in-out;
+  }
+
+  #comments-tab-top-menu ul.list-group li.list-group-item {
+    padding: 0;
+    margin-left: 15px;
+    margin-right: 15px;
+  }
+
+  #comments-tab-top-menu ul.list-group li.list-group-item:hover {
+    cursor: pointer;
+    background-color: #ebebeb;
+  }
+
+  .comment-btn {
     border: 1px solid ghostwhite;
+    background-color: transparent;
+  }
+
+  .comment-btn:hover {
+    cursor: pointer;
+  }
+
+  .head-wrapper {
+    height: 40px;
+    padding: 0;
     background-color: whitesmoke;
-    margin-left: 5px;
   }
 
-  .comment-btn:hover{
-  cursor: pointer;
-  }
-
-  .head-wrapper{
-    height:40px;
-    padding:0;
-    background-color: whitesmoke;
-  }
-
-  #compiled-msg{
+  #compiled-msg {
     position: relative;
     background-color: whitesmoke;
     height: 36px;
@@ -419,14 +646,14 @@
   }
 
   #compiled-msg a {
-   margin-left: 10px;
+    margin-left: 10px;
     position: relative;
     display: block;
     padding: 10px 10px;
     background-color: whitesmoke;
   }
 
-  #compiled-msg a:hover{
+  #compiled-msg a:hover {
     cursor: pointer;
     text-decoration: none;
     background-color: #eee;
@@ -471,7 +698,7 @@
     padding-bottom: 56px;
     min-height: 650px;
     height: 100%;
-    width: 55%;
+    width: 60%;
     text-align: left;
     overflow-y: hidden;
 
@@ -481,32 +708,28 @@
     scrollbar-track-color: transparent;
   }
 
-  #comments-tab{
-    position: relative;
-    right: 0;
-    top: 0;
-    bottom: 0;
-    left: 55%;
-    width: 35px;
-    margin-left: 35px;
-    height:100%;
-    border-left: 2px dotted #ebebeb;
+  #comments-tab ul li.list-group-item {
     background-color: whitesmoke;
-    min-height: 600px;
-    z-index: 1000;
-    -webkit-transition:right .3s ease-in-out;
-    -o-transition:right .3s ease-in-out;transition:right .3s ease-in-out;
+    margin-top: 5px;
+    border: 1px solid transparent;
+    padding-right: 3px;
+    float: left;
   }
 
+  #comments-tab ul li.list-group-item:hover {
+    background-color: white;
+    border: 1px solid transparent;
+  }
 
-  .ex-tab{
+  .ex-tab {
 
-    -webkit-transition:right .3s ease-in-out;
-    -o-transition:right .3s ease-in-out;transition:right .3s ease-in-out;
+    -webkit-transition: right .3s ease-in-out;
+    -o-transition: right .3s ease-in-out;
+    transition: right .3s ease-in-out;
   }
 
   /*.ex-tab:nth-last-child(0){*/
-    /*margin-right: 60px;*/
+  /*margin-right: 60px;*/
   /*}*/
 
 

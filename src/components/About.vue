@@ -4,13 +4,22 @@
 
     <br/>
     <br/>
-    <span>I'ma get rightwithca!!</span>
+
+
+    <span class="pull-right">Icons made by <a href="http://www.flaticon.com/authors/eleonor-wang" title="Eleonor Wang">Eleonor Wang</a> from <a href="http://www.flaticon.com" title="Flaticon">www.flaticon.com</a> is licensed by <a href="http://creativecommons.org/licenses/by/3.0/" title="Creative Commons BY 3.0" target="_blank">CC 3.0 BY</a></span>
   </div>
+  <!-- /.content-wrapper -->
+
 </template>
 
 <script>
 export default {
-  name: 'about'
+  name: 'about',
+  methods: {
+    getName: function () {
+      return this.name
+    }
+  }
 }
 </script>
 <!-- styling for the component -->
