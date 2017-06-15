@@ -6,35 +6,39 @@
 
         <!-- Logo -->
         <a href="index.html" class="logo">
-          <!-- mini logo for sidebar mini 50x50 pixels -->
-          <span class="logo-mini"><b>M</b>L</span>
+          <!--&lt;!&ndash; mini logo for sidebar mini 50x50 pixels &ndash;&gt;-->
+          <!--<span class="logo-mini"><b>M</b>L</span>-->
 
           <!-- logo for regular state and mobile devices -->
-          <span class="logo-lg"><b>Mootz</b>LAB</span>
+          <span class="logo-sm"><b>Mootz</b>LAB</span>
         </a>
 
         <!-- Header Navbar: style can be found in header.less -->
         <nav id="headNav" class="navbar navbar-static-top fixed sidebar-collapse" role="navigation">
 
-          <!-- Sidebar toggle button-->
-          <span class="sr-only">Toggle navigation</span>
+          <!--&lt;!&ndash; Sidebar toggle button&ndash;&gt;-->
+          <!--<span class="sr-only">Toggle navigation</span>-->
 
-          <a data-toggle="popover" data-placement="bottom" title="options" data-content="Settings will go here">
-            <img id="options-img" class="sidebar-toggle" src="/static/img/options.png" alt="options"/>
-          </a>
+          <!--<a data-toggle="popover" data-placement="bottom" title="options" data-content="Settings will go here">-->
+          <!--<img id="options-img" class="sidebar-toggle" src="/static/img/options.png" alt="options"/>-->
+          <!--</a>-->
 
           <ul id="editor-controls" class="nav navbar-nav pull-right">
 
 
             <!--settings-->
             <li data-toggle="control-sidebar" class="e-tab pull-right" data-placement="bottom" title="settings">
-              <a> <small>settings </small>&nbsp<img src="/static/img/gear.png" class="right-btn"></a>
+              <a>
+                <small>settings </small>
+                &nbsp<img src="/static/img/gear.png" class="right-btn"></a>
             </li>
 
             <!--inbox-->
             <li v-on:click="toggleAssignmentNav" data-toggle="tooltip" data-placement="bottom" title="Assignements"
                 class="e-tab chalk-tab pull-right">
-              <a> <small>docs </small>&nbsp
+              <a>
+                <small>docs </small>
+                &nbsp
                 <img class="text-light-blue" id="c-board-img" src="/static/img/briefcase.png"
                      alt="assignments"/>
               </a>
@@ -42,13 +46,18 @@
 
             <li v-on:click="toggleSessionsNav" data-toggle="tooltip" data-placement="bottom" title="sessions"
                 class="pull-right sessions-ta active">
-              <a><small>users</small>&nbsp
-            <img id="rtc-session" src="/static/img/webcam.png" alt="lab sessions"/>
+              <a>
+                <small>users</small>
+                &nbsp
+                <img id="rtc-session" src="/static/img/webcam.png" alt="lab sessions"/>
               </a>
             </li>
             <li>
-            <a data-toggle="tooltip" data-placement="bottom" title="sessions" class="pull-right">
-              <router-link v-bind:to="'/about'"> <small>achievements</small>&nbsp<img src="/static/img/information.png" alt="about"/></router-link></a>
+              <a data-toggle="tooltip" data-placement="bottom" title="sessions" class="pull-right">
+                <router-link v-bind:to="'/about'">
+                  <small>comments</small>
+                  &nbsp<img src="/static/img/information.png" alt="about"/></router-link>
+              </a>
             </li>
 
           </ul>
@@ -62,7 +71,7 @@
     </router-view>
 
     <!-- Control Sidebar -->
-    <aside class="control-sidebar control-sidebar-light">
+    <aside id="sidebar-settings" class="hidden control-sidebar-settings control-sidebar control-sidebar-light">
       <!-- Create the tabs -->
       <ul class="nav nav-tabs nav-justified control-sidebar-tabs">
         <li><a href="#control-sidebar-home-tab" data-toggle="tab"><i class="fa fa-home"></i></a></li>
@@ -251,60 +260,6 @@
       </div>
     </aside>
 
-    <!--assignment control sidebar-->
-    <aside id="sidebar-assignments" class="control-sidebar-assignments control-sidebar-light">
-      <ul class="nav nav-pills no-padding no-margin">
-
-        <li v-on:click="toggleAssignmentNav" data-toggle="tooltip" data-placement="bottom" title="hide" class="pull-right">
-          <a> <img id="close-assignment-window" width="15px" height="15px" src="/static/img/close-right.png"
-                   alt="build"/></a>
-        </li>
-      </ul>
-    </aside>
-
-    <!-- Videos Control Sidebar -->
-    <aside id="sidebar-videos" class="control-sidebar-videos control-sidebar-light">
-      <ul class="nav nav-pills no-padding no-margin">
-
-        <li v-on:click="toggleSessionsNav" data-toggle="tooltip" data-placement="bottom" title="hide" class="pull-right">
-          <a> <img id="close-videos-window" width="15px" height="15px" src="/static/img/close-right.png"
-                   alt="build"/></a>
-        </li>
-      </ul>
-      <div id="video-section">
-
-        <div class="box-body l-vid-box">
-
-          <button id="local-vid-popper" type="button" class="btn btn-default btn-circle btn-lg"
-                  data-toggle="popover">HC
-          </button>
-
-          <div id="panel-local-vid" class="hidden panel panel-default">
-            <div class="panel-body">
-              <div class="hidden" id="local-vid"></div>
-            </div>
-            <!--video section footer with icons-->
-            <div class="small-box small-box-footer">
-              <button type="button" class="btn btn-box-tool pull-right" data-toggle="tooltip"
-                      title="Contacts" data-widget="chat-pane-toggle">
-                <i class="fa fa-comments"></i>
-              </button>
-              <button type="button" class="btn btn-box-tool pull-right" data-toggle="tooltip"
-                      title="video" data-widget="chat-pane-toggle">
-                <i class="fa fa-video-camera"></i>
-              </button>
-            </div>
-          </div>
-
-        </div>
-
-        <div id="remote-vids">
-
-        </div>
-      </div>
-
-    </aside>
-
   </div>
 </template>
 
@@ -322,47 +277,83 @@
       toggleAssignmentNav: function (e) {
         let sb_asgn = '#sidebar-assignments'
         let sb_vid = '#sidebar-videos'
-        let opened = $(sb_asgn).css('width')> '5%';
-        if (opened) {
-          $(sb_asgn).animate({'width':'0'}, 400)
-          $('#editor').animate({'width':'100%'}, 400)
-          $('#comments-tab').stop().hide(250).animate({'right': 0}, 400).show(150)
-          $('.ex-tab').stop().hide(250).removeClass('pull-left').addClass('pull-right').fadeIn(550)
-        } else {
-          $('#editor').animate({'width':'55%'}, 400)
-          $('#comments-tab').stop().hide(250).animate({'right': '40%'}, 400).show(150)
-          $('li.ex-tab').stop().hide(250).removeClass('pull-right').addClass('pull-left').fadeIn(550)
-          $(sb_asgn).animate({'width': '40%'}, 400)
+        if (_isOpened(sb_asgn)) {
+          _resize(sb_asgn, '0', '400')
+          _resize('#editor','100%', '400')
 
-         if($(sb_vid).css('width')> '5%'){
-           $(sb_vid).animate({'width': '0'}, 400)
-         }
+          if(!_isOpened(sb_vid)){
+            _replaceImage('img#exp-img', '/static/img/expand-left.png' )
+          }
+
+        } else {
+          _resize(sb_asgn, '40%', '400')
+          _resize('#editor','55%', '400')
+          _replaceImage('img#exp-img', '/static/img/expand-right.png' )
+
+          if ($(sbv).css('width') > '5%') {
+            _resize(sb_vid, '0', 400)
+          }
         }
       },
       toggleSessionsNav: function (e) {
-        let editorRight = $('#editor').position().right
-
         let sb_asgn = '#sidebar-assignments'
         let sb_vid = '#sidebar-videos'
-        let opened = $(sb_vid).css('width') > '5%';
-        if (opened) {
-          $(sb_vid).animate({'width': '0'}, 400)
-          $('#editor').animate({'width':'100%'}, 400)
-          $('#comments-tab').stop().hide(250).animate({'right': 0}, 400).show(150)
-          $('.ex-tab').stop().hide(250).removeClass('pull-left').addClass('pull-right').fadeIn(550)
-        } else {
-          $('#editor').animate({'width':'55%'}, 400)
-          $('#comments-tab').stop().hide(250).animate({'right': '40%'}, 400).show(150)
-          $('li.ex-tab').stop().hide(250).removeClass('pull-right').addClass('pull-left').fadeIn(550)
-          $(sb_vid).animate({'width': '40%'}, 400)
+        if (_isOpened(sb_vid)) {
+          _resize(sb_vid, '0', '400')
+          _resize('#editor','100%', '400')
 
-          if($(sb_asgn).css('width')> '5%') {
-            $(sb_asgn).animate({'width': '0'}, 400)
+          if(!_isOpened(sb_asgn)){
+            _replaceImage('img#exp-img', '/static/img/expand-left.png' )
           }
+
+        } else {
+          _resize(sb_vid, '40%', '400')
+          _resize('#editor','55%', '400')
+          _replaceImage('img#exp-img', '/static/img/expand-right.png' )
+
+          if ($(sb_asgn).css('width') > '5%') {
+            _resize(sb_asgn, '0', 400)
+          }
+        }
+      },
+      toggleSettingsNav: function(e){
+        let settBox = $('#sidebar-settings')
+
+        if (_isOpened(settBox)) {
+          _close(settBox)
+        }else{
+
         }
       }
     }
   }
+
+  function _isOpened (el) {
+    return $(el).css('width') > '5%'
+  }
+  function _resize (el, howBigVal, speed) {
+    $(el).animate({'width': howBigVal}, speed)
+  }
+  function _moveComments (howMuch, speed) {
+    $('#comments-tab').stop().hide(250).animate({'right': howMuch}, speed).show(150)
+  }
+  function _swapClasses(el, first, second, speed){
+    $(el).stop().hide(10).removeClass(first).addClass(second).fadeIn(speed)
+  }
+
+  function _replaceImage(el, newSrc){
+    $(el).attr('src', newSrc)
+  }
+
+  function addUserWebcam (videos, div) {
+      slideIndex++;
+      $(videos).slick('slickAdd', div);
+  }
+  function removeUserWebcam (videos, div) {
+    slideIndex--;
+    $(videos).slick('slickRemove', div);
+  }
+
 </script>
 <!-- styling for the component -->
 <style>
@@ -372,6 +363,15 @@
   @import '/static/css/skins/skin-green-light.css';
   @import '/static/css/peez.css';
 
+  .main-header a.logo {
+    text-decoration: none;
+    width: 150px;
+  }
+
+  #main-sect {
+    position: relative;
+    margin-top: 10px;
+  }
 
   #app {
     font-family: 'Avenir', Helvetica, Arial, sans-serif;

@@ -21,6 +21,7 @@
     "jsbeautify": "^0.3.6",
     "nodemon": "^1.11.0",
     "sass-loader": "^6.0.5",
+    "slick-carousel": "^1.6.0",
     "tether": "^1.4.0",
     "vue": "^2.1.0",
     "vue-router": "^2.2.0",
