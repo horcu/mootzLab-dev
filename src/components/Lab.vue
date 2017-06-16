@@ -97,12 +97,12 @@
         </li>
       </ul>
       <!--<div class="test slider" data-slick='{"slidesToShow": 4, "slidesToScroll": 4}'>-->
-        <!--<div><h3>1</h3></div>-->
-        <!--<div><h3>2</h3></div>-->
-        <!--<div><h3>3</h3></div>-->
-        <!--<div><h3>4</h3></div>-->
-        <!--<div><h3>5</h3></div>-->
-        <!--<div><h3>6</h3></div>-->
+      <!--<div><h3>1</h3></div>-->
+      <!--<div><h3>2</h3></div>-->
+      <!--<div><h3>3</h3></div>-->
+      <!--<div><h3>4</h3></div>-->
+      <!--<div><h3>5</h3></div>-->
+      <!--<div><h3>6</h3></div>-->
       <!--</div>-->
     </aside>
 
@@ -149,40 +149,33 @@
 
     <!-- Videos Control Sidebar -->
     <aside id="sidebar-comments" class="control-sidebar-comments control-sidebar-light">
-      <ul class="nav nav-pills no-padding no-margin">
-        <li v-on:click="toggleCommentsNav" data-toggle="tooltip" data-placement="bottom" title="hide"
-            class="pull-right disabled">
-          <a> <img id="close-comments-window" width="12px" height="12px" src="/static/img/cancel.png"
-                   alt="build"/></a>
-        </li>
-      </ul>
-
-      <div id="comments-section">
-
-        <div class="box-body l-vid-box">
-
-          <div id="panel-comments" class="hidden panel panel-default">
-            <div class="panel-body">
-              <div class="hidden" id="local-vid"></div>
+      <div id="main-chat-box" class="panel panel-flat">
+        <div>Panel heading without title</div>
+        <div class="panel-body">
+          <div class="container">
+            <div class="row message-bubble">
+              <p class="text-muted">Matt Townsen</p>
+              <p>It Isn't'</p>
             </div>
-            <!--video section footer with icons-->
-            <div class="small-box small-box-footer">
-              <button type="button" class="btn btn-box-tool pull-right" data-toggle="tooltip"
-                      title="Contacts" data-widget="chat-pane-toggle">
-                <i class="fa fa-comments"></i>
-              </button>
-              <button type="button" class="btn btn-box-tool pull-right" data-toggle="tooltip"
-                      title="video" data-widget="chat-pane-toggle">
-                <i class="fa fa-video-camera"></i>
-              </button>
+            <div class="row message-bubble">
+              <p class="text-muted">Matt Townsen</p>
+              <p>Umm yes it is</p>
+            </div>
+            <div class="row message-bubble">
+              <p class="text-muted">Matt Townsen</p>
+              <p>Test message</p>
             </div>
           </div>
-
+          <div class="panel-footer">
+            <div class="input-group">
+              <input type="text" class="form-control">
+              <span class="input-group-btn">
+                    <button class="btn btn-default" type="button">Send</button>
+                  </span>
+            </div>
+          </div>
         </div>
-
-      <span>comment stream....</span>
       </div>
-
     </aside>
   </div>
 </template>
@@ -253,7 +246,9 @@
           this.initWebRtc(getWebRtc())
 
           //slick carousel init
+          let divs = $('#remote-vids')
           this.initSlickCarousel($('#remote-vids'));
+          let divs2 = $('#remote-vids')
         },
         asObject: false
       },
@@ -589,7 +584,49 @@
   @import "/static/slick/slick.css";
   @import "/static/slick/slick-theme.css";
 
+  .message-bubble
+  {
+    padding: 10px 0 10px 0;
+  }
 
+  .message-bubble:nth-child(even) { background-color: #F5F5F5; }
+
+  .message-bubble > *
+  {
+    padding-left: 10px;
+  }
+
+  .panel-body { padding: 0px; }
+
+  .panel-heading { background-color: #3d6da7 !important; color: white !important; }
+
+  /*#comments-section {*/
+    /*position: absolute;*/
+    /*height: 100%;*/
+    /*width: 100%;*/
+    /*bottom: 0;*/
+    /*right: 0;*/
+    /*top: 40px;*/
+  /*}*/
+
+  div#main-chat-box.panel-default,  #main-chat-box div.panel-body{
+    height: 90%;
+
+  }
+
+  #main-chat-box div.container{
+    height: 90%;
+    margin-bottom: 50px;
+  }
+  /*div.direct-chat-messages{*/
+  /*position: relative;*/
+  /*top: 0px;*/
+  /*right: 0;*/
+  /*bottom: 0;*/
+  /*left: 0;*/
+  /*height: auto;*/
+  /*width: 100%;*/
+  /*}*/
 
   #comments-tab {
     position: absolute;
