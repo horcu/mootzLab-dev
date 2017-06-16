@@ -911,7 +911,7 @@
     list-style: none;
     padding: 20px 10px 0 10px;
     height: auto;
-    overflow: scroll;
+    overflow: hidden;
     bottom: 0;
     margin-bottom: 80px;
   }

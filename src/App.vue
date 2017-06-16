@@ -46,8 +46,8 @@
             </li>
 
             <li class="go-lab">
-              <input id="lab-path-input" type="text" class="form-control" placeholder="/lab/" value=""/>
-                <!--<router-link v-bind:to="'/lab/'"></router-link>-->
+             <div id="div-input-path"><span><a>/lab/<input id="lab-path-input" type="text" placeholder="name" value=""/></a></span></div>
+              <!--<router-link v-bind:to="'/lab/'"></router-link>-->
             </li>
           </ul>
           <!--</div>-->
@@ -424,7 +424,17 @@
           _resize(settBox, '40%', 300)
         }
       }
-    }
+    },
+//    firebase: {
+//      getUserName :{
+//        source: db.ref(fbpaths.labs),
+//        cancelCallback: function () {
+//        },
+//        readyCallback: function (x) {
+//        },
+//        asObject: false
+//      }
+//    }
   }
 
   function _isOpened (el) {
@@ -462,6 +472,19 @@
   @import '/static/css/skins/skin-green-light.css';
   @import '/static/css/peez.css';
 
+  #div-input-path{
+    margin-left: 2px;
+  }
+
+  #lab-path-input{
+    position: relative;
+    border: 1px solid ghostwhite;
+    border-radius: 6px;
+    height:40px;
+    background-color: #ebebeb;
+    padding:0;
+    margin-top: -4px;
+  }
   #sign-in-div{
     margin-top: 60px;
   }
@@ -589,7 +612,8 @@
   }
 
   #editor-controls li.go-lab input{
-    margin-top: 10px;
+    margin-top: 5px;
+    margin-left: 3px;
     width: 225px;
   }
 
@@ -598,6 +622,13 @@
     border: 1px solid transparent;
 
   }
+  #editor-controls li.go-lab a{
+    text-decoration: none;
+  }
+  #editor-controls li.go-lab a:hover{
+    cursor: none;
+  }
+
 
   .main-header a.logo {
     text-decoration: none;
