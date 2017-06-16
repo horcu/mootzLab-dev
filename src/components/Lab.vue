@@ -147,34 +147,38 @@
 
     </aside>
 
-    <!-- Videos Control Sidebar -->
+    <!-- comments Control Sidebar -->
     <aside id="sidebar-comments" class="control-sidebar-comments control-sidebar-light">
-      <div id="main-chat-box" class="panel panel-flat">
-        <div>Panel heading without title</div>
-        <div class="panel-body">
-          <div class="container">
-            <div class="row message-bubble">
-              <p class="text-muted">Matt Townsen</p>
-              <p>It Isn't'</p>
-            </div>
-            <div class="row message-bubble">
-              <p class="text-muted">Matt Townsen</p>
-              <p>Umm yes it is</p>
-            </div>
-            <div class="row message-bubble">
-              <p class="text-muted">Matt Townsen</p>
-              <p>Test message</p>
+      <div class="chat_window">
+        <div class="top_menu pull-right">
+          <div class="buttons">
+            <div class="button close"></div>
+            <div class="button minimize"></div>
+            <div class="button maximize">
             </div>
           </div>
-          <div class="panel-footer">
-            <div class="input-group">
-              <input type="text" class="form-control">
-              <span class="input-group-btn">
-                    <button class="btn btn-default" type="button">Send</button>
-                  </span>
+          <div class="title"></div>
+        </div>
+        <ul class="messages"></ul>
+        <div id="enter-message" class="hidden bottom_wrapper clearfix">
+          <div class="message_input_wrapper">
+            <input class="message_input" placeholder="Type your message here..."/>
+          </div>
+          <div class="send_message">
+            <div class="icon">
+
             </div>
+            <div class="text">Send</div>
           </div>
         </div>
+      </div>
+      <div class="message_template">
+        <li class="message">
+          <div class="avatar"></div>
+          <div class="text_wrapper">
+            <div class="text"></div>
+          </div>
+        </li>
       </div>
     </aside>
   </div>
@@ -189,7 +193,7 @@
   import Firebase from 'firebase'
   import $ from 'jquery'
 
-  import { db } from 'src/fb-config'
+  import {db} from 'src/fb-config'
   import Lab from 'src/components/Lab.vue'
   import 'slick-carousel'
 
@@ -215,11 +219,24 @@
     lastChallengeAttempted: getUserSpecificPath('/last-challenge-attempted/')
 
   }
+  var webrtc
   const userName = 'disIzPeez'
   let editor;
   let roomName = 'mootz'
 
+
   ace.config.set('basePath', 'static/ace/');
+
+  $(function(){
+    let commentsSection = $('#sidebar-comments')
+    let sendMessageBx = $('#enter-message')
+
+    commentsSection.on('mouseover', function() {
+     sendMessageBx.stop().delay(750).removeClass('hidden').fadeIn(750)
+    }).on('mouseout', function() {
+      sendMessageBx.stop().delay(750).addClass('hidden').fadeOut(500)
+      })
+  })
 
   export default {
     name: 'lab',
@@ -243,12 +260,12 @@
           this.initEditorEvents()
 
           //webrtc init
-          this.initWebRtc(getWebRtc())
+          this.initWebRtc()
 
           //slick carousel init
-          let divs = $('#remote-vids')
-          this.initSlickCarousel($('#remote-vids'));
-          let divs2 = $('#remote-vids')
+          // let divs = $('#remote-vids')
+          // this.initSlickCarousel($('#remote-vids'));
+          // let divs2 = $('#remote-vids')
         },
         asObject: false
       },
@@ -374,92 +391,18 @@
       toggleSettingsNav: function () {
         App.methods.toggleSettingsNav()
       },
-      initWebRtc: function (webrtc) {
+      getMessageTextFromEntry: function () {
+    var $message_input;
+    $message_input = $('.message_input');
+    return $message_input.val();
+  },
 
-        // a peer video has been added
-        webrtc.on('videoAdded', function (video, peer) {
 
-          console.log('video added', peer);
-          console.log('video added', peer.nick);
 
-          let remotes = document.getElementById('remote-vids');
-          if (remotes) {
+      sendMessageToDb : function () {
 
-            let container = document.createElement('div')
-            container.className = 'videoContainer';
-            container.id = 'container_' + webrtc.getDomId(peer);
-            container.appendChild(video);
+  },
 
-            let htmlWrapper = '<div class="box-body l-vid-box"><button id="local-vid-popper" type="button" class="btn btn-default btn-circle btn-lg" data-toggle="popover">P</button><div id="panel-local-vid" class="hidden panel panel-default"><div class="panel-body">'
-              + container
-              + '</div>div class="small-box small-box-footer"><button type="button" class="btn btn-box-tool pull-right" data-toggle="tooltip"title="Contacts" data-widget="chat-pane-toggle">'
-              + '<i class="fa fa-comments"></i></button><button type="button" class="btn btn-box-tool pull-right" data-toggle="tooltip" title="video" data-widget="chat-pane-toggle">'
-              + '<i class="fa fa-video-camera"></i></button></div></div></div>';
-
-            // suppress contextmenu
-            video.oncontextmenu = function () {
-              return false;
-            };
-
-            remotes.appendChild(htmlWrapper);
-
-            // show the ice connection state
-            if (peer && peer.pc) {
-              let connstate = document.createElement('div');
-              connstate.className = 'connectionstate';
-              container.appendChild(connstate);
-              peer.pc.on('iceConnectionStateChange', function (event) {
-                switch (peer.pc.iceConnectionState) {
-                  case 'checking':
-                    connstate.innerText = 'Connecting to peer...';
-                    break;
-                  case 'connected':
-                  case 'completed': // on caller side
-                    connstate.innerText = 'Connection established.';
-                    break;
-                  case 'disconnected':
-                    connstate.innerText = 'Disconnected.';
-                    break;
-                  case 'failed':
-                    break;
-                  case 'closed':
-                    connstate.innerText = 'Connection closed.';
-                    break;
-                }
-              });
-            }
-          }
-        });
-        // a peer has been removed
-        webrtc.on('videoRemoved', function (video, peer) {
-          console.log('video removed ', peer);
-          let remotes = document.getElementById('remote-vids');
-          let el = document.getElementById(peer ? 'container_' + webrtc.getDomId(peer) : 'localScreenContainer');
-          if (remotes && el) {
-            remotes.removeChild(el);
-          }
-        });
-
-        // local p2p/ice failure
-        webrtc.on('iceFailed', function (peer) {
-          let connstate = document.querySelector('#container_' + webrtc.getDomId(peer) + ' .connectionstate');
-          console.log('local fail', connstate);
-          if (connstate) {
-            connstate.innerText = 'Connection failed.';
-            fileinput.disabled = 'disabled';
-          }
-        });
-
-        // remote p2p/ice failure
-        webrtc.on('connectivityError', function (peer) {
-          let connstate = document.querySelector('#container_' + webrtc.getDomId(peer) + ' .connectionstate');
-          console.log('remote fail', connstate);
-          if (connstate) {
-            connstate.innerText = 'Connection failed.';
-            fileinput.disabled = 'disabled';
-          }
-        });
-      },
       initSlickCarousel: function (videos) {
         videos.slick({
           centerMode: true,
@@ -494,27 +437,164 @@
             }
           ]
         });
+      },
+
+      initWebRtc : function () {
+
+        console.log('webrtc', 'building objects')
+
+        let webrtc =  new SimpleWebRTC({
+          localVideoEl: 'local-vid',
+          remoteVideosEl: 'remote-vids',
+          autoRequestMedia: false,
+          nick: userName
+        });
+
+        console.log('webrtc', 'setting up events')
+
+        webrtc.on('connectionReady', function (sessionId) {
+          console.log('joining room')
+
+          webrtc.joinRoom(roomName);
+
+          console.log('joined room')
+          console.log('adding joined message to stream')
+          addMessageToStream('joined :)', userName, 'left')
+        })
+
+        webrtc.on('readyToCall', function () {
+          // you can name it anything
+
+        });
+
+        //        // a peer video has been added
+//        webrtc.on('videoAdded', function (video, peer) {
+//
+//          console.log('video added', peer);
+//          console.log('video added', peer.nick);
+//
+//          let remotes = document.getElementById('remote-vids');
+//          if (remotes) {
+//
+//            let container = document.createElement('div')
+//            container.className = 'videoContainer';
+//            container.id = 'container_' + webrtc.getDomId(peer);
+//            container.appendChild(video);
+//
+//            let htmlWrapper = '<div class="box-body l-vid-box"><button id="local-vid-popper" type="button" class="btn btn-default btn-circle btn-lg" data-toggle="popover">P</button><div id="panel-local-vid" class="hidden panel panel-default"><div class="panel-body">'
+//              + container
+//              + '</div>div class="small-box small-box-footer"><button type="button" class="btn btn-box-tool pull-right" data-toggle="tooltip"title="Contacts" data-widget="chat-pane-toggle">'
+//              + '<i class="fa fa-comments"></i></button><button type="button" class="btn btn-box-tool pull-right" data-toggle="tooltip" title="video" data-widget="chat-pane-toggle">'
+//              + '<i class="fa fa-video-camera"></i></button></div></div></div>';
+//
+//            // suppress contextmenu
+//            video.oncontextmenu = function () {
+//              return false;
+//            };
+//
+//            remotes.appendChild(htmlWrapper);
+//
+//            // show the ice connection state
+//            if (peer && peer.pc) {
+//              let connstate = document.createElement('div');
+//              connstate.className = 'connectionstate';
+//              container.appendChild(connstate);
+//              peer.pc.on('iceConnectionStateChange', function (event) {
+//                switch (peer.pc.iceConnectionState) {
+//                  case 'checking':
+//                    connstate.innerText = 'Connecting to peer...';
+//                    break;
+//                  case 'connected':
+//                  case 'completed': // on caller side
+//                    connstate.innerText = 'Connection established.';
+//                    break;
+//                  case 'disconnected':
+//                    connstate.innerText = 'Disconnected.';
+//                    break;
+//                  case 'failed':
+//                    break;
+//                  case 'closed':
+//                    connstate.innerText = 'Connection closed.';
+//                    break;
+//                }
+//              });
+//            }
+//          }
+//        });
+//        // a peer has been removed
+//        webrtc.on('videoRemoved', function (video, peer) {
+//          console.log('video removed ', peer);
+//          let remotes = document.getElementById('remote-vids');
+//          let el = document.getElementById(peer ? 'container_' + webrtc.getDomId(peer) : 'localScreenContainer');
+//          if (remotes && el) {
+//            remotes.removeChild(el);
+//          }
+//        });
+
+        // local p2p/ice failure
+        // webrtc.on('iceFailed', function (peer) {
+//          let connstate = document.querySelector('#container_' + webrtc.getDomId(peer) + ' .connectionstate');
+//          console.log('local fail', connstate);
+//          if (connstate) {
+//            connstate.innerText = 'Connection failed.';
+//            fileinput.disabled = 'disabled';
+//          }
+//        });
+
+        // remote p2p/ice failure
+//        webrtc.on('connectivityError', function (peer) {
+//          let connstate = document.querySelector('#container_' + webrtc.getDomId(peer) + ' .connectionstate');
+//          console.log('remote fail', connstate);
+//          if (connstate) {
+//            connstate.innerText = 'Connection failed.';
+//            fileinput.disabled = 'disabled';
+//          }
+//        });
+        console.log('webrtc', 'done setting up events')
       }
     }
   }
 
-  function getWebRtc () {
-    return new SimpleWebRTC({
-      // the id/element dom element that will hold "our" video
-      localVideoEl: 'local-vid',
-      // the id/element dom element that will hold remote videos
-      remoteVideosEl: 'remote-vids',
-      // immediately ask for camera access
-      autoRequestMedia: true,
-      nick: userName
+  function addMessageToStream (text, name, side) {
+    var $messages, message;
+    if (text.trim() === '' || name.trim() === '') {
+      return;
+    }
+
+    $('.message_input').val('');
+    $messages = $('.messages');
+    message = new Message({
+      text: userName + ' ' + text,
+      message_side: side
     });
+    message.draw(name);
+    return $messages.animate({scrollTop: $messages.prop('scrollHeight')}, 300);
   }
 
-  function getUserSpecificPath (path) {
+   var Message ;
+   Message = function (arg) {
+    let text = arg.text
+    let side = arg.message_side
+
+    this.draw = function (name, _this) {
+      return function () {
+        let $message;
+        $message = $($('.message_template').clone().html());
+        $message.addClass(side).find('.text').html(text);
+        $('.messages').append($message);
+        return setTimeout(function () {
+          return $message.addClass('appeared');
+        }, 0);
+      };
+    }(this);
+    return this;
+  }
+
+  function getUserSpecificPath(path) {
     return '/users/' + userName + '/' + path
   }
 
-  function syncEditorWithLab () {
+  function syncEditorWithLab() {
 
     editor = ace.edit("editor");
 
@@ -565,15 +645,17 @@
     })
   }
 
-  function addComments (comm) {
+  function addComments(comm) {
 
   }
 
-  function setEditorDisabled () {
+
+
+  function setEditorDisabled() {
     editor.setReadOnly(true);
   }
 
-  function setEditorEnabled () {
+  function setEditorEnabled() {
     editor.setReadOnly(false);
   }
 
@@ -584,49 +666,9 @@
   @import "/static/slick/slick.css";
   @import "/static/slick/slick-theme.css";
 
-  .message-bubble
-  {
-    padding: 10px 0 10px 0;
+  .panel-body {
+    padding: 0px;
   }
-
-  .message-bubble:nth-child(even) { background-color: #F5F5F5; }
-
-  .message-bubble > *
-  {
-    padding-left: 10px;
-  }
-
-  .panel-body { padding: 0px; }
-
-  .panel-heading { background-color: #3d6da7 !important; color: white !important; }
-
-  /*#comments-section {*/
-    /*position: absolute;*/
-    /*height: 100%;*/
-    /*width: 100%;*/
-    /*bottom: 0;*/
-    /*right: 0;*/
-    /*top: 40px;*/
-  /*}*/
-
-  div#main-chat-box.panel-default,  #main-chat-box div.panel-body{
-    height: 90%;
-
-  }
-
-  #main-chat-box div.container{
-    height: 90%;
-    margin-bottom: 50px;
-  }
-  /*div.direct-chat-messages{*/
-  /*position: relative;*/
-  /*top: 0px;*/
-  /*right: 0;*/
-  /*bottom: 0;*/
-  /*left: 0;*/
-  /*height: auto;*/
-  /*width: 100%;*/
-  /*}*/
 
   #comments-tab {
     position: absolute;
@@ -765,9 +807,234 @@
     transition: right .3s ease-in-out;
   }
 
-  /*.ex-tab:nth-last-child(0){*/
-  /*margin-right: 60px;*/
-  /*}*/
+  * {
+    box-sizing: border-box;
+  }
+
+  body {
+    background-color: #edeff2;
+    font-family: "Calibri", "Roboto", sans-serif;
+  }
+
+  .chat_window {
+    position: fixed;
+    width: 40%;
+    max-width: 800px;
+    right: 0;
+    top: 50px;
+    bottom: 44px;
+    /*box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);*/
+    background-color: #d4d4d4;
+    overflow: hidden;
+    border-left : 2px dotted white;
+  }
+
+  .top_menu {
+    background-color: #d4d4d4;
+    width: 100%;
+    padding: 20px 0 15px;
+    /*box-shadow: 0 1px 30px rgba(0, 0, 0, 0.1);*/
+  }
+
+  .top_menu .buttons {
+    margin: 3px 0 0 20px;
+    position: absolute;
+  }
+
+  .top_menu .buttons .button {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    display: inline-block;
+    margin-right: 10px;
+    position: relative;
+  }
+
+  .top_menu .buttons .button.close {
+    background-color: #f5886e;
+  }
+
+  .top_menu .buttons .button.minimize {
+    background-color: #fdbf68;
+  }
+
+  .top_menu .buttons .button.maximize {
+    background-color: #a3d063;
+  }
+
+  .top_menu .title {
+    text-align: center;
+    color: #bcbdc0;
+    font-size: 20px;
+  }
+
+  .messages {
+    position: relative;
+    list-style: none;
+    padding: 20px 10px 0 10px;
+    margin: 0;
+    height: 347px;
+    overflow: scroll;
+  }
+
+  .messages .message {
+    clear: both;
+    overflow: hidden;
+    margin-bottom: 20px;
+    transition: all 0.5s linear;
+    opacity: 0;
+  }
+
+  .messages .message.left .avatar {
+    background-color: #f5886e;
+    float: left;
+  }
+
+  .messages .message.left .text_wrapper {
+    background-color: #ffe6cb;
+    margin-left: 0;
+  }
+
+  .messages .message.left .text_wrapper::after, .messages .message.left .text_wrapper::before {
+    right: 100%;
+    border-right-color: #ffe6cb;
+  }
+
+  .messages .message.left .text {
+    color: #c48843;
+  }
+
+  .messages .message.right .avatar {
+    background-color: #fdbf68;
+    float: right;
+  }
+
+  .messages .message.right .text_wrapper {
+    background-color: #c7eafc;
+    margin-right: 20px;
+    float: right;
+  }
+
+  .messages .message.right .text_wrapper::after, .messages .message.right .text_wrapper::before {
+    left: 100%;
+    border-left-color: #c7eafc;
+  }
+
+  .messages .message.right .text {
+    color: #45829b;
+  }
+
+  .messages .message.appeared {
+    opacity: 1;
+  }
+
+  .messages .message .avatar {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    display: inline-block;
+  }
+
+  .messages .message .text_wrapper {
+    display: inline-block;
+    padding: 20px;
+    border-radius: 6px;
+    width: auto;
+    min-width: 100px;
+    position: relative;
+  }
+
+  .messages .message .text_wrapper::after, .messages .message .text_wrapper:before {
+    top: 18px;
+    border: solid transparent;
+    content: " ";
+    height: 0;
+    width: 0;
+    position: absolute;
+    pointer-events: none;
+  }
+
+  .messages .message .text_wrapper::after {
+    border-width: 13px;
+    margin-top: 0px;
+  }
+
+  .messages .message .text_wrapper::before {
+    border-width: 15px;
+    margin-top: -2px;
+  }
+
+  .messages .message .text_wrapper .text {
+    font-size: 15px;
+    font-weight: 200;
+  }
+
+ .text, .text_wrapper{
+   width: auto;
+  }
+
+  .bottom_wrapper {
+    position: relative;
+    width: 100%;
+    background-color: whitesmoke;
+    padding: 20px 20px;
+    position: absolute;
+    bottom: 0;
+  }
+
+  .bottom_wrapper .message_input_wrapper {
+    display: inline-block;
+    height: 50px;
+    border-radius: 0;
+    border: 1px solid #bcbdc0;
+    width: 70%;
+    position: relative;
+    padding: 0 20px;
+  }
+
+  .bottom_wrapper .message_input_wrapper .message_input {
+    border: none;
+    height: 100%;
+    box-sizing: border-box;
+    outline-width: 0;
+    color: gray;
+  }
+
+  .message_input {
+    position: relative;
+    width: 100%;
+    background-color: whitesmoke;
+  }
+
+  .bottom_wrapper .send_message {
+    width: 100px;
+    height: 45px;
+    display: inline-block;
+    border-radius: 30px;
+    background-color: #a3d063;
+    border: 2px solid #a3d063;
+    color: #fff;
+    cursor: pointer;
+    transition: all 0.2s linear;
+    text-align: center;
+    float: right;
+  }
+
+  .bottom_wrapper .send_message:hover {
+    color: #a3d063;
+    background-color: #fff;
+  }
+
+  .bottom_wrapper .send_message .text {
+    font-size: 18px;
+    font-weight: 300;
+    display: inline-block;
+    line-height: 48px;
+  }
+
+  .message_template {
+    display: none;
+  }
 
 
 </style>
