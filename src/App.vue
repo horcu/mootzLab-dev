@@ -57,7 +57,7 @@
               <a data-toggle="tooltip" data-placement="bottom" title="comments" class="pull-right">
 
                   <small>comments</small>
-                  &nbsp<img src="/static/img/information.png" alt="about"/>
+                  &nbsp<img src="/static/img/users.png" alt="about"/>
               </a>
             </li>
             <li class="go-lab">
