@@ -582,10 +582,10 @@ div.slim-footer button {
   width: 0; /* 0 width - change this with JavaScript */
   height: 100%;
   padding-top: 50px;
-  border-left: 2px dotted #ffffff;
+  /*border-left: 2px dotted #ffffff;*/
   background-color: #d4d4d4;
-  -webkit-transition: right .3s ease-in-out;
-  -o-transition: right .3s ease-in-out;
+  -webkit-transition: right .2s ease-in-out;
+  -o-transition: right .2s ease-in-out;
   z-index: 2; /* Stay on top */
   top: 0;
   right: 0;

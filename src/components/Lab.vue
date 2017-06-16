@@ -196,6 +196,7 @@
   import {db} from 'src/fb-config'
   import Lab from 'src/components/Lab.vue'
   import 'slick-carousel'
+  //import 'spacegray-ace-theme'
 
   var fbpaths = {
 
@@ -220,22 +221,26 @@
 
   }
   var webrtc
-  const userName = 'disIzPeez'
+  let userName  = "anonymous"
   let editor;
   let roomName = 'mootz'
 
 
   ace.config.set('basePath', 'static/ace/');
 
-  $(function(){
+  $(function () {
     let commentsSection = $('#sidebar-comments')
     let sendMessageBx = $('#enter-message')
+    let labPathInput = $('#lab-path-input')
 
-    commentsSection.on('mouseover', function() {
-     sendMessageBx.stop().delay(750).removeClass('hidden').fadeIn(750)
-    }).on('mouseout', function() {
+    //watchInput(labPathInput, handleLabRoute)
+
+    commentsSection.on('mouseover', function () {
+      sendMessageBx.stop().delay(750).removeClass('hidden').fadeIn(750)
+    }).on('mouseout', function () {
       sendMessageBx.stop().delay(750).addClass('hidden').fadeOut(500)
-      })
+    })
+
   })
 
   export default {
@@ -250,6 +255,12 @@
         exceptionsArray: {},
       }
     },
+//    props: {
+//      un: {
+//        type: String,
+//        required: true
+//      }
+//    },
     firebase: {
       liveCode: {
         source: db.ref(fbpaths.live),
@@ -311,6 +322,9 @@
       }
     },
     methods: {
+      getUserName: function () {
+      return  props.un
+      },
       find: function (word, dir) {
         editor = ace.edit("editor");
         editor.find(word, {
@@ -352,6 +366,8 @@
       initEditorEvents: function () {
         editor = ace.edit("editor");
 
+        //editor.setTheme('ace/theme/space_gray')
+
         editor.getSession().on('change', function (e) {
           $('#comments-tab-top-menu').stop().hide()
         });
@@ -392,16 +408,15 @@
         App.methods.toggleSettingsNav()
       },
       getMessageTextFromEntry: function () {
-    var $message_input;
-    $message_input = $('.message_input');
-    return $message_input.val();
-  },
+        var $message_input;
+        $message_input = $('.message_input');
+        return $message_input.val();
+      },
 
 
+      sendMessageToDb: function () {
 
-      sendMessageToDb : function () {
-
-  },
+      },
 
       initSlickCarousel: function (videos) {
         videos.slick({
@@ -439,11 +454,11 @@
         });
       },
 
-      initWebRtc : function () {
+      initWebRtc: function () {
 
         console.log('webrtc', 'building objects')
 
-        let webrtc =  new SimpleWebRTC({
+        let webrtc = new SimpleWebRTC({
           localVideoEl: 'local-vid',
           remoteVideosEl: 'remote-vids',
           autoRequestMedia: false,
@@ -467,9 +482,11 @@
 
         });
 
-        //        // a peer video has been added
-//        webrtc.on('videoAdded', function (video, peer) {
-//
+        // a peer video has been added
+        webrtc.on('videoAdded', function (video, peer) {
+
+          addMessageToStream('joined :)', 'anonymous', 'right')
+
 //          console.log('video added', peer);
 //          console.log('video added', peer.nick);
 //
@@ -519,43 +536,56 @@
 //                }
 //              });
 //            }
-//          }
-//        });
-//        // a peer has been removed
-//        webrtc.on('videoRemoved', function (video, peer) {
-//          console.log('video removed ', peer);
-//          let remotes = document.getElementById('remote-vids');
-//          let el = document.getElementById(peer ? 'container_' + webrtc.getDomId(peer) : 'localScreenContainer');
-//          if (remotes && el) {
-//            remotes.removeChild(el);
-//          }
-//        });
+          // }
+        });
 
-        // local p2p/ice failure
-        // webrtc.on('iceFailed', function (peer) {
-//          let connstate = document.querySelector('#container_' + webrtc.getDomId(peer) + ' .connectionstate');
-//          console.log('local fail', connstate);
-//          if (connstate) {
-//            connstate.innerText = 'Connection failed.';
-//            fileinput.disabled = 'disabled';
-//          }
-//        });
+        // a peer has been removed
+        webrtc.on('videoRemoved', function (video, peer) {
+          console.log('video removed ', peer);
+          let remotes = document.getElementById('remote-vids');
+          let el = document.getElementById(peer ? 'container_' + webrtc.getDomId(peer) : 'localScreenContainer');
+          if (remotes && el) {
+            remotes.removeChild(el);
+          }
+        });
 
-        // remote p2p/ice failure
-//        webrtc.on('connectivityError', function (peer) {
-//          let connstate = document.querySelector('#container_' + webrtc.getDomId(peer) + ' .connectionstate');
-//          console.log('remote fail', connstate);
-//          if (connstate) {
-//            connstate.innerText = 'Connection failed.';
-//            fileinput.disabled = 'disabled';
-//          }
-//        });
+        //local p2p/ice failure
+        webrtc.on('iceFailed', function (peer) {
+          let connstate = document.querySelector('#container_' + webrtc.getDomId(peer) + ' .connectionstate');
+          console.log('local fail', connstate);
+          if (connstate) {
+            connstate.innerText = 'Connection failed.';
+            fileinput.disabled = 'disabled';
+          }
+        });
+
+        //remote p2p/ice failure
+        webrtc.on('connectivityError', function (peer) {
+          let connstate = document.querySelector('#container_' + webrtc.getDomId(peer) + ' .connectionstate');
+          console.log('remote fail', connstate);
+          if (connstate) {
+            connstate.innerText = 'Connection failed.';
+            fileinput.disabled = 'disabled';
+          }
+        });
         console.log('webrtc', 'done setting up events')
       }
     }
   }
 
-  function addMessageToStream (text, name, side) {
+
+  function handleLabRoute(e, el) {
+    //maybe parse the string first
+    let v = $(el).val()
+    let pre = '/#/lab/'
+    let preIdx = v.indexOf(pre)
+    let parsed = v.substring(pre.length, v.length - pre.length)
+    let txt = prependPath(pre, v)
+    el.val(txt)
+    // window.location.href = txt
+  }
+
+  function addMessageToStream(text, name, side) {
     var $messages, message;
     if (text.trim() === '' || name.trim() === '') {
       return;
@@ -571,8 +601,8 @@
     return $messages.animate({scrollTop: $messages.prop('scrollHeight')}, 300);
   }
 
-   var Message ;
-   Message = function (arg) {
+  var Message;
+  Message = function (arg) {
     let text = arg.text
     let side = arg.message_side
 
@@ -649,7 +679,19 @@
 
   }
 
+  function prependPath(pre, path) {
+    return pre + path
+  }
 
+  function watchInput(el, callback) {
+    $(el).on('change keydown keyup', function (e) {
+      callback(e, el)
+    });
+
+  }
+  function getUserName() {
+    return App.methods.un()
+  }
 
   function setEditorDisabled() {
     editor.setReadOnly(true);
@@ -768,7 +810,7 @@
 
   #editor {
     position: absolute;
-    background-color: whitesmoke;
+    background-color: transparent;
     top: 0;
     right: 0;
     bottom: 0;
@@ -781,10 +823,6 @@
     text-align: left;
     overflow-y: hidden;
 
-    scrollbar-face-color: transparent;
-    scrollbar-arrow-color: transparent;
-    scrollbar-base-color: transparent;
-    scrollbar-track-color: transparent;
   }
 
   #comments-tab ul li.list-group-item {
@@ -826,7 +864,7 @@
     /*box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);*/
     background-color: #d4d4d4;
     overflow: hidden;
-    border-left : 2px dotted white;
+    border-left: 2px dotted white;
   }
 
   .top_menu {
@@ -869,12 +907,17 @@
   }
 
   .messages {
-    position: relative;
+    position: absolute;
     list-style: none;
     padding: 20px 10px 0 10px;
-    margin: 0;
-    height: 347px;
+    height: auto;
     overflow: scroll;
+    bottom: 0;
+    margin-bottom: 80px;
+  }
+
+  div.avatar {
+    margin-right: 20px;
   }
 
   .messages .message {
@@ -969,8 +1012,8 @@
     font-weight: 200;
   }
 
- .text, .text_wrapper{
-   width: auto;
+  .text, .text_wrapper {
+    width: auto;
   }
 
   .bottom_wrapper {
@@ -1036,5 +1079,8 @@
     display: none;
   }
 
+  #enter-message {
+    background-color: whitesmoke;
+  }
 
 </style>

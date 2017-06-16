@@ -32,13 +32,13 @@ require('bootstrap')
 //define your routes
 const routes = [
   //route for the home route of the webpage
-  {path: '/', component: Hello},
+  {name: 'login' ,path: '/', component: Hello},
   //route for the about route of the webpage
   {path: '/about', component: About},
   //route for the labs
-  {path: '/lab', component: Lab},
+  {name: 'lab', path: '/lab', component: Lab},
   //route for a lab with a given id
-  {path: '/lab/:id', component: Lab}
+  {name: 'session', path: '/lab/:id', component: Lab}
 ]
 
 // Create the router instance and pass the `routes` option
