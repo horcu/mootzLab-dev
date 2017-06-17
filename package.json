@@ -19,6 +19,7 @@
     "bootstrap-sass": "^3.3.7",
     "firebase": "^4.1.2",
     "firebase-cli": "^1.2.0",
+    "firebaseui": "^2.1.1",
     "jenkins-ace-editor": "^1.1.9-v2",
     "jsbeautify": "^0.3.6",
     "nodemon": "^1.11.0",
@@ -27,7 +28,8 @@
     "tether": "^1.4.0",
     "vue": "^2.1.0",
     "vue-router": "^2.2.0",
-    "vuefire": "^1.4.3"
+    "vuefire": "^1.4.3",
+    "webpack": "^1.15.0"
   },
   "devDependencies": {
     "autoprefixer": "^6.4.0",

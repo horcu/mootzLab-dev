@@ -1,8 +1,10 @@
 <template>
+
   <div id="lab" class="lab content-wrapper">
 
     <section class="main-sect">
       <div class="row main-row">
+
         <!-- Code Box -->
         <div class="code-area">
           <div>
@@ -174,7 +176,9 @@
       </div>
       <div class="message_template">
         <li class="message">
-          <div class="avatar"></div>
+          <div class="avatar">
+            <img width="56px" height="56px" id="user-img"/>
+          </div>
           <div class="text_wrapper">
             <div class="text"></div>
           </div>
@@ -184,47 +188,21 @@
   </div>
 </template>
 
-<!-- styling for the component -->
-<!--<script src="lab.js" type="application/javascript" ></script>-->
 <script>
   import Vue from 'Vue'
   import App from '../App'
   import ace from 'jenkins-ace-editor';
-  import Firebase from 'firebase'
+  import firebase from 'firebase'
   import $ from 'jquery'
 
-  import {db} from 'src/fb-config'
+  import fb from 'src/fb-config'
   import Lab from 'src/components/Lab.vue'
   import 'slick-carousel'
   //import 'spacegray-ace-theme'
 
-  var fbpaths = {
-
-    // top level paths
-    users: 'users/',
-    challenges: 'challenges/',
-    themes: 'themes/',
-    languages: 'languages/',
-    live: 'live-code/',
-    labs: 'labs/',
-
-    // user specific paths
-    chalkboard: getUserSpecificPath('chalkboard/'),
-    timeline: getUserSpecificPath('timeline/'),
-    info: getUserSpecificPath('info/'),
-    exceptions: getUserSpecificPath('exceptions/'),
-    settings: getUserSpecificPath('settings/'),
-    submissions: getUserSpecificPath('submissions/'),
-    lastSavedLanguage: getUserSpecificPath('/last-saved-language/'),
-    lastSavedTheme: getUserSpecificPath('/last-saved-theme/'),
-    lastChallengeAttempted: getUserSpecificPath('/last-challenge-attempted/')
-
-  }
   var webrtc
-  let userName  = "anonymous"
   let editor;
   let roomName = 'mootz'
-
 
   ace.config.set('basePath', 'static/ace/');
 
@@ -245,8 +223,14 @@
 
   export default {
     name: 'lab',
+
     data() {
       return {
+        photo: '',
+        userId: '',
+        userName: '',
+        email: '',
+        user: {},
         labs: {},
         liveCode: {},
         challengesArray: {},
@@ -255,23 +239,26 @@
         exceptionsArray: {},
       }
     },
-//    props: {
-//      un: {
-//        type: String,
-//        required: true
-//      }
-//    },
+    created() {
+      this.user = firebase.auth().currentUser;
+      if (this.user) {
+        this.userName = this.user.displayName;
+        this.email = this.user.email;
+        this.photo = this.user.photoURL;
+        this.uId = this.user.uid;
+      }
+    },
     firebase: {
       liveCode: {
-        source: db.ref(fbpaths.live),
+        source: fb.database().ref(fbpaths.live),
         cancelCallback: function () {
         },
         readyCallback: function () {
-          syncEditorWithLab()
+          this.syncEditorWithLab()
           this.initEditorEvents()
 
           //webrtc init
-          this.initWebRtc()
+          this.initWebRtc(this.userName, this.photo, this.email, this.uId)
 
           //slick carousel init
           // let divs = $('#remote-vids')
@@ -281,7 +268,7 @@
         asObject: false
       },
       labs: {
-        source: db.ref(fbpaths.labs),
+        source: fb.database().ref(fbpaths.labs),
         cancelCallback: function () {
         },
         readyCallback: function (x) {
@@ -289,7 +276,7 @@
         asObject: false
       },
       challengesArray: {
-        source: db.ref(fbpaths.challenges),
+        source: fb.database().ref(fbpaths.challenges),
         cancelCallback: function () {
         },
         readyCallback: function (x) {
@@ -297,7 +284,7 @@
         asObject: false
       },
       chalkboardArray: {
-        source: db.ref(fbpaths.chalkboard),
+        source: fb.database().ref(fbpaths.chalkboard),
         cancelCallback: function () {
         },
         readyCallback: function (x) {
@@ -305,7 +292,7 @@
         asObject: false
       },
       exceptionsArray: {
-        source: db.ref(fbpaths.exceptions),
+        source: fb.database().ref(fbpaths.exceptions),
         cancelCallback: function () {
         },
         readyCallback: function (x) {
@@ -313,7 +300,7 @@
         asObject: false
       },
       settingsArray: {
-        source: db.ref(fbpaths.settings),
+        source: fb.database().ref(fbpaths.settings),
         cancelCallback: function () {
         },
         readyCallback: function (x) {
@@ -322,9 +309,7 @@
       }
     },
     methods: {
-      getUserName: function () {
-      return  props.un
-      },
+
       find: function (word, dir) {
         editor = ace.edit("editor");
         editor.find(word, {
@@ -392,7 +377,7 @@
           text: codeEntry,
         };
 
-        let childTemplate = `/${roomName}/${userName}/code/`
+        let childTemplate = `/${roomName}/${this.userName}/code/`
         this.$firebaseRefs.labs.child(childTemplate).update(codeToSubmit)
       },
       toggleAssignmentNav: function () {
@@ -412,12 +397,9 @@
         $message_input = $('.message_input');
         return $message_input.val();
       },
-
-
       sendMessageToDb: function () {
 
       },
-
       initSlickCarousel: function (videos) {
         videos.slick({
           centerMode: true,
@@ -453,8 +435,7 @@
           ]
         });
       },
-
-      initWebRtc: function () {
+      initWebRtc: function (nick, photo, email, uId) {
 
         console.log('webrtc', 'building objects')
 
@@ -462,7 +443,7 @@
           localVideoEl: 'local-vid',
           remoteVideosEl: 'remote-vids',
           autoRequestMedia: false,
-          nick: userName
+          nick: nick
         });
 
         console.log('webrtc', 'setting up events')
@@ -474,18 +455,18 @@
 
           console.log('joined room')
           console.log('adding joined message to stream')
-          addMessageToStream('joined :)', userName, 'left')
+          addMessageToStream('joined :)', nick, photo, email, uId, 'left')
+          //todo addSessionIdToDb(sessionId)
         })
 
         webrtc.on('readyToCall', function () {
-          // you can name it anything
-
+          addMessageToStream('joined :)', nick, photo, email, uId, 'left')
         });
 
         // a peer video has been added
         webrtc.on('videoAdded', function (video, peer) {
 
-          addMessageToStream('joined :)', 'anonymous', 'right')
+          addMessageToStream('joined :)', peer.nick, photo, email, uId, 'right')
 
 //          console.log('video added', peer);
 //          console.log('video added', peer.nick);
@@ -569,68 +550,17 @@
           }
         });
         console.log('webrtc', 'done setting up events')
-      }
-    }
-  }
+      },
+      getUserSpecificPath: function (path) {
+        return '/users/' + this.userName + '/' + path
+      },
+      syncEditorWithLab: function () {
 
+        editor = ace.edit("editor");
 
-  function handleLabRoute(e, el) {
-    //maybe parse the string first
-    let v = $(el).val()
-    let pre = '/#/lab/'
-    let preIdx = v.indexOf(pre)
-    let parsed = v.substring(pre.length, v.length - pre.length)
-    let txt = prependPath(pre, v)
-    el.val(txt)
-    // window.location.href = txt
-  }
-
-  function addMessageToStream(text, name, side) {
-    var $messages, message;
-    if (text.trim() === '' || name.trim() === '') {
-      return;
-    }
-
-    $('.message_input').val('');
-    $messages = $('.messages');
-    message = new Message({
-      text: userName + ' ' + text,
-      message_side: side
-    });
-    message.draw(name);
-    return $messages.animate({scrollTop: $messages.prop('scrollHeight')}, 300);
-  }
-
-  var Message;
-  Message = function (arg) {
-    let text = arg.text
-    let side = arg.message_side
-
-    this.draw = function (name, _this) {
-      return function () {
-        let $message;
-        $message = $($('.message_template').clone().html());
-        $message.addClass(side).find('.text').html(text);
-        $('.messages').append($message);
-        return setTimeout(function () {
-          return $message.addClass('appeared');
-        }, 0);
-      };
-    }(this);
-    return this;
-  }
-
-  function getUserSpecificPath(path) {
-    return '/users/' + userName + '/' + path
-  }
-
-  function syncEditorWithLab() {
-
-    editor = ace.edit("editor");
-
-    let winSize = $(window).height();
-    $(editor).animate({'height': winSize}, 400)
-    editor.resize()
+        let winSize = $(window).height();
+        $(editor).animate({'height': winSize}, 400)
+        editor.resize()
 
 //    let prefix = 'https://cors-anywhere.herokuapp.com/'
 //    let id = 11
@@ -647,59 +577,147 @@
 //      editor.clearSelection();
 //    })
 
-    let ref = db.ref(`${fbpaths.labs}/${roomName}//${userName}`)
-    ref.on('value', function (snapshot) {
-      if (snapshot.key === userName) {
-        let editor = ace.edit("editor")
-        snapshot.forEach(function (childSnapshot) {
-          if (childSnapshot.key === 'code') {
-            let v = childSnapshot.val()
+        let un = this.userName
+        let ref = fb.database().ref(`${fbpaths.labs}/${roomName}//${un}`)
+        ref.on('value', function (snapshot) {
+          if (snapshot.key === un) {
+            let editor = ace.edit("editor")
+            snapshot.forEach(function (childSnapshot) {
+              if (childSnapshot.key === 'code') {
+                let v = childSnapshot.val()
 
-            //editor.getSession().setMode("ace/mode/java");
-            $('#editor').css({'font-size': '14px'})
-            editor.getSession().setUseWorker(true);
-            //editor.setTheme('ace/theme/ambiance');
-            editor.setHighlightActiveLine(true);
-            editor.getSession().setUseSoftTabs(true);
-            editor.setShowPrintMargin(false);
-            editor.setValue(v.text);
+                //editor.getSession().setMode("ace/mode/java");
+                $('#editor').css({'font-size': '14px'})
+                editor.getSession().setUseWorker(true);
+                //editor.setTheme('ace/theme/ambiance');
+                editor.setHighlightActiveLine(true);
+                editor.getSession().setUseSoftTabs(true);
+                editor.setShowPrintMargin(false);
+                editor.setValue(v.text);
 
-            return true
+                return true
+              }
+            });
+
+            editor.clearSelection()
+
+            addComments()
           }
+        })
+      },
+
+      addUserWebcam: function (videos, div) {
+        slideIndex++;
+        $(videos).slick('slickAdd', div);
+      },
+      removeUserWebcam: function (videos, div) {
+        slideIndex--;
+        $(videos).slick('slickRemove', div);
+      },
+      watchInput: function (el, callback) {
+        $(el).on('change keydown keyup', function (e) {
+          callback(e, el)
         });
 
-        editor.clearSelection()
-
-        addComments()
+      },
+      setEditorDisabled: function () {
+        editor.setReadOnly(true);
+      },
+      setEditorEnabled: function () {
+        editor.setReadOnly(false);
       }
-    })
+
+    }
+  }
+
+  function fbpaths() {
+
+    return {
+      // top level paths
+      users: 'users/',
+      challenges: 'challenges/',
+      themes: 'themes/',
+      languages: 'languages/',
+      live: 'live-code/',
+      labs: 'labs/',
+
+      // user specific paths
+      chalkboard: function () {
+        return this.getUserSpecificPath('chalkboard/')
+      },
+      timeline: function () {
+        this.getUserSpecificPath('timeline/')
+      },
+      info: function () {
+        this.getUserSpecificPath('info/')
+      },
+      exceptions: function () {
+        this.getUserSpecificPath('exceptions/')
+      },
+      settings: function () {
+        this.getUserSpecificPath('settings/')
+      },
+      submissions: function () {
+        this.getUserSpecificPath('submissions/')
+      },
+      lastSavedLanguage: function () {
+        this.getUserSpecificPath('/last-saved-language/')
+      },
+      lastSavedTheme: function () {
+        this.getUserSpecificPath('/last-saved-theme/')
+      },
+      lastChallengeAttempted: function () {
+        this.getUserSpecificPath('/last-challenge-attempted/')
+      }
+    }
+  }
+
+  function addMessageToStream(text, name, photo, email, uId, side) {
+    var $messages, message;
+    if (text.trim() === '' || name.trim() === '') {
+      return;
+    }
+
+    $('.message_input').val('');
+    $messages = $('.messages');
+    message = new Message({
+      text: name + ' ' + text,
+      message_side: side,
+      photo: photo,
+      email: email,
+      uId: uId
+    });
+    message.draw(name);
+    return $messages.animate({scrollTop: $messages.prop('scrollHeight')}, 300);
+  }
+
+  var Message;
+  Message = function (arg) {
+    let text = arg.text
+    let side = arg.message_side
+    let email = arg.email
+    let photo = arg.photo
+    let uId = arg.uId
+
+    this.draw = function (name, _this) {
+      return function () {
+        let $message;
+        $message = $($('.message_template').clone().html());
+        $message.addClass(side).find('.text').html(text);
+        $message.find('#user-img').attr('src', photo);
+        $('.messages').append($message);
+        return setTimeout(function () {
+          return $message.addClass('appeared');
+        }, 0);
+      };
+    }(this);
+    return this;
   }
 
   function addComments(comm) {
 
   }
 
-  function prependPath(pre, path) {
-    return pre + path
-  }
-
-  function watchInput(el, callback) {
-    $(el).on('change keydown keyup', function (e) {
-      callback(e, el)
-    });
-
-  }
-  function getUserName() {
-    return App.methods.un()
-  }
-
-  function setEditorDisabled() {
-    editor.setReadOnly(true);
-  }
-
-  function setEditorEnabled() {
-    editor.setReadOnly(false);
-  }
 
 </script>
 
@@ -710,6 +728,11 @@
 
   .panel-body {
     padding: 0px;
+  }
+
+  #user-img {
+    border: 1px solid transparent;
+    border-radius: 24px
   }
 
   #comments-tab {
@@ -929,7 +952,7 @@
   }
 
   .messages .message.left .avatar {
-    background-color: #f5886e;
+    background-color: transparent;
     float: left;
   }
 

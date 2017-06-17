@@ -11,6 +11,7 @@ const firebaseApp = Firebase.initializeApp({
   projectId: "mootz-166219",
   storageBucket: "mootz-166219.appspot.com",
   messagingSenderId: "914649290418"
-});
 
-export const db = firebaseApp.database();
+})
+
+export default firebaseApp;
