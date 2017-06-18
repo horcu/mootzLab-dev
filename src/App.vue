@@ -1,53 +1,61 @@
 <template>
-  <div class="container">
-    <div v-show="isLoggedIn()" class="row">
+    <div v-show="isLoggedIn()" class="row full-length">
 
       <div id="labs-list">
         <ul>
           <li class="go-lab">
-            <div id="div-input-path"><span><a>/lab/<input id="lab-path-input" type="text" placeholder="name" value=""/></a></span>
-              <span class="btn btn-flat" v-on:click="navigateToLab('lab')">Go</span>
+            <div class="pull-left" id="div-input-path">
+              <span id="lab-prefix" class="pull-left">
+                  <span class="pull-left">lab/</span>
+                <input class="pull-left" id="lab-path-input" type="text" placeholder="lab name" value=""/>
+                <img id="lg-go" class="btn btn-flat pull-right" v-on:click="navigateToLab('lab')"src="/static/img/expand-right.png" />
+              </span>
             </div>
           </li>
         </ul>
-        <ul class="list-group">
-          <li class="list-group-item list-group-item-success"><span class="badge">14</span> Lab mootz - [default]</li>
-          <li class="list-group-item">Lab frenz</li>
-          <li class="list-group-item"><span class="badge">14</span>Horcu</li>
-          <li class="list-group-item">ray</li>
-          <li class="list-group-item">remy</li>
-        </ul>
+        <!--<ul class="list-group">-->
+          <!--<li v-for="item in labSessions" class="list-group-item"> {{item.code}}</li>-->
+        <!--</ul>-->
       </div>
-    </div>
-    <aside class="hidden">
-      <div id="users-list" class="col-lg-4">
-        <a href="#" class="list-group-item">
-          <h4 class="list-group-item-heading">Users</h4>
-        </a>
-        <ul class="list-group">
-          <li class="list-group-item list-group-item-success">Mootz</li>
-          <li class="list-group-item">kaisa</li>
-          <li class="list-group-item">Cohen</li>
-          <li class="list-group-item">Horatio</li>
-          <li class="list-group-item">Jess</li>
-        </ul>
-      </div>
-    </aside>
-  </div>
-</template>
 
+      <aside class="hidden">
+        <div id="users-list" class="col-lg-4">
+          <a href="#" class="list-group-item">
+            <h4 class="list-group-item-heading">Users</h4>
+          </a>
+          <ul class="list-group">
+            <li class="list-group-item list-group-item-success">Mootz</li>
+            <li class="list-group-item">kaisa</li>
+            <li class="list-group-item">Cohen</li>
+            <li class="list-group-item">Horatio</li>
+            <li class="list-group-item">Jess</li>
+          </ul>
+        </div>
+      </aside>
+    </div>
+
+</template>
 <script>
 
-  import App from 'src/App.vue'
+  //import App from 'src/App.vue'
   import $ from 'jquery'
   import firebase from 'firebase';
-  import fbConfig from 'src/fb-config'
+  import fb from 'src/fb-config'
   import firebaseui from 'firebaseui'
+  import fbpaths from 'src/fbPaths'
+
+  let test = fbpaths().labs()
+  console.log('App.vue',test)
 
   export default {
     name: 'app',
-    template: a => a(App),
-    render: r => r(App),
+    data() {
+      return {
+        labSessions:{}
+      }
+    },
+    // template: a => a(App),
+    // render: r => r(App),
 
     methods: {
       isLoggedIn: function () {
@@ -74,7 +82,16 @@
         let labInput = $('#lab-path-input')
         return labInput.val()
       }
-    }
+    },
+    firebase: {
+      labSessions: {
+        source: fb.database().ref(fbpaths().labs()),
+        cancelCallback: function () {
+        },
+        readyCallback: function () {},
+        asObject: false
+      }
+    },
   }
 
 </script>
@@ -97,17 +114,52 @@
 
   #div-input-path{
     margin-left: 2px;
+    height:200px;
+    width: 100%;
+    background-color: whitesmoke;
+  }
+
+  #lg-go{
+    position: absolute;
+    margin-top: 150px;
+
+  }
+
+  #lab-prefix{
+    text-decoration: none;
+    font-size: 160px;
   }
 
   #lab-path-input{
     position: relative;
     border: 1px solid ghostwhite;
     border-radius: 6px;
-    height:40px;
-    background-color: #ebebeb;
+    height:165px;
+    background-color: whitesmoke;
     padding:0;
-    margin-top: -4px;
+    margin-top: 54px;
+    font-size: 100px;
+    width: 40%;
   }
+
+  ::-webkit-input-placeholder {
+    font-style: italic;
+  }
+  :-moz-placeholder {
+    font-style: italic;
+  }
+  ::-moz-placeholder {
+    font-style: italic;
+  }
+  :-ms-input-placeholder {
+    font-style: italic;
+  }
+
+  #lab-path-input:active,   #lab-path-input:focus {
+  border: 1px solid transparent;
+    outline: none;
+  }
+
   #sign-in-div{
     margin-top: 60px;
   }

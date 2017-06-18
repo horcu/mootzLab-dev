@@ -38,7 +38,7 @@
                 </li>
 
                 <li class="col-lg-5">
-                  <span class="pull-left" id="compiled-msg">
+                  <!--<span class="pull-left" id="compiled-msg">-->
 
                   <a v-on:click="toggleAssignmentNav" data-toggle="tooltip" data-placement="bottom" title="exceptions"
                      class="ex-tab exception-tab pull-right">
@@ -48,7 +48,7 @@
                          data-placement="bottom" title="expand" class="ex-tab expand-tab pull-right">
                     <img id="err-img" width="15px" height="15px" src="/static/img/warning.png" alt="exception"/>
                   </a>
-                    </span>
+                    <!--</span>-->
                 </li>
 
               </ul>
@@ -198,11 +198,13 @@
   import fb from 'src/fb-config'
   import Lab from 'src/components/Lab.vue'
   import 'slick-carousel'
+  import fbpaths from 'src/fbPaths'
   //import 'spacegray-ace-theme'
 
   var webrtc
   let editor;
-  let roomName = 'mootz'
+
+  let roomName = '0'
 
   ace.config.set('basePath', 'static/ace/');
 
@@ -223,9 +225,9 @@
 
   export default {
     name: 'lab',
-
     data() {
       return {
+        roomName: this.$route.params.id,
         photo: '',
         userId: '',
         userName: '',
@@ -250,7 +252,7 @@
     },
     firebase: {
       liveCode: {
-        source: fb.database().ref(fbpaths.live),
+        source: fb.database().ref(fbpaths().live()),
         cancelCallback: function () {
         },
         readyCallback: function () {
@@ -259,6 +261,7 @@
 
           //webrtc init
           this.initWebRtc(this.userName, this.photo, this.email, this.uId)
+          this.updateUserRoomInfo(this.uId, this.userName)
 
           //slick carousel init
           // let divs = $('#remote-vids')
@@ -268,7 +271,7 @@
         asObject: false
       },
       labs: {
-        source: fb.database().ref(fbpaths.labs),
+        source: fb.database().ref(fbpaths().labs()),
         cancelCallback: function () {
         },
         readyCallback: function (x) {
@@ -276,7 +279,7 @@
         asObject: false
       },
       challengesArray: {
-        source: fb.database().ref(fbpaths.challenges),
+        source: fb.database().ref(fbpaths().challenges()),
         cancelCallback: function () {
         },
         readyCallback: function (x) {
@@ -284,7 +287,7 @@
         asObject: false
       },
       chalkboardArray: {
-        source: fb.database().ref(fbpaths.chalkboard),
+        source: fb.database().ref(fbpaths().chalkboard()),
         cancelCallback: function () {
         },
         readyCallback: function (x) {
@@ -292,7 +295,7 @@
         asObject: false
       },
       exceptionsArray: {
-        source: fb.database().ref(fbpaths.exceptions),
+        source: fb.database().ref(fbpaths().exceptions()),
         cancelCallback: function () {
         },
         readyCallback: function (x) {
@@ -300,7 +303,7 @@
         asObject: false
       },
       settingsArray: {
-        source: fb.database().ref(fbpaths.settings),
+        source: fb.database().ref(fbpaths().settings()),
         cancelCallback: function () {
         },
         readyCallback: function (x) {
@@ -309,7 +312,9 @@
       }
     },
     methods: {
-
+      roomName: function () {
+        return this.$route.params.id
+      },
       find: function (word, dir) {
         editor = ace.edit("editor");
         editor.find(word, {
@@ -370,14 +375,15 @@
       },
       saveCodeToFirebase: function (probId) {
         let codeEntry = editor.getValue()
-
         let codeToSubmit = {
           'problem-id': probId,
           'last-updated': new Date().toTimeString(),
           text: codeEntry,
         };
 
-        let childTemplate = `/${roomName}/${this.userName}/code/`
+        //todo put safeguard in to ensure that the userName and roomName properties are not undefiined
+
+        let childTemplate = `/${this.roomName}/${this.userName}/code/`
         this.$firebaseRefs.labs.child(childTemplate).update(codeToSubmit)
       },
       toggleAssignmentNav: function () {
@@ -455,18 +461,18 @@
 
           console.log('joined room')
           console.log('adding joined message to stream')
-          addMessageToStream('joined :)', nick, photo, email, uId, 'left')
+          addMessageToStream('joined :)', nick, photo, email, uId, 'left', sessionId)
           //todo addSessionIdToDb(sessionId)
         })
 
         webrtc.on('readyToCall', function () {
-          addMessageToStream('joined :)', nick, photo, email, uId, 'left')
+          addMessageToStream('joined :)', nick, photo, email, uId, 'left', sessionId)
         });
 
         // a peer video has been added
         webrtc.on('videoAdded', function (video, peer) {
 
-          addMessageToStream('joined :)', peer.nick, photo, email, uId, 'right')
+          addMessageToStream('joined :)', peer.nick, photo, email, uId, 'right', sessionId)
 
 //          console.log('video added', peer);
 //          console.log('video added', peer.nick);
@@ -551,8 +557,15 @@
         });
         console.log('webrtc', 'done setting up events')
       },
-      getUserSpecificPath: function (path) {
-        return '/users/' + this.userName + '/' + path
+      updateUserRoomInfo : function(userId, userName){
+          let user = {
+              userName : userName,
+            userId: userId
+          }
+
+
+        let usersRath = fbpaths().labs() + '/' + this.roomName + '/users/'
+        fb.database().ref(usersRath).update(user)
       },
       syncEditorWithLab: function () {
 
@@ -578,7 +591,7 @@
 //    })
 
         let un = this.userName
-        let ref = fb.database().ref(`${fbpaths.labs}/${roomName}//${un}`)
+        let ref = fb.database().ref(`${fbpaths().labs()}/${this.roomName}//${un}`)
         ref.on('value', function (snapshot) {
           if (snapshot.key === un) {
             let editor = ace.edit("editor")
@@ -587,7 +600,7 @@
                 let v = childSnapshot.val()
 
                 //editor.getSession().setMode("ace/mode/java");
-                $('#editor').css({'font-size': '14px'})
+                //$('#editor').css({'font-size': '14px'})
                 editor.getSession().setUseWorker(true);
                 //editor.setTheme('ace/theme/ambiance');
                 editor.setHighlightActiveLine(true);
@@ -630,49 +643,11 @@
     }
   }
 
-  function fbpaths() {
-
-    return {
-      // top level paths
-      users: 'users/',
-      challenges: 'challenges/',
-      themes: 'themes/',
-      languages: 'languages/',
-      live: 'live-code/',
-      labs: 'labs/',
-
-      // user specific paths
-      chalkboard: function () {
-        return this.getUserSpecificPath('chalkboard/')
-      },
-      timeline: function () {
-        this.getUserSpecificPath('timeline/')
-      },
-      info: function () {
-        this.getUserSpecificPath('info/')
-      },
-      exceptions: function () {
-        this.getUserSpecificPath('exceptions/')
-      },
-      settings: function () {
-        this.getUserSpecificPath('settings/')
-      },
-      submissions: function () {
-        this.getUserSpecificPath('submissions/')
-      },
-      lastSavedLanguage: function () {
-        this.getUserSpecificPath('/last-saved-language/')
-      },
-      lastSavedTheme: function () {
-        this.getUserSpecificPath('/last-saved-theme/')
-      },
-      lastChallengeAttempted: function () {
-        this.getUserSpecificPath('/last-challenge-attempted/')
-      }
-    }
+  function getRoomName() {
+    return this.roomName()
   }
 
-  function addMessageToStream(text, name, photo, email, uId, side) {
+  function addMessageToStream(text, name, photo, email, uId, side, sessionId) {
     var $messages, message;
     if (text.trim() === '' || name.trim() === '') {
       return;
@@ -685,7 +660,8 @@
       message_side: side,
       photo: photo,
       email: email,
-      uId: uId
+      uId: uId,
+      sessionId: sessionId
     });
     message.draw(name);
     return $messages.animate({scrollTop: $messages.prop('scrollHeight')}, 300);
@@ -698,6 +674,7 @@
     let email = arg.email
     let photo = arg.photo
     let uId = arg.uId
+    let sessionId = arg.sessionId
 
     this.draw = function (name, _this) {
       return function () {
@@ -779,14 +756,13 @@
   #compiled-msg {
     position: relative;
     background-color: whitesmoke;
-    height: 36px;
+    height: 40px;
     min-width: 100%;
     width: 100%;
     border: 1px solid transparent;
     -webkit-border-radius: 6px;
     -moz-border-radius: 6px;
     border-radius: 6px;
-    margin-top: 7px;
   }
 
   #compiled-msg a {

@@ -14,7 +14,7 @@
           <ul v-show="!isLogin()" id="editor-controls" class="nav navbar-nav pull-right">
 
             <li v-show="isLabPage()" class="pull-left">
-              <a>horcu &nbsp <img src="/static/img/share.png" /></a>
+              <a>{{$route.params.id}} &nbsp <img src="/static/img/share.png" /></a>
 
             </li>
 
@@ -46,7 +46,6 @@
                      alt="assignments"/>
               </a>
             </li>
-
 
           </ul>
           <!--</div>-->
@@ -325,22 +324,26 @@
 
 <script>
 
-  import App from 'src/App.vue'
+  //import App from 'src/App.vue'
+  //import Hello from './Hello.vue'
   import $ from 'jquery'
   import Lab from "./Lab.vue";
   import firebase from 'firebase';
-  import fbConfig from 'src/fb-config'
+  import fb from 'src/fb-config'
   import firebaseui from 'firebaseui'
+  import fbpaths from 'src/fbPaths'
 
 export default {
   name: 'app',
-  template: a => a(App),
-  render: r => r(App),
+//  template: a => a(Hello),
+//  render: r => r(Hello),
   data () {
     return {
+
       msg: 'Hello'
     }
   },
+
   methods: {
     logOut() {
       firebase.auth().signOut();
