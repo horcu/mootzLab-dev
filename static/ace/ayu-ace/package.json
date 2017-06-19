@@ -1,0 +1,96 @@
+{
+  "_args": [
+    [
+      {
+        "raw": "ayu-ace",
+        "scope": null,
+        "escapedName": "ayu-ace",
+        "name": "ayu-ace",
+        "rawSpec": "",
+        "spec": "latest",
+        "type": "tag"
+      },
+      "/Users/ray/WebstormProjects/mootzLab-dev"
+    ]
+  ],
+  "_from": "ayu-ace@latest",
+  "_id": "ayu-ace@2.0.3",
+  "_inCache": true,
+  "_location": "/ayu-ace",
+  "_nodeVersion": "7.2.1",
+  "_npmOperationalInternal": {
+    "host": "packages-12-west.internal.npmjs.com",
+    "tmp": "tmp/ayu-ace-2.0.3.tgz_1481971954140_0.36113348905928433"
+  },
+  "_npmUser": {
+    "name": "konsch",
+    "email": "me@kons.ch"
+  },
+  "_npmVersion": "3.10.9",
+  "_phantomChildren": {},
+  "_requested": {
+    "raw": "ayu-ace",
+    "scope": null,
+    "escapedName": "ayu-ace",
+    "name": "ayu-ace",
+    "rawSpec": "",
+    "spec": "latest",
+    "type": "tag"
+  },
+  "_requiredBy": [
+    "#USER",
+    "/"
+  ],
+  "_resolved": "https://registry.npmjs.org/ayu-ace/-/ayu-ace-2.0.3.tgz",
+  "_shasum": "445498d81eb11a44fcaef73a22bb3dab69773747",
+  "_shrinkwrap": null,
+  "_spec": "ayu-ace",
+  "_where": "/Users/ray/WebstormProjects/mootzLab-dev",
+  "author": {
+    "name": "Konstantin Pschera",
+    "email": "me@kons.ch"
+  },
+  "bugs": {
+    "url": "https://github.com/ayu-theme/ayu-ace/issues"
+  },
+  "dependencies": {},
+  "description": "ayu color theme for the ace editor",
+  "devDependencies": {
+    "babel-cli": "6.18.0",
+    "babel-core": "6.18.2",
+    "babel-jest": "17.0.2",
+    "babel-preset-latest": "6.16.0",
+    "babel-preset-stage-0": "6.16.0",
+    "common-tags": "1.4.0",
+    "execa": "0.5.0",
+    "jest": "17.0.3",
+    "rimraf": "2.5.4"
+  },
+  "directories": {},
+  "dist": {
+    "shasum": "445498d81eb11a44fcaef73a22bb3dab69773747",
+    "tarball": "https://registry.npmjs.org/ayu-ace/-/ayu-ace-2.0.3.tgz"
+  },
+  "gitHead": "3e31a915ef8bae7d692b74a2c937bb8d1a5e7b89",
+  "homepage": "https://github.com/ayu-theme/ayu-ace#readme",
+  "license": "MIT",
+  "main": "index.js",
+  "maintainers": [
+    {
+      "name": "konsch",
+      "email": "me@kons.ch"
+    }
+  ],
+  "name": "ayu-ace",
+  "optionalDependencies": {},
+  "readme": "ERROR: No README data found!",
+  "repository": {
+    "url": "git+https://github.com/ayu-theme/ayu-ace.git",
+    "type": "git"
+  },
+  "scripts": {
+    "start": "babel-node scripts/update.js",
+    "test": "jest"
+  },
+  "version": "2.0.3"
+}

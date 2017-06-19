@@ -2,8 +2,7 @@
     <div v-show="isLoggedIn()" class="row full-length">
 
       <div id="labs-list">
-        <ul>
-          <li class="go-lab">
+
             <div class="pull-left" id="div-input-path">
               <span id="lab-prefix" class="pull-left">
                   <span class="pull-left">lab/</span>
@@ -11,8 +10,7 @@
                 <img id="lg-go" class="btn btn-flat pull-right" v-on:click="navigateToLab('lab')"src="/static/img/expand-right.png" />
               </span>
             </div>
-          </li>
-        </ul>
+
         <!--<ul class="list-group">-->
           <!--<li v-for="item in labSessions" class="list-group-item"> {{item.code}}</li>-->
         <!--</ul>-->
@@ -37,26 +35,23 @@
 </template>
 <script>
 
-  //import App from 'src/App.vue'
   import $ from 'jquery'
   import firebase from 'firebase';
   import fb from 'src/fb-config'
   import firebaseui from 'firebaseui'
   import fbpaths from 'src/fbPaths'
 
-  let test = fbpaths().labs()
-  console.log('App.vue',test)
-
   export default {
     name: 'app',
     data() {
       return {
-        labSessions:{}
+        labSessions:{},
+        userName:'',
+        email:'',
+        photo:'',
+        uId: ''
       }
     },
-    // template: a => a(App),
-    // render: r => r(App),
-
     methods: {
       isLoggedIn: function () {
         return true
@@ -92,10 +87,18 @@
         asObject: false
       }
     },
+  created() {
+    this.user = firebase.auth().currentUser;
+    if (this.user) {
+      this.userName = this.user.displayName;
+      this.email = this.user.email;
+      this.photo = this.user.photoURL;
+      this.uId = this.user.uid;
+    }
+  }
   }
 
 </script>
-<!-- styling for the component -->
 <style>
   @import '/static/bootstrap/css/bootstrap.min.css';
   @import '/static/bootstrap/css/bootstrap-theme.css';
@@ -113,7 +116,7 @@
 
 
   #div-input-path{
-    margin-left: 2px;
+    margin-left: 20px;
     height:200px;
     width: 100%;
     background-color: whitesmoke;

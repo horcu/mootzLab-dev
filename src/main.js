@@ -27,6 +27,7 @@ import About from './components/About'
 import Lab from './components/Lab'
 
 import jQuery from 'jquery'
+
 global.jQuery = jQuery
 
 require('bootstrap')

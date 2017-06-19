@@ -1,5 +1,4 @@
 <template>
-
   <div id="lab" class="lab content-wrapper">
 
     <section class="main-sect">
@@ -44,11 +43,11 @@
                      class="ex-tab exception-tab pull-right">
                     <img id="exp-img" width="15px" height="15px" src="/static/img/expand-right.png" alt="exceptions"/>
                   </a>
-                      <a id="error-icon-div" data-toggle="tooltip"
-                         data-placement="bottom" title="expand" class="ex-tab expand-tab pull-right">
+                  <a id="error-icon-div" data-toggle="tooltip"
+                     data-placement="bottom" title="expand" class="ex-tab expand-tab pull-right">
                     <img id="err-img" width="15px" height="15px" src="/static/img/warning.png" alt="exception"/>
                   </a>
-                    <!--</span>-->
+                  <!--</span>-->
                 </li>
 
               </ul>
@@ -57,8 +56,9 @@
             <div>
 
               <div id="code-tab" class="tab-pane fade in active">
-                <div id="editor" class="ace-Katzenmilch">
+                <div id="editor">
                 </div>
+
                 <div id="comments-tab" class="hidden">
                   <div id="comments-tab-top-menu">
                     <ul class="list-group">
@@ -177,7 +177,7 @@
       <div class="message_template">
         <li class="message">
           <div class="avatar">
-            <img width="56px" height="56px" id="user-img"/>
+            <img id="user-img"/>
           </div>
           <div class="text_wrapper">
             <div class="text"></div>
@@ -191,22 +191,25 @@
 <script>
   import Vue from 'Vue'
   import App from '../App'
-  import ace from 'jenkins-ace-editor';
   import firebase from 'firebase'
+  import ace from 'jenkins-ace-editor'
   import $ from 'jquery'
-
   import fb from 'src/fb-config'
   import Lab from 'src/components/Lab.vue'
-  import 'slick-carousel'
+  //import 'slick-carousel'
   import fbpaths from 'src/fbPaths'
-  //import 'spacegray-ace-theme'
-
   var webrtc
-  let editor;
+
+//  require('../../static/ace/mode-csharp')
+//  require('../../static/ace/mode-java')
+//  require('../../static/ace/mode-javascript')
+//  require('../../static/ace/mode-python')
+//  require('../../static/ace/mode-golang')
 
   let roomName = '0'
+  let editor
 
-  ace.config.set('basePath', 'static/ace/');
+  ace.config.set('basePath', './static/ace/');
 
   $(function () {
     let commentsSection = $('#sidebar-comments')
@@ -225,12 +228,15 @@
 
   export default {
     name: 'lab',
-    data() {
+    prop: {
+      content: ''
+    },
+    data: function() {
       return {
         roomName: this.$route.params.id,
         photo: '',
         userId: '',
-        userName: '',
+        userName: fb.auth().currentUser.displayName,
         email: '',
         user: {},
         labs: {},
@@ -256,12 +262,8 @@
         cancelCallback: function () {
         },
         readyCallback: function () {
-          this.syncEditorWithLab()
-          this.initEditorEvents()
 
-          //webrtc init
-          this.initWebRtc(this.userName, this.photo, this.email, this.uId)
-          this.updateUserRoomInfo(this.uId, this.userName)
+
 
           //slick carousel init
           // let divs = $('#remote-vids')
@@ -270,14 +272,20 @@
         },
         asObject: false
       },
-      labs: {
-        source: fb.database().ref(fbpaths().labs()),
-        cancelCallback: function () {
-        },
-        readyCallback: function (x) {
-        },
-        asObject: false
-      },
+//      labs:  {
+//            source: fb.database().ref(fbpaths().labs() + roomName + '/' +  userName + '/code/'),
+//            cancelCallback: function () {
+//            },
+//            readyCallback: function (x) {
+//            console.log('labs', 'loaded lab from firebase')
+//
+//              this.syncEditorWithLab()
+//
+//              console.log('labs', 'synced editor')
+//            },
+//            asObject: true
+//
+//      },
       challengesArray: {
         source: fb.database().ref(fbpaths().challenges()),
         cancelCallback: function () {
@@ -316,7 +324,7 @@
         return this.$route.params.id
       },
       find: function (word, dir) {
-        editor = ace.edit("editor");
+        //editor = ace.edit("editor");
         editor.find(word, {
           backwards: dir === 'back',
           wrap: false,
@@ -328,21 +336,21 @@
         return dir === 'back' ? editor.findPrevious() : editor.findNext()
       },
       readOnly: function (val) {
-        editor = ace.edit("editor");
+        //  editor = ace.edit("editor");
         editor.setReadOnly(val);
       },
       getLiveCode: function () {
         return this.liveCode[0]
       },
       getSelectedCodeInfo: function () {
-        editor = ace.edit("editor");
+        // editor = ace.edit("editor");
       },
       getCurcorPosition: function () {
-        editor = ace.edit("editor");
+        //  editor = ace.edit("editor");
         return editor.selection.getCursor();
       },
       makeSnippetFromSelection: function () {
-        editor = ace.edit("editor");
+        //  editor = ace.edit("editor");
         let selectedText = editor.session.getTextRange(editor.getSelectionRange());
         alert(selectedText)
         let cursorBox = $('div.ace_cursor')
@@ -354,27 +362,25 @@
         }, 400)
       },
       initEditorEvents: function () {
-        editor = ace.edit("editor");
+        // editor = ace.edit("editor");
 
-        //editor.setTheme('ace/theme/space_gray')
-
-        editor.getSession().on('change', function (e) {
-          $('#comments-tab-top-menu').stop().hide()
-        });
-
-        editor.getSession().selection.on('changeSelection', function (e) {
-          // alert('selection made')
-          //this.makeSnippetFromSelection()
-        });
-
-        editor.getSession().selection.on('changeCursor', function (e) {
-          //   alert('cursor changed')
-          $('#comments-tab-top-menu').stop().show()
-
-        });
+//        editor.getSession().on('change', function (e) {
+//          $('#comments-tab-top-menu').stop().hide()
+//        });
+//
+//        editor.getSession().selection.on('changeSelection', function (e) {
+//          // alert('selection made')
+//          //this.makeSnippetFromSelection()
+//        });
+//
+//        editor.getSession().selection.on('changeCursor', function (e) {
+//          //   alert('cursor changed')
+//          $('#comments-tab-top-menu').stop().show()
+//
+//        });
       },
       saveCodeToFirebase: function (probId) {
-        let codeEntry = editor.getValue()
+        let codeEntry = editor.props.content
         let codeToSubmit = {
           'problem-id': probId,
           'last-updated': new Date().toTimeString(),
@@ -383,8 +389,8 @@
 
         //todo put safeguard in to ensure that the userName and roomName properties are not undefiined
 
-        let childTemplate = `/${this.roomName}/${this.userName}/code/`
-        this.$firebaseRefs.labs.child(childTemplate).update(codeToSubmit)
+        let path = `/${vm.roomName}/${vm.userName}/code/`
+        this.$firebaseRefs.labs.ref().update(codeToSubmit)
       },
       toggleAssignmentNav: function () {
         App.methods.toggleAssignmentNav()
@@ -557,62 +563,65 @@
         });
         console.log('webrtc', 'done setting up events')
       },
-      updateUserRoomInfo : function(userId, userName){
-          let user = {
-              userName : userName,
-            userId: userId
-          }
+      updateUserInfoForLab: function (userId, userName) {
+          let vm = this
+        let user = {
+          userName: userName,
+          userId: userId
+        }
 
 
-        let usersRath = fbpaths().labs() + '/' + this.roomName + '/users/'
+        let usersRath = fbpaths().labs() + '/' + vm.roomName + '/users/'
         fb.database().ref(usersRath).update(user)
       },
+      getTemplateForLanguage: function (langId) {
+        let prefix = 'https://cors-anywhere.herokuapp.com/'
+        let templatesUrl = 'http://cloudcompiler.esy.es/api/languages/template/' + langId
+        let def = $.getJSON(prefix + templatesUrl);
+
+        def.done(function (data, s) {
+         // editor.setValue(data.source);
+         // editor.clearSelection();
+        })
+      },
       syncEditorWithLab: function () {
+          let vm = this
+//        let winSize = $(window).height();
+//        if ($('#editor').css('height') < winSize){
+//          $(editor).animate({'height': winSize}, 400)
+//          editor.resize()
+//        }
 
-        editor = ace.edit("editor");
-
-        let winSize = $(window).height();
-        $(editor).animate({'height': winSize}, 400)
-        editor.resize()
-
-//    let prefix = 'https://cors-anywhere.herokuapp.com/'
-//    let id = 11
-//    let templatesUrl = 'http://cloudcompiler.esy.es/api/languages/template/' + id
-//    let def =  $.getJSON(prefix + templatesUrl);
-//
-//
-//    def.done(function(data, s){
-//      editor.getSession().setMode("ace/mode/csharp");
-//      editor.getSession().setUseWorker(true);
-//      editor.setTheme('ace/theme/katzenmilch');
-//      //editor.getSession().setUseWrapMode(true);
-//      editor.setValue(data.source);
-//      editor.clearSelection();
-//    })
-
-        let un = this.userName
-        let ref = fb.database().ref(`${fbpaths().labs()}/${this.roomName}//${un}`)
+        let un = vm.userName
+        let ref = fb.database().ref(`${fbpaths().labs()}/${vm.roomName}//${un}`)
         ref.on('value', function (snapshot) {
           if (snapshot.key === un) {
-            let editor = ace.edit("editor")
+
             snapshot.forEach(function (childSnapshot) {
               if (childSnapshot.key === 'code') {
                 let v = childSnapshot.val()
+                console.log('setting editor content')
 
-                //editor.getSession().setMode("ace/mode/java");
-                //$('#editor').css({'font-size': '14px'})
+                let editor = ace.edit('editor')
+                 editor.setTheme('ace/theme/ayu-mirage')
+                  editor.getSession().setMode("ace/mode/csharp");
+                $('#editor').css({'font-size': '16px'})
                 editor.getSession().setUseWorker(true);
-                //editor.setTheme('ace/theme/ambiance');
                 editor.setHighlightActiveLine(true);
                 editor.getSession().setUseSoftTabs(true);
                 editor.setShowPrintMargin(false);
+
+                console.log('editor','logging firebase code text')
+                console.log(v.text)
                 editor.setValue(v.text);
+                editor.clearSelection();
+
+                console.log(editor)
+                console.log(ace)
 
                 return true
               }
             });
-
-            editor.clearSelection()
 
             addComments()
           }
@@ -640,11 +649,16 @@
         editor.setReadOnly(false);
       }
 
-    }
-  }
+    },
+    components: {
 
-  function getRoomName() {
-    return this.roomName()
+    },
+    mounted () {
+      this.initEditorEvents()
+      this.initWebRtc(this.userName, this.photo, this.email, this.uId)
+      this.updateUserInfoForLab(this.uId, this.userName)
+      this.syncEditorWithLab()
+    }
   }
 
   function addMessageToStream(text, name, photo, email, uId, side, sessionId) {
@@ -695,13 +709,12 @@
 
   }
 
-
 </script>
 
 <style scoped>
-  @import "/static/ace/theme-monokai.css";
-  @import "/static/slick/slick.css";
-  @import "/static/slick/slick-theme.css";
+  /*@import "/static/ace/theme-monokai.css";*/
+  /*@import "/static/slick/slick.css";*/
+  /*@import "/static/slick/slick-theme.css";*/
 
   .panel-body {
     padding: 0px;
@@ -809,7 +822,7 @@
 
   #editor {
     position: absolute;
-    background-color: transparent;
+    /*background-color: whitesmoke;*/
     top: 0;
     right: 0;
     bottom: 0;
@@ -818,7 +831,7 @@
     padding-bottom: 56px;
     min-height: 650px;
     height: 100%;
-    width: 60%;
+    width: 100%;
     text-align: left;
     overflow-y: hidden;
 
@@ -919,6 +932,11 @@
     margin-right: 20px;
   }
 
+  div.avatar img {
+    width: 60px;
+    height: 60px;
+  }
+
   .messages .message {
     clear: both;
     overflow: hidden;
@@ -933,13 +951,13 @@
   }
 
   .messages .message.left .text_wrapper {
-    background-color: #ffe6cb;
+    background-color: #ebebeb;
     margin-left: 0;
   }
 
   .messages .message.left .text_wrapper::after, .messages .message.left .text_wrapper::before {
     right: 100%;
-    border-right-color: #ffe6cb;
+    border-right-color: #ebebeb;
   }
 
   .messages .message.left .text {
@@ -973,14 +991,14 @@
   .messages .message .avatar {
     width: 60px;
     height: 60px;
-    border-radius: 50%;
+    border-radius: 50px;
     display: inline-block;
   }
 
   .messages .message .text_wrapper {
     display: inline-block;
     padding: 20px;
-    border-radius: 6px;
+    border-radius: 4px;
     width: auto;
     min-width: 100px;
     position: relative;
@@ -1079,7 +1097,11 @@
   }
 
   #enter-message {
-    background-color: whitesmoke;
+    background-color: transparent;
+  }
+
+  #editor div.ace_content div.ace_text-layer div.ace_line span.ace_identifier {
+    color: orangered;
   }
 
 </style>
