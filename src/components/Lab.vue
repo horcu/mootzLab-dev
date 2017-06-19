@@ -3,59 +3,11 @@
 
     <section class="main-sect">
       <div class="row main-row">
-
         <!-- Code Box -->
         <div class="code-area">
-          <div>
-            <div class="box-header with-border head-wrapper">
-              <ul class="nav nav-pills no-padding no-margin">
-                <li class="e-tab code-tab active">
-                  <div id="code-file-dd" class="dropdown">
-                    <button class="btn btn-flat" type="button">
-                      <a data-toggle="popover" title="Popover Header" data-placement="bottom"
-                         data-content="Some content inside the popover">
-                        <img width="18px" height="18px" src="/static/img/file.png" alt="file(s)"/>&nbsp; app.cs
-                      </a>
-                    </button>
-                  </div>
+          <div id="code-area-header-box">
 
-                </li>
-
-                <!--stop build-->
-                <li data-toggle="tooltip" data-placement="bottom" title="stop">
-                  <a> <img id="code-editor-controls-stop" width="15px" height="15px" src="/static/img/stop.png"
-                           alt="build"/></a>
-                </li>
-
-                <!--build code-->
-                <li v-on:click="saveCodeToFirebase(1)" data-toggle=" tooltip
-                " data-placement="bottom" title="build">
-                  <a> <img id="code-editor-controls-play" width="15px" height="15px"
-                           src="/static/img/play-button%20(1).png" alt="build"
-                  /></a>
-
-                </li>
-
-                <li class="col-lg-5">
-                  <!--<span class="pull-left" id="compiled-msg">-->
-
-                  <a v-on:click="toggleAssignmentNav" data-toggle="tooltip" data-placement="bottom" title="exceptions"
-                     class="ex-tab exception-tab pull-right">
-                    <img id="exp-img" width="15px" height="15px" src="/static/img/expand-right.png" alt="exceptions"/>
-                  </a>
-                  <a id="error-icon-div" data-toggle="tooltip"
-                     data-placement="bottom" title="expand" class="ex-tab expand-tab pull-right">
-                    <img id="err-img" width="15px" height="15px" src="/static/img/warning.png" alt="exception"/>
-                  </a>
-                  <!--</span>-->
-                </li>
-
-              </ul>
-            </div>
-
-            <div>
-
-              <div id="code-tab" class="tab-pane fade in active">
+              <div id="code-tab">
                 <div id="editor">
                 </div>
 
@@ -82,109 +34,102 @@
                   </div>
                 </div>
               </div>
-            </div>
           </div>
         </div>
       </div>
+
+      <!--assignment control sidebar-->
+      <aside id="sidebar-assignments" class="hidden control-sidebar-assignments">
+        <ul class="nav nav-pills no-padding no-margin">
+
+          <li v-on:click="toggleAssignmentNav" data-toggle="tooltip" data-placement="bottom" title="hide"
+              class="pull-right">
+            <a> <img id="close-assignment-window" width="12px" height="12px" src="/static/img/cancel.png"
+                     alt="build"/></a>
+          </li>
+        </ul>
+
+      </aside>
+
+      <!-- Videos Control Sidebar -->
+      <aside id="sidebar-videos" class="hidden control-sidebar-videos">
+        <ul class="nav nav-pills no-padding no-margin">
+          <li v-on:click="toggleSessionsNav" data-toggle="tooltip" data-placement="bottom" title="hide"
+              class="pull-right">
+            <a> <img id="close-videos-window" width="12px" height="12px" src="/static/img/cancel.png"
+                     alt="build"/></a>
+          </li>
+        </ul>
+
+        <div id="video-section">
+
+          <div class="box-body l-vid-box">
+
+            <div id="panel-local-vid" class="hidden panel panel-default">
+              <div class="panel-body">
+                <div class="hidden" id="local-vid"></div>
+              </div>
+              <!--video section footer with icons-->
+              <div class="small-box small-box-footer">
+                <button type="button" class="btn btn-box-tool pull-right" data-toggle="tooltip"
+                        title="Contacts" data-widget="chat-pane-toggle">
+                  <i class="fa fa-comments"></i>
+                </button>
+                <button type="button" class="btn btn-box-tool pull-right" data-toggle="tooltip"
+                        title="video" data-widget="chat-pane-toggle">
+                  <i class="fa fa-video-camera"></i>
+                </button>
+              </div>
+            </div>
+
+          </div>
+
+          <div id="remote-vids">
+
+          </div>
+
+        </div>
+
+      </aside>
+
+      <!-- comments Control Sidebar -->
+      <aside id="sidebar-comments" class="control-sidebar-comments">
+        <div class="chat_window">
+          <div class="top_menu pull-right">
+            <div class="buttons">
+              <div class="button close"></div>
+              <div class="button minimize"></div>
+              <div class="button maximize">
+              </div>
+            </div>
+            <div class="title"></div>
+          </div>
+          <ul class="messages"></ul>
+          <div id="enter-message" class="hidden bottom_wrapper clearfix">
+            <div class="message_input_wrapper">
+              <input class="message_input" placeholder="Type your message here..."/>
+            </div>
+            <div class="send_message">
+              <div class="icon">
+
+              </div>
+              <div class="text">Send</div>
+            </div>
+          </div>
+        </div>
+        <div class="message_template">
+          <li class="message">
+            <div class="avatar">
+              <img id="user-img"/>
+            </div>
+            <div class="text_wrapper">
+              <div class="text"></div>
+            </div>
+          </li>
+        </div>
+      </aside>
     </section>
 
-    <!--assignment control sidebar-->
-    <aside id="sidebar-assignments" class="control-sidebar-assignments">
-      <ul class="nav nav-pills no-padding no-margin">
-
-        <li v-on:click="toggleAssignmentNav" data-toggle="tooltip" data-placement="bottom" title="hide"
-            class="pull-right">
-          <a> <img id="close-assignment-window" width="12px" height="12px" src="/static/img/cancel.png"
-                   alt="build"/></a>
-        </li>
-      </ul>
-      <!--<div class="test slider" data-slick='{"slidesToShow": 4, "slidesToScroll": 4}'>-->
-      <!--<div><h3>1</h3></div>-->
-      <!--<div><h3>2</h3></div>-->
-      <!--<div><h3>3</h3></div>-->
-      <!--<div><h3>4</h3></div>-->
-      <!--<div><h3>5</h3></div>-->
-      <!--<div><h3>6</h3></div>-->
-      <!--</div>-->
-    </aside>
-
-    <!-- Videos Control Sidebar -->
-    <aside id="sidebar-videos" class="control-sidebar-videos control-sidebar-light">
-      <ul class="nav nav-pills no-padding no-margin">
-        <li v-on:click="toggleSessionsNav" data-toggle="tooltip" data-placement="bottom" title="hide"
-            class="pull-right">
-          <a> <img id="close-videos-window" width="12px" height="12px" src="/static/img/cancel.png"
-                   alt="build"/></a>
-        </li>
-      </ul>
-
-      <div id="video-section">
-
-        <div class="box-body l-vid-box">
-
-          <div id="panel-local-vid" class="hidden panel panel-default">
-            <div class="panel-body">
-              <div class="hidden" id="local-vid"></div>
-            </div>
-            <!--video section footer with icons-->
-            <div class="small-box small-box-footer">
-              <button type="button" class="btn btn-box-tool pull-right" data-toggle="tooltip"
-                      title="Contacts" data-widget="chat-pane-toggle">
-                <i class="fa fa-comments"></i>
-              </button>
-              <button type="button" class="btn btn-box-tool pull-right" data-toggle="tooltip"
-                      title="video" data-widget="chat-pane-toggle">
-                <i class="fa fa-video-camera"></i>
-              </button>
-            </div>
-          </div>
-
-        </div>
-
-        <div id="remote-vids">
-
-        </div>
-
-      </div>
-
-    </aside>
-
-    <!-- comments Control Sidebar -->
-    <aside id="sidebar-comments" class="control-sidebar-comments control-sidebar-light">
-      <div class="chat_window">
-        <div class="top_menu pull-right">
-          <div class="buttons">
-            <div class="button close"></div>
-            <div class="button minimize"></div>
-            <div class="button maximize">
-            </div>
-          </div>
-          <div class="title"></div>
-        </div>
-        <ul class="messages"></ul>
-        <div id="enter-message" class="hidden bottom_wrapper clearfix">
-          <div class="message_input_wrapper">
-            <input class="message_input" placeholder="Type your message here..."/>
-          </div>
-          <div class="send_message">
-            <div class="icon">
-
-            </div>
-            <div class="text">Send</div>
-          </div>
-        </div>
-      </div>
-      <div class="message_template">
-        <li class="message">
-          <div class="avatar">
-            <img id="user-img"/>
-          </div>
-          <div class="text_wrapper">
-            <div class="text"></div>
-          </div>
-        </li>
-      </div>
-    </aside>
   </div>
 </template>
 
@@ -200,11 +145,11 @@
   import fbpaths from 'src/fbPaths'
   var webrtc
 
-//  require('../../static/ace/mode-csharp')
-//  require('../../static/ace/mode-java')
-//  require('../../static/ace/mode-javascript')
-//  require('../../static/ace/mode-python')
-//  require('../../static/ace/mode-golang')
+  //  require('../../static/ace/mode-csharp')
+  //  require('../../static/ace/mode-java')
+  //  require('../../static/ace/mode-javascript')
+  //  require('../../static/ace/mode-python')
+  //  require('../../static/ace/mode-golang')
 
   let roomName = '0'
   let editor
@@ -231,15 +176,17 @@
     prop: {
       content: ''
     },
-    data: function() {
+    data: function () {
       return {
-        roomName: this.$route.params.id,
+        labName: '',
         photo: '',
         userId: '',
         userName: fb.auth().currentUser.displayName,
         email: '',
         user: {},
-        labs: {},
+        currentLab: {},
+        currentLabUsers: {},
+        allLabs: {},
         liveCode: {},
         challengesArray: {},
         settingsArray: {},
@@ -248,81 +195,104 @@
       }
     },
     created() {
-      this.user = firebase.auth().currentUser;
-      if (this.user) {
-        this.userName = this.user.displayName;
-        this.email = this.user.email;
-        this.photo = this.user.photoURL;
-        this.uId = this.user.uid;
+      let vm = this
+      vm.firebase = function () {
+        return {
+          currentLab: {
+            source: fb.database().ref(fbpaths().labs() + vm.labName),
+            cancelCallback: function () {
+            },
+            readyCallback: function () {
+            },
+            asObject: true
+          },
+          currentLabUsers: {
+            source: fb.database().ref(fbpaths() + vm.labName + '/users'),
+            cancelCallback: function () {
+            },
+            readyCallback: function () {
+            },
+            asObject: false
+          },
+          allLabs: {
+            source: fb.database().ref(fbpaths().labs()),
+            cancelCallback: function () {
+            },
+            readyCallback: function () {
+            },
+            asObject: false
+          },
+          liveCode: {
+            source: fb.database().ref(fbpaths().live()),
+            cancelCallback: function () {
+            },
+            readyCallback: function () {
+
+
+
+              //slick carousel init
+              // let divs = $('#remote-vids')
+              // this.initSlickCarousel($('#remote-vids'));
+              // let divs2 = $('#remote-vids')
+            },
+            asObject: false
+          },
+          challengesArray: {
+            source: fb.database().ref(fbpaths().challenges()),
+            cancelCallback: function () {
+            },
+            readyCallback: function (x) {
+            },
+            asObject: false
+          },
+          chalkboardArray: {
+            source: fb.database().ref(fbpaths().chalkboard()),
+            cancelCallback: function () {
+            },
+            readyCallback: function (x) {
+            },
+            asObject: false
+          },
+          exceptionsArray: {
+            source: fb.database().ref(fbpaths().exceptions()),
+            cancelCallback: function () {
+            },
+            readyCallback: function (x) {
+            },
+            asObject: false
+          },
+          settingsArray: {
+            source: fb.database().ref(fbpaths().settings()),
+            cancelCallback: function () {
+            },
+            readyCallback: function (x) {
+            },
+            asObject: false
+          }
+        }
+      },
+        vm.user = firebase.auth().currentUser;
+      if (vm.user) {
+        vm.userName = this.user.displayName;
+        vm.email = this.user.email;
+        vm.photo = this.user.photoURL;
+        vm.userId = this.user.uid;
+        vm.labName = this.$route.params.id
       }
     },
-    firebase: {
-      liveCode: {
-        source: fb.database().ref(fbpaths().live()),
-        cancelCallback: function () {
-        },
-        readyCallback: function () {
+    mounted () {
+      this.initEditorEvents()
+      this.initWebRtc(this.userName, this.photo, this.email, this.userId)
+      this.updateUserInfoForLab(this.userId, this.userName, this.labName)
 
-
-
-          //slick carousel init
-          // let divs = $('#remote-vids')
-          // this.initSlickCarousel($('#remote-vids'));
-          // let divs2 = $('#remote-vids')
-        },
-        asObject: false
-      },
-//      labs:  {
-//            source: fb.database().ref(fbpaths().labs() + roomName + '/' +  userName + '/code/'),
-//            cancelCallback: function () {
-//            },
-//            readyCallback: function (x) {
-//            console.log('labs', 'loaded lab from firebase')
-//
-//              this.syncEditorWithLab()
-//
-//              console.log('labs', 'synced editor')
-//            },
-//            asObject: true
-//
-//      },
-      challengesArray: {
-        source: fb.database().ref(fbpaths().challenges()),
-        cancelCallback: function () {
-        },
-        readyCallback: function (x) {
-        },
-        asObject: false
-      },
-      chalkboardArray: {
-        source: fb.database().ref(fbpaths().chalkboard()),
-        cancelCallback: function () {
-        },
-        readyCallback: function (x) {
-        },
-        asObject: false
-      },
-      exceptionsArray: {
-        source: fb.database().ref(fbpaths().exceptions()),
-        cancelCallback: function () {
-        },
-        readyCallback: function (x) {
-        },
-        asObject: false
-      },
-      settingsArray: {
-        source: fb.database().ref(fbpaths().settings()),
-        cancelCallback: function () {
-        },
-        readyCallback: function (x) {
-        },
-        asObject: false
-      }
+      //todo maybe save in local storage the last problem within this lab that the user was in and use that here to
+      //todo determine the default lab problem that firebase should sync with the editor.
+      let probId = '0'
+      this.initEditor()
+      this.syncEditorWithUsersLastCodeEntry(this.labName, this.userName, probId)
     },
     methods: {
-      roomName: function () {
-        return this.$route.params.id
-      },
+
       find: function (word, dir) {
         //editor = ace.edit("editor");
         editor.find(word, {
@@ -362,35 +332,36 @@
         }, 400)
       },
       initEditorEvents: function () {
-        // editor = ace.edit("editor");
+        editor = ace.edit("editor");
 
-//        editor.getSession().on('change', function (e) {
-//          $('#comments-tab-top-menu').stop().hide()
-//        });
-//
-//        editor.getSession().selection.on('changeSelection', function (e) {
-//          // alert('selection made')
-//          //this.makeSnippetFromSelection()
-//        });
-//
-//        editor.getSession().selection.on('changeCursor', function (e) {
-//          //   alert('cursor changed')
-//          $('#comments-tab-top-menu').stop().show()
-//
-//        });
+        editor.getSession().on('change', function (e) {
+        });
+
+        editor.getSession().selection.on('changeSelection', function (e) {
+        });
+
+        editor.getSession().selection.on('changeCursor', function (e) {
+        });
       },
-      saveCodeToFirebase: function (probId) {
-        let codeEntry = editor.props.content
+      saveCodeToFirebase: function (labName, userName, probId) {
+
+        let vm = this
+        if (labName === '') {
+          labName = vm.labName
+        }
+        if (userName === '') {
+          userName = vm.userName
+        }
+        //_say('saveCodeToFirebase', editor)
+        let codeEntry = editor.getSession().getValue()
         let codeToSubmit = {
           'problem-id': probId,
           'last-updated': new Date().toTimeString(),
           text: codeEntry,
         };
-
-        //todo put safeguard in to ensure that the userName and roomName properties are not undefiined
-
-        let path = `/${vm.roomName}/${vm.userName}/code/`
-        this.$firebaseRefs.labs.ref().update(codeToSubmit)
+        let codeEntryPath = fbpaths().getCodeEntryByLabAndProblemId(labName, userName, probId)
+        // console.log('saving code :', fb.database().ref())
+        fb.database().ref().child(codeEntryPath).update(codeToSubmit)
       },
       toggleAssignmentNav: function () {
         App.methods.toggleAssignmentNav()
@@ -447,7 +418,7 @@
           ]
         });
       },
-      initWebRtc: function (nick, photo, email, uId) {
+      initWebRtc: function (nick, photo, email, userId, isCreator) {
 
         console.log('webrtc', 'building objects')
 
@@ -463,22 +434,25 @@
         webrtc.on('connectionReady', function (sessionId) {
           console.log('joining room')
 
-          webrtc.joinRoom(roomName);
+          webrtc.joinRoom(this.labName);
 
           console.log('joined room')
           console.log('adding joined message to stream')
-          addMessageToStream('joined :)', nick, photo, email, uId, 'left', sessionId)
-          //todo addSessionIdToDb(sessionId)
+          addMessageToLabStream('joined :)', nick, photo, email, userId, 'left', sessionId)
+
+          if (isCreator !== undefined && isCreator) {
+            this.addSessionIdToDb(sessionId)
+          }
         })
 
         webrtc.on('readyToCall', function () {
-          addMessageToStream('joined :)', nick, photo, email, uId, 'left', sessionId)
+          addMessageToLabStream('joined :)', nick, photo, email, userId, 'left', sessionId)
         });
 
         // a peer video has been added
         webrtc.on('videoAdded', function (video, peer) {
 
-          addMessageToStream('joined :)', peer.nick, photo, email, uId, 'right', sessionId)
+          addMessageToLabStream('joined :)', peer.nick, photo, email, userId, 'right', sessionId)
 
 //          console.log('video added', peer);
 //          console.log('video added', peer.nick);
@@ -563,71 +537,66 @@
         });
         console.log('webrtc', 'done setting up events')
       },
-      updateUserInfoForLab: function (userId, userName) {
-          let vm = this
+      addSessionIdToDb: function (sessionId, createdTime, creator) {
+        let info = {
+          sessionId: sessionId,
+          created: createdTime,
+          created_by: creator
+        }
+        let labInfoPath = fbpaths().currentLabs()
+        fb.database().ref(labInfoPath).update(info)
+      },
+      updateUserInfoForLab: function (userId, userName, labName) {
         let user = {
           userName: userName,
           userId: userId
         }
-
-
-        let usersRath = fbpaths().labs() + '/' + vm.roomName + '/users/'
-        fb.database().ref(usersRath).update(user)
+        let usersPath = fbpaths().currentLabUsers(labName)
+        fb.database().ref(usersPath).update(user)
       },
       getTemplateForLanguage: function (langId) {
         let prefix = 'https://cors-anywhere.herokuapp.com/'
         let templatesUrl = 'http://cloudcompiler.esy.es/api/languages/template/' + langId
-        let def = $.getJSON(prefix + templatesUrl);
+        return $.getJSON(prefix + templatesUrl);
 
-        def.done(function (data, s) {
-         // editor.setValue(data.source);
-         // editor.clearSelection();
-        })
       },
-      syncEditorWithLab: function () {
-          let vm = this
-//        let winSize = $(window).height();
-//        if ($('#editor').css('height') < winSize){
-//          $(editor).animate({'height': winSize}, 400)
-//          editor.resize()
-//        }
+      initEditor: function () {
+        let ed =  $('#editor')
+        let hgt = calCulateWindowHeight()
+        ed.css('height', hgt - 100)
+        ed.css({'font-size': '13px'})
+        editor = editor || ace.edit('editor')
+        editor.setTheme('ace/theme/ayu-mirage')
+        editor.getSession().setMode("ace/mode/csharp");
 
-        let un = vm.userName
-        let ref = fb.database().ref(`${fbpaths().labs()}/${vm.roomName}//${un}`)
+        editor.getSession().setUseWorker(true);
+        editor.setHighlightActiveLine(true);
+        editor.getSession().setUseSoftTabs(true);
+        editor.setShowPrintMargin(false);
+        console.log('editor', 'editor created and styled')
+
+      },
+      syncEditorWithUsersLastCodeEntry: function (labName, userName, probId) {
+        let ref = fb.database().ref(fbpaths().getCodeEntryByLabAndProblemId(labName, userName, probId))
         ref.on('value', function (snapshot) {
-          if (snapshot.key === un) {
-
+          if (snapshot.key === probId) {
             snapshot.forEach(function (childSnapshot) {
-              if (childSnapshot.key === 'code') {
+              if (childSnapshot.key === 'text') {
                 let v = childSnapshot.val()
+
+                editor = editor || ace.edit('editor')
                 console.log('setting editor content')
-
-                let editor = ace.edit('editor')
-                 editor.setTheme('ace/theme/ayu-mirage')
-                  editor.getSession().setMode("ace/mode/csharp");
-                $('#editor').css({'font-size': '16px'})
-                editor.getSession().setUseWorker(true);
-                editor.setHighlightActiveLine(true);
-                editor.getSession().setUseSoftTabs(true);
-                editor.setShowPrintMargin(false);
-
-                console.log('editor','logging firebase code text')
-                console.log(v.text)
-                editor.setValue(v.text);
+                editor.setValue(v);
                 editor.clearSelection();
-
                 console.log(editor)
                 console.log(ace)
-
                 return true
               }
             });
-
-            addComments()
+           // updateUserLabStream(message, type)
           }
         })
       },
-
       addUserWebcam: function (videos, div) {
         slideIndex++;
         $(videos).slick('slickAdd', div);
@@ -648,20 +617,15 @@
       setEditorEnabled: function () {
         editor.setReadOnly(false);
       }
-
     },
-    components: {
-
-    },
-    mounted () {
-      this.initEditorEvents()
-      this.initWebRtc(this.userName, this.photo, this.email, this.uId)
-      this.updateUserInfoForLab(this.uId, this.userName)
-      this.syncEditorWithLab()
-    }
+    components: {}
   }
 
-  function addMessageToStream(text, name, photo, email, uId, side, sessionId) {
+  function calCulateWindowHeight () {
+    return $(window).height()
+  }
+
+  function addMessageToLabStream (text, name, photo, email, uId, side, sessionId) {
     var $messages, message;
     if (text.trim() === '' || name.trim() === '') {
       return;
@@ -705,16 +669,45 @@
     return this;
   }
 
-  function addComments(comm) {
+  //todo  type determines size, color, animation etc...
+  function updateUserLabStream (message, type) {
 
   }
 
 </script>
 
 <style scoped>
-  /*@import "/static/ace/theme-monokai.css";*/
-  /*@import "/static/slick/slick.css";*/
-  /*@import "/static/slick/slick-theme.css";*/
+
+  .control-sidebar-videos, .control-sidebar-assignments, .control-sidebar-settings, .control-sidebar-comments {
+    position: fixed;
+    width: 0; /* 0 width - change this with JavaScript */
+    height: 100%;
+    padding-top: 50px;
+    /*border-left: 2px dotted #ffffff;*/
+    background-color: #212733;
+    -webkit-transition: right .2s ease-in-out;
+    -o-transition: right .2s ease-in-out;
+    z-index: 2; /* Stay on top */
+    top: 0;
+    right: 0;
+    overflow-x: hidden; /* Disable horizontal scroll */
+    transition: 0.5s; /* 0.5 second transition effect to slide in the sidenav */
+  }
+  .control-sidebar-settings{
+    z-index: 3;
+    background-color: whitesmoke;
+  }
+
+  .control-sidebar-comments{
+    width: 40%; /* 0 width - change this with JavaScript */
+    z-index: 1;
+    background-color: #212733;
+  }
+
+
+  #lab{
+    margin-top: 0px;
+  }
 
   .panel-body {
     padding: 0px;
@@ -763,7 +756,7 @@
   .head-wrapper {
     height: 40px;
     padding: 0;
-    background-color: whitesmoke;
+    background-color: transparent;
   }
 
   #compiled-msg {
@@ -793,12 +786,20 @@
 
   }
 
-  #code-file-dd {
-    margin: 3px;
-    margin-top: 5px;
-    margin-left: 20px;
-    padding: 3px;
+  .main-sect, .main-row {
+    padding-top: 0;
+    height: 100%;
   }
+
+  .code-area {
+    position: relative;
+    background-color: #212733;
+  }
+  #code-area-header-box  {
+    background: transparent;
+    height:auto;
+  }
+
 
   .code-tab {
     background-color: whitesmoke;
@@ -827,11 +828,13 @@
     right: 0;
     bottom: 0;
     left: 0;
-    margin-top: 60px;
-    padding-bottom: 56px;
-    min-height: 650px;
+    margin-top: 0;
+    margin-bottom: 0;
+    padding-top: 10px;
+    padding-bottom: 0;
     height: 100%;
     width: 100%;
+    min-width: 800px;
     text-align: left;
     overflow-y: hidden;
 
@@ -869,19 +872,18 @@
   .chat_window {
     position: fixed;
     width: 40%;
-    max-width: 800px;
     right: 0;
     top: 50px;
     bottom: 44px;
     /*box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);*/
-    background-color: #d4d4d4;
+    background-color: #212733;
     overflow: hidden;
-    border-left: 2px dotted white;
+    border-left: 1px dotted #222b33;
   }
 
   .top_menu {
-    background-color: #d4d4d4;
-    width: 100%;
+    background-color: transparent;
+    width: 120px;
     padding: 20px 0 15px;
     /*box-shadow: 0 1px 30px rgba(0, 0, 0, 0.1);*/
   }
@@ -940,6 +942,8 @@
   .messages .message {
     clear: both;
     overflow: hidden;
+    height: 100%;
+    width: 100%;
     margin-bottom: 20px;
     transition: all 0.5s linear;
     opacity: 0;
@@ -1046,7 +1050,8 @@
     display: inline-block;
     height: 50px;
     border-radius: 0;
-    border: 1px solid #bcbdc0;
+    border: 1px solid transparent;
+    background-color: transparent;
     width: 70%;
     position: relative;
     padding: 0 20px;
@@ -1062,7 +1067,8 @@
 
   .message_input {
     position: relative;
-    width: 100%;
+    width: 80%;
+    padding-left: 20px;
     background-color: whitesmoke;
   }
 
@@ -1101,7 +1107,6 @@
   }
 
   #editor div.ace_content div.ace_text-layer div.ace_line span.ace_identifier {
-    color: orangered;
   }
 
 </style>

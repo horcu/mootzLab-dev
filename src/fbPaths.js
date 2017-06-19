@@ -2,30 +2,45 @@
  * Created by ray on 6/17/17.
  */
 
-function fbpaths() {
+function fbpaths () {
 
   return {
+
     // top level paths
     users: function () {
-     return  'users/'
+      return 'users/'
     },
     challenges: function () {
       return 'challenges/'
-    } ,
+    },
     themes: function () {
       return 'themes/'
-    } ,
+    },
     languages: function () {
-      return  'languages/'
+      return 'languages/'
     },
     live: function () {
       return 'live-code/'
     },
     labs: function () {
       return 'labs/'
-    } ,
+    },
+    currentLabs: function (labName) {
+      return this.labs() + labName
+    },
 
     // user specific paths
+    currentLabUserCodeEntries: function (labName, userName) {
+      return '/labs/' + labName + '/' + userName + '/'
+    },
+
+    getCodeEntryByLabAndProblemId: function (labName, userName, probId) {
+      return '/labs/' + labName + '/' + userName + '/' + probId + '/'
+    },
+
+    currentLabUsers: function (labName) {
+      return '/labs/' + labName + '/users/'
+    },
     chalkboard: function () {
       return this.getUserSpecificPath('chalkboard/')
     },

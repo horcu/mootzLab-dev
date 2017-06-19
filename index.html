@@ -84,7 +84,19 @@
     <!-- built files will be auto injected -->
 
   <footer  class="main-footer">
-
+    <ul class="nav navbar-nav pull-left">
+      <li v-show="!isLabPage()">
+        <div id="code-file-dd" class="dropdown">
+              <img width="18px" height="18px" src="/static/img/gear.png" alt="file(s)"/>&nbsp; options
+        </div>
+      </li>
+      <!--<li v-show="isLabPage()">-->
+        <!--<div>-->
+          <!--<img id="err-img" width="15px" height="15px" src="/static/img/warning.png" alt="exception"/>-->
+        <!--</div>-->
+        <!--&lt;!&ndash;</span>&ndash;&gt;-->
+      <!--</li>-->
+    </ul>
   </footer>
 
    <!--<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.0.0-alpha.6/css/bootstrap.min.css" ></script>-->

@@ -1,13 +1,13 @@
 <template>
-    <div v-show="isLoggedIn()" class="row full-length">
+    <div id="main" v-show="isLoggedIn()">
 
       <div id="labs-list">
 
             <div class="pull-left" id="div-input-path">
               <span id="lab-prefix" class="pull-left">
-                  <span class="pull-left">lab/</span>
+                  <span class="pull-left text-white">lab/</span>
                 <input class="pull-left" id="lab-path-input" type="text" placeholder="lab name" value=""/>
-                <img id="lg-go" class="btn btn-flat pull-right" v-on:click="navigateToLab('lab')"src="/static/img/expand-right.png" />
+                <img id="lg-go" height="128" width="110" class="btn btn-flat pull-right" v-on:click="navigateToLab('lab')"src="/static/img/next_lab.png" />
               </span>
             </div>
 
@@ -95,7 +95,14 @@
       this.photo = this.user.photoURL;
       this.uId = this.user.uid;
     }
-  }
+  },
+    mounted(){
+      $("#lab-path-input").keydown(function(event){
+        if(event.keyCode === 13){
+          navigateToLab('lab')
+        }
+      });
+    }
   }
 
 </script>
@@ -107,24 +114,47 @@
   @import '/static/css/peez.css';
   @import "/static/css/firebaseui.css";
 
+  html{
+    color: #898E91;
+  }
+  body{
+    background-color: #212733;
+  }
+
+  #main{
+    background-color: #212733;
+    position: absolute;
+    width : 100%;
+    height: 100%;
+
+  }
+
+
   #labs-list, #users-list{
-    position: relative;
-    margin-top: 100px;
-    width: auto;
+    position: absolute;
+    width: 100%;
+    height:100%;
+    min-height: 400px;
+    margin-top: 10px;
     min-width: 400px;
+    background-color: #212733
   }
 
 
   #div-input-path{
+    position: relative;
     margin-left: 20px;
-    height:200px;
+    height:40%;
     width: 100%;
-    background-color: whitesmoke;
+    margin-top: 50px;
+    border: 1px solid transparent;
+    background-color: transparent;
   }
 
   #lg-go{
     position: absolute;
-    margin-top: 150px;
+    margin-top: 80px;
+    height: 100px;
 
   }
 
@@ -135,14 +165,18 @@
 
   #lab-path-input{
     position: relative;
-    border: 1px solid ghostwhite;
+    border: 1px solid transparent;
     border-radius: 6px;
-    height:165px;
-    background-color: whitesmoke;
+    height:265px;
+    background-color: transparent;
     padding:0;
-    margin-top: 54px;
+    padding-left: 20px;
+    margin-top: 0px;
+    margin-left: 10px;
     font-size: 100px;
-    width: 40%;
+    font-style: italic;
+    font-family: 'Courier New', Monospace;
+    width: 60%;
   }
 
   ::-webkit-input-placeholder {
@@ -161,6 +195,8 @@
   #lab-path-input:active,   #lab-path-input:focus {
   border: 1px solid transparent;
     outline: none;
+    background-color: transparent;
+    color: whitesmoke;
   }
 
   #sign-in-div{

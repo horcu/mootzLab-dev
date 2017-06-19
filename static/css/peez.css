@@ -1,5 +1,5 @@
 body {
-  background-color: whitesmoke;
+  background-color: #212733;
 }
 
 div#main.wrapper {
@@ -17,12 +17,18 @@ div#app {
   overflow-x: hidden;
 }
 
-.code-area {
+
+#code-file-dd {
   position: relative;
-  width: 100%;
-  height: 100%;
-  margin-top: 0px;
-  background-color: whitesmoke;
+  margin: 3px;
+  margin-left: 20px;
+  padding: 3px;
+  margin-top: -8px;
+}
+
+#code-file-dd:hover{
+  cursor: pointer;
+  background-color: white;
 }
 
 div.box-header.with-border {
@@ -54,10 +60,7 @@ code.html {
   background-color: #f8f8f8;
 }
 
-.main-sect, .main-row {
-  padding-top: 0;
-  height: 100%;
-}
+
 
 div.ace_content {
   height: 100%;
@@ -109,6 +112,10 @@ div.ace_content {
   width: 100%;
   height: 45px;
   background-color: #ebebeb;
+}
+
+.main-footer ul li {
+  list-style-type: none;
 }
 
 .controls {
@@ -577,26 +584,3 @@ div.slim-footer button {
   margin-left: 10px;
 }
 
-.control-sidebar-videos, .control-sidebar-assignments, .control-sidebar-settings, .control-sidebar-comments {
-  position: fixed;
-  width: 0; /* 0 width - change this with JavaScript */
-  height: 100%;
-  padding-top: 50px;
-  /*border-left: 2px dotted #ffffff;*/
-  background-color: #d4d4d4;
-  -webkit-transition: right .2s ease-in-out;
-  -o-transition: right .2s ease-in-out;
-  z-index: 2; /* Stay on top */
-  top: 0;
-  right: 0;
-  overflow-x: hidden; /* Disable horizontal scroll */
-  transition: 0.5s; /* 0.5 second transition effect to slide in the sidenav */
-}
-.control-sidebar-settings{
- z-index: 3
-}
-
-.control-sidebar-comments{
-  width: 40%; /* 0 width - change this with JavaScript */
-  z-index: 1;
-}
