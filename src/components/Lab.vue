@@ -285,6 +285,7 @@
       this.initWebRtc(this.userName, this.photo, this.email, this.userId)
       this.updateUserInfoForLab(this.userId, this.userName, this.labName)
 
+    //  this.subscribeToChange(fbpaths().currentLabUsers(), )
       //todo maybe save in local storage the last problem within this lab that the user was in and use that here to
       //todo determine the default lab problem that firebase should sync with the editor.
       let probId = '0'
@@ -331,6 +332,15 @@
           'border-radius': '6px'
         }, 400)
       },
+      subscribeToChange: function (path, key, cb) {
+        let friendsRef = fb.database().ref(path)
+
+        friendsRef.on('value', function (snapshot) {
+            if (snapshot.key === key) {
+              cb(key)
+            }
+          })
+          },
       initEditorEvents: function () {
         editor = ace.edit("editor");
 
