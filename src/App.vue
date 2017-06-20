@@ -1,13 +1,13 @@
 <template>
-    <div id="app" v-show="!isLogin()">
+    <div id="main" v-show="isLoggedIn()">
 
       <div id="labs-list">
 
             <div class="pull-left" id="div-input-path">
               <span id="lab-prefix" class="pull-left">
                   <span class="pull-left text-white">lab/</span>
-                <input class="pull-left" id="lab-path-input" type="text" placeholder="lab name" value=""/>
-                <img id="lg-go" height="128" width="110" class="btn btn-flat pull-right" v-on:click="preNavigateLabCheck()"src="/static/img/next_lab.png" />
+                <input class="pull-left" id="lab-path-input" type="text" placeholder="enter lab" value=""/>
+                <img id="lg-go" height="128" width="110" class="btn btn-flat pull-right" v-on:click="navigateToLab('lab')"src="/static/img/next_lab.png" />
               </span>
             </div>
 
@@ -15,8 +15,6 @@
           <!--<li v-for="item in labSessions" class="list-group-item"> {{item.code}}</li>-->
         <!--</ul>-->
       </div>
-
-      <lab v-show="isLabPage()"></lab>
 
       <aside class="hidden">
         <div id="users-list" class="col-lg-4">
@@ -33,6 +31,7 @@
         </div>
       </aside>
     </div>
+
 </template>
 <script>
 
@@ -41,130 +40,21 @@
   import fb from 'src/fb-config'
   import firebaseui from 'firebaseui'
   import fbpaths from 'src/fbPaths'
-  import Home from 'src/Home.vue'
-  import Lab from './components/Lab'
 
   export default {
-    components: {Lab},
     name: 'app',
-    data: function() {
+    data() {
       return {
         labSessions:{},
-        user: {},
         userName:'',
         email:'',
         photo:'',
-        userId: '',
-        labName:''
+        uId: ''
       }
-    },
-    template: a => a(Home),
-    created() {
-      let vm = this
-      vm.user = firebase.auth().currentUser;
-      if (vm.user) {
-        vm.userName = this.user.displayName;
-        vm.email = this.user.email;
-        vm.photo = this.user.photoURL;
-        vm.userId = this.user.uid;
-      }
-    },
-    mounted(){
-      $("#lab-path-input").keydown(function(event){
-        if(event.keyCode === 13){
-          navigateToLab('lab')
-        }
-      });
     },
     methods: {
-      isLabPage: function () {
-        return this.$route.name === 'lab'
-      },
-      isLogin: function () {
-        return this.$route.name === 'auth'
-      },
-      preNavigateLabCheck: function(){
-
-          let vm = this
-          let labName = this.getLabId()
-
-        if(!labName || labName.trim() === ''){
-              alert('enter a lab name')
-        }
-        if(!vm.userName){
-          alert('no user name')
-          return false
-        }
-
-        if(!vm.userId){
-          alert('no user id')
-          return false
-        }
-
-        let ref = fb.database().ref(fbpaths().labs())
-        ref.once('value', function (snapshot) {
-          if(snapshot.key === 'labs'){
-            if(snapshot.val()){
-              //existing lab so check if user can attend before navigating
-              snapshot.forEach(function (child) {
-                if(child.key === labName){
-                  //that lab was found.. check if user is allowed in
-                  vm.checkLabUsersInvitationList(labName, vm.userId, vm.navigateToLab)
-                }else{
-                  //no lab found with this name so its new
-                  console.log(labName + ' was not found')
-                  vm.setUserAsLabOwner(vm.userId, vm.userName)
-                  vm.navigate('lab')
-                }
-              })
-            }else {
-              //no lab found with this name so its new
-              vm.setUserAsLabOwner(vm.userId, vm.userName)
-              vm.navigate('lab')
-            }
-
-          }
-        })
-      },
-      setUserAsLabOwner : function () {
-        let ref = fb.database().ref(fbpaths().currentLabInfo(labName))
-        let info = {
-            owner: this.userId,
-            ownerName: this.userName,
-        }
-        ref.update(info)
-      },
-      checkLabUsersInvitationList: function (labName, userId, cb) {
-        let ref = fb.database().ref(fbpaths().currentLabsInvitees(labName))
-        ref.once('value', function (snapshot) {
-            if(!snapshot.val()){
-              //todo not invited so let the user know
-              console.log('no one has been invited')
-            }else{
-              let found = false
-                snapshot.forEach(function (childSnapshot) {
-                  let user = childSnapshot.val()
-                  if(user.userId === userId){
-                    found = true
-                  }
-                })
-              if(found){
-                cb('lab')
-                //todo not invited so let the user know
-                console.log('user found and was invited')
-              }else {
-                //todo not invited so let the user know
-                console.log('user not found on invite list')
-              }
-            }
-
-        })
-      },
-      navigate: function (where) {
-
-          if(where === 'lab'){
-              this.navigateToLab(labName)
-          }
+      isLoggedIn: function () {
+        return true
       },
       navigateToLab: function (labName) {
 
@@ -178,9 +68,9 @@
 
         this.$router.push(rObj,
           function () {
-            console.log('navigated to '  + id)
+            console.log('navigated to ' + labName + '/' + id)
           }, function () {
-            console.log("couldn't navigated to " + id)
+            console.log("couldn't navigated to " + labName + '/' + id)
           })
       },
       getLabId : function () {
@@ -196,6 +86,22 @@
         readyCallback: function () {},
         asObject: false
       }
+    },
+  created() {
+    this.user = firebase.auth().currentUser;
+    if (this.user) {
+      this.userName = this.user.displayName;
+      this.email = this.user.email;
+      this.photo = this.user.photoURL;
+      this.uId = this.user.uid;
+    }
+  },
+    mounted(){
+      $("#lab-path-input").keydown(function(event){
+        if(event.keyCode === 13){
+          navigateToLab('lab')
+        }
+      });
     }
   }
 
@@ -203,8 +109,8 @@
 <style>
   @import '/static/bootstrap/css/bootstrap.min.css';
   @import '/static/bootstrap/css/bootstrap-theme.css';
-  /*@import '/static/css/skins/_all-skins.css';*/
-  /*@import '/static/css/skins/skin-green-light.css';*/
+  @import '/static/css/skins/_all-skins.css';
+  @import '/static/css/skins/skin-green-light.css';
   @import '/static/css/peez.css';
   @import "/static/css/firebaseui.css";
 
@@ -215,7 +121,7 @@
     background-color: #212733;
   }
 
-  #app{
+  #main{
     background-color: #212733;
     position: absolute;
     width : 100%;

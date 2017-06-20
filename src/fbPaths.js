@@ -28,19 +28,13 @@ function fbpaths () {
     currentLabs: function (labName) {
       return this.labs() + labName
     },
-    currentLabsInvitees: function (labName) {
-      return this.labs() + labName + '/invitees/'
-    },
-    currentLabInfo: function (labName) {
-      return this.labs() + labName + '/info/'
-    },
 
     // user specific paths
     currentLabUserCodeEntries: function (labName, userName) {
       return '/labs/' + labName + '/' + userName + '/'
     },
 
-    codeEntryByLabAndProblemId: function (labName, userName, probId) {
+    getCodeEntryByLabAndProblemId: function (labName, userName, probId) {
       return '/labs/' + labName + '/' + userName + '/' + probId + '/'
     },
 

@@ -81,12 +81,17 @@
                 </button>
               </div>
             </div>
+
           </div>
 
           <div id="remote-vids">
+
           </div>
+
         </div>
+
       </aside>
+
       <!-- comments Control Sidebar -->
       <aside id="sidebar-comments" class="control-sidebar-comments">
         <div class="chat_window">
@@ -130,7 +135,7 @@
 
 <script>
   import Vue from 'Vue'
-  import App from '../Home'
+  import App from '../App'
   import firebase from 'firebase'
   import ace from 'jenkins-ace-editor'
   import $ from 'jquery'
@@ -139,6 +144,7 @@
   //import 'slick-carousel'
   import fbpaths from 'src/fbPaths'
   var webrtc
+
   let editor
 
   ace.config.set('basePath', './static/ace/');
@@ -147,6 +153,7 @@
     let commentsSection = $('#sidebar-comments')
     let sendMessageBx = $('#enter-message')
     let labPathInput = $('#lab-path-input')
+
 
     commentsSection.on('mouseover', function () {
       sendMessageBx.stop().delay(750).removeClass('hidden').fadeIn(750)
@@ -158,7 +165,6 @@
 
   export default {
     name: 'lab',
-    template: a => a(Lab),
     prop: {
       content: ''
     },
@@ -257,7 +263,6 @@
           }
         }
       },
-
         vm.user = firebase.auth().currentUser;
       if (vm.user) {
         vm.userName = this.user.displayName;
@@ -268,22 +273,17 @@
       }
     },
     mounted () {
-      this.initEditor()
       this.initEditorEvents()
       this.initWebRtc(this.userName, this.photo, this.email, this.userId)
       this.updateUserInfoForLab(this.userId, this.userName, this.photo, this.labName)
 
-//      this.subscribeToUsersChange(fbpaths().currentLabUsers(),'users', function (snapshot) {
-//          snapshot.forEach(function (childSnap) {
-//            addMessageToLabStream('is also here', childSnap.name, childSnap.photo, '', childSnap.userId, 'right', childSnap.sessionId)
-//          })
-//        })
+        this.subscribeToUsersChange(fbpaths().currentLabUsers())
 
       //todo maybe save in local storage the last problem within this lab that the user was in and use that here to
       //todo determine the default lab problem that firebase should sync with the editor.
 
       let probId = '0'
-
+      this.initEditor()
       this.syncEditorWithUsersLastCodeEntry(this.labName, this.userName, probId)
     },
     methods: {
@@ -326,17 +326,17 @@
           'border-radius': '6px'
         }, 400)
       },
-      subscribeToUsersChange: function (path, key, cb) {
+      subscribeToUsersChange: function (path) {
         let ref = fb.database().ref(path)
 
         ref.on('value', function (snapshot) {
           if (snapshot.key === key) {
-            cb(snapshot)
+
           }
         })
       },
       initEditorEvents: function () {
-        editor = editor ||  ace.edit("editor");
+        editor = ace.edit("editor");
 
         editor.getSession().on('change', function (e) {
         });
@@ -363,7 +363,7 @@
           'last-updated': new Date().toTimeString(),
           text: codeEntry,
         };
-        let codeEntryPath = fbpaths().codeEntryByLabAndProblemId(labName, userName, probId)
+        let codeEntryPath = fbpaths().getCodeEntryByLabAndProblemId(labName, userName, probId)
         // console.log('saving code :', fb.database().ref())
         fb.database().ref().child(codeEntryPath).update(codeToSubmit)
       },
@@ -563,10 +563,9 @@
         let user = {
           userName: userName || 'guest',
           userId: userId || '0',
-          photo: photo || '',
-          loginTime : new Date().toTimeString()
+          photo: photo || ''
         }
-        let usersPath = fbpaths().currentLabUsers(labName) + '/' + userName + '/'
+        let usersPath = fbpaths().currentLabUsers(labName)
         fb.database().ref(usersPath).update(user)
       },
       getTemplateForLanguage: function (langId) {
@@ -592,11 +591,11 @@
 
       },
       syncEditorWithUsersLastCodeEntry: function (labName, userName, probId) {
-        let ref = fb.database().ref(fbpaths().codeEntryByLabAndProblemId(labName, userName, probId))
+        let ref = fb.database().ref(fbpaths().getCodeEntryByLabAndProblemId(labName, userName, probId))
         ref.on('value', function (snapshot) {
           if (snapshot && snapshot.key && snapshot.key === probId) {
             snapshot.forEach(function (childSnapshot) {
-              if (childSnapshot && childSnapshot && childSnapshot.key === 'text') {
+              if (childSnapshot && childSnapshot.key && childSnapshot.key === 'text') {
                 let v = childSnapshot.val()
 
                 editor = editor || ace.edit('editor')
@@ -608,7 +607,7 @@
                 return true
               }
             });
-            // updateUserLabStream(message, type)
+            // updateUserLabStream(userId, message, type)
           }
         })
       },
@@ -641,8 +640,8 @@
   }
 
   function addMessageToLabStream(text, name, photo, email, uId, side, sessionId) {
-    let $messages, message;
-    if (!text || text.trim() === '' || ! name || name.trim() === '') {
+    var $messages, message;
+    if (text.trim() === '' || name.trim() === '') {
       return;
     }
 

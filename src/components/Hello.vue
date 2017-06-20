@@ -1,89 +1,156 @@
 <template>
   <div id="app">
-    <header class="main-header box">
 
-      <!-- Logo -->
-      <a href="#/" class="logo">
+    <!--<div id="main">-->
+      <header class="main-header box box-widget">
 
-        <span class="logo-sm"><b>Mootz</b>LAB</span>
-      </a>
+        <!-- Logo -->
+        <a href="index.html" class="logo">
 
-      <nav id="headNav" class="navbar navbar-static-top fixed sidebar-collapse" role="navigation">
+          <span class="logo-sm"><b>Mootz</b>LAB</span>
+        </a>
 
-        <ul v-show="isLogin()" id="editor-controls" class="nav navbar-nav pull-left">
+        <nav id="headNav" class="navbar navbar-static-top fixed sidebar-collapse" role="navigation">
 
-          <li class="pull-left">
-            <a>
-              <strong> {{$route.params.id}}</strong>
-            </a>
-          </li>
+          <ul v-show="!isLogin()" id="editor-controls" class="nav navbar-nav pull-left">
+
+            <li class="pull-left">
+              <a>
+               <strong> {{$route.params.id}}</strong>
+              </a>
+            </li>
 
 
-          <!--stop build-->
-          <li v-show="isLabPage()" data-toggle="tooltip" data-placement="bottom" title="stop" class="pull-left">
-            <a> <img id="code-editor-controls-stop" width="15px" height="15px" src="/static/img/stop.png"
-                     alt="build"/></a>
-          </li>
+            <!--stop build-->
+            <li v-show="isLabPage()" data-toggle="tooltip" data-placement="bottom" title="stop" class="pull-left">
+              <a> <img id="code-editor-controls-stop" width="15px" height="15px" src="/static/img/stop.png"
+                       alt="build"/></a>
+            </li>
 
-          <!--build code-->
-          <li v-show="isLabPage()" class="pull-left" v-on:click="saveCode('', '', '0')"
-              data-toggle=" tooltip
+            <!--build code-->
+            <li v-show="isLabPage()" class="pull-left" v-on:click="saveCode('', '', '0')"
+                data-toggle=" tooltip
                 " data-placement="bottom" title="build">
-            <a> <img id="code-editor-controls-play" width="15px" height="15px"
-                     src="/static/img/play-button%20(1).png" alt="build"
-            /></a>
+              <a> <img id="code-editor-controls-play" width="15px" height="15px"
+                       src="/static/img/play-button%20(1).png" alt="build"
+              /></a>
 
-          </li>
+            </li>
 
-        </ul>
+          </ul>
 
-        <ul v-show="!isLogin()"  class="nav navbar-nav pull-right">
-
-
-          <!--<li v-show="isLabPage()" class="pull-left">-->
-          <!--<a>share &nbsp <img src="/static/img/share.png"/></a>-->
-
-          <!--</li>-->
-
-          <li v-show="!isLabPage() && !isLogin()" v-on:click="logOut()" class="pull-right">
-            <a class="pull-right">log out</a>
-          </li>
-
-          <li v-show="isLabPage()" v-on:click="toggleSettingsNav" data-toggle="control-sidebar"
-              class="e-tab pull-right" data-placement="bottom" title="settings">
-            <a>
-              <small>settings </small>
-              &nbsp<img src="/static/img/gear.png" class="right-btn"></a>
-          </li>
+          <ul v-show="!isLogin()"  class="nav navbar-nav pull-right">
 
 
-          <!--<li v-show="isLabPage()" v-on:click="toggleCommentsNav">-->
-          <!--<a data-toggle="tooltip" data-placement="bottom" title="comments" class="pull-right">-->
+            <!--<li v-show="isLabPage()" class="pull-left">-->
+              <!--<a>share &nbsp <img src="/static/img/share.png"/></a>-->
 
-          <!--<small>users</small>-->
-          <!--&nbsp<img src="/static/img/users.png" alt="about"/>-->
-          <!--</a>-->
-          <!--</li>-->
+            <!--</li>-->
 
-          <!--<li v-show="isLabPage()" v-on:click="toggleAssignmentNav" data-toggle="tooltip" data-placement="bottom"-->
-          <!--title="labs"-->
-          <!--class="e-tab chalk-tab pull-right active">-->
-          <!--<a>-->
-          <!--<small>labs </small>-->
-          <!--&nbsp-->
-          <!--<img class="text-light-blue" id="c-board-img" src="/static/img/briefcase.png"-->
-          <!--alt="assignments"/>-->
-          <!--</a>-->
-          <!--</li>-->
+            <li v-show="!isLabPage() && !isLogin()" v-on:click="logOut()" class="pull-right">
+              <a class="pull-right">log out</a>
+            </li>
 
-        </ul>
+            <li v-show="isLabPage()" v-on:click="toggleSettingsNav" data-toggle="control-sidebar"
+                class="e-tab pull-right" data-placement="bottom" title="settings">
+              <a>
+                <small>settings </small>
+                &nbsp<img src="/static/img/gear.png" class="right-btn"></a>
+            </li>
+
+
+            <!--<li v-show="isLabPage()" v-on:click="toggleCommentsNav">-->
+              <!--<a data-toggle="tooltip" data-placement="bottom" title="comments" class="pull-right">-->
+
+                <!--<small>users</small>-->
+                <!--&nbsp<img src="/static/img/users.png" alt="about"/>-->
+              <!--</a>-->
+            <!--</li>-->
+
+            <!--<li v-show="isLabPage()" v-on:click="toggleAssignmentNav" data-toggle="tooltip" data-placement="bottom"-->
+                <!--title="labs"-->
+                <!--class="e-tab chalk-tab pull-right active">-->
+              <!--<a>-->
+                <!--<small>labs </small>-->
+                <!--&nbsp-->
+                <!--<img class="text-light-blue" id="c-board-img" src="/static/img/briefcase.png"-->
+                     <!--alt="assignments"/>-->
+              <!--</a>-->
+            <!--</li>-->
+
+          </ul>
+          <!--</div>-->
+        </nav>
+
+      </header>
+
+      <div v-show="isLogin()" id="sign-in-div" class="container">
+
+        <div id="firebaseui-auth-container"></div>
+
+
+        <!--<script id="metamorph-1-start" type="text/x-placeholder"></script>-->
+        <!--<script id="metamorph-21-start" type="text/x-placeholder"></script>-->
+
+        <!--<div class="container text-center">-->
+        <!--<form class="form-signin" data-ember-action="2">-->
+        <!--<h2 class="form-signin-heading">Sign in</h2>-->
+
+        <!--<small class="text-muted">Connect [your service] with your favorite social network</small>-->
+        <!--<br><br>-->
+
+
+        <!--<p>-->
+        <!--<a class="btn btn-primary social-login-btn social-facebook" href="/auth/facebook"><i class="fa fa-facebook"></i></a>-->
+        <!--<a class="btn btn-primary social-login-btn social-twitter" href="/auth/twitter"><i class="fa fa-twitter"></i></a>-->
+        <!--</p>-->
+        <!--<p>-->
+        <!--<a class="btn btn-primary social-login-btn social-linkedin" href="/auth/linkedin"><i class="fa fa-linkedin"></i></a>-->
+        <!--<a class="btn btn-primary social-login-btn social-google" href="/auth/google"><i class="fa fa-google-plus"></i></a>-->
+        <!--</p>-->
+
+        <!--<div class="btn-group social-login-more">-->
+        <!--<button type="button" class="btn btn-flat dropdown-toggle btn-block" data-toggle="dropdown">-->
+        <!--More...-->
+        <!--</button>-->
+        <!--<ul class="dropdown-menu text-left " role="menu">-->
+        <!--<li><a href="#"><i class="fa fa-tumblr-sign"></i>   Tumblr</a></li>-->
+        <!--<li><a href="#"><i class="fa fa-github-alt"></i>   Github</a></li>-->
+        <!--<li><a href="#"><i class="fa fa-dropbox"></i>   Dropbox</a></li>-->
+        <!--<li><a href="/auth/amazon"><span class="zocial-amazon"></span>   Amazon</a></li>-->
+        <!--<li><a href="#"><span class="zocial-bitbucket"></span>   Bitbucket</a></li>-->
+        <!--<li><a href="#"><span class="zocial-evernote"></span>   Evernote</a></li>-->
+        <!--<li><a href="#"><span class="zocial-meetup"></span>   Meetup</a></li>-->
+        <!--<li><a href="#"><i class="fa fa-windows"></i>   Windows Live</a></li>-->
+        <!--<li><a href="#"><i class="fa fa-weibo"></i>   Weibo</a></li>-->
+        <!--<li><a href="#"><i class="fa fa-foursquare"></i>   Foursquare</a></li>-->
+        <!--<li><a href="#"><i class="fa fa-stackexchange"></i>   Stack Exchange</a></li>-->
+        <!--<li><a href="#"><i class="fa fa-trello"></i>   Trello</a></li>-->
+        <!--<li><a href="#"><span class="zocial-wordpress"></span>   Wordpress</a></li>-->
+        <!--</ul>-->
         <!--</div>-->
-      </nav>
+        <!--<br><br>-->
 
-    </header>
-      <div v-show="isLogin()" id="firebaseui-auth-container">
+
+        <!--<small class="text-muted">Or sign in with [your service]</small>-->
+        <!--<br><br>-->
+
+        <!--<input id="username-tb" class="ember-view ember-text-field form-control login-input" placeholder="Email Address" type="text">-->
+        <!--<input id="pw-tb" class="ember-view ember-text-field form-control login-input-pass" placeholder="Password" type="password">-->
+
+        <!--<script id="metamorph-22-start" type="text/x-placeholder"></script><script id="metamorph-22-end" type="text/x-placeholder"></script>-->
+
+        <!--<button v-on:click="navigateToLab('lab')" class="btn btn-lg btn-flat btn-block btn-center" type="submit" data-bindattr-3="3">Sign in</button>-->
+        <!--<br>-->
+        <!--<small class="create-account text-muted">Dont have a [your service] or social network account? <button id="ember363" class="ember-view btn btn-sm btn-default"> Sign Up </button> </small>-->
+        <!--</form>-->
+        <!--</div>-->
       </div>
+
+    <!--</div>-->
+
     <router-view>
+
     </router-view>
 
     <!-- Control Sidebar -->
@@ -288,8 +355,8 @@
 
 <script>
 
-  import Home from 'src/Home.vue'
-  import Auth from './Auth.vue'
+  //import App from 'src/App.vue'
+  //import Hello from './Hello.vue'
   import $ from 'jquery'
   import Lab from "./Lab.vue";
   import firebase from 'firebase';
@@ -298,11 +365,12 @@
   import fbpaths from 'src/fbPaths'
 
   export default {
-    name: 'auth',
-  template: a => a(Auth),
- // render: r => r(Auth),
+    name: 'app',
+//  template: a => a(Hello),
+//  render: r => r(Hello),
     data () {
       return {
+
         msg: 'Hello'
       }
     },
@@ -319,6 +387,7 @@
         return unTb.val()
       },
       isLogin: function () {
+        console.log('app', 'entering lab: ' + this.$route.name)
         return this.$route.name === 'auth'
       },
       isLabPage: function () {
@@ -415,16 +484,11 @@
 
 <style scoped>
 
-  #firebaseui-auth-container{
-    position: relative;
-    margin-top: 50px;
-  }
-
   html {
     color: #212733;
   }
 
-  #auth {
+  #main {
     background-color: #212733;
     position: absolute;
     width: 100%;
