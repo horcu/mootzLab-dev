@@ -7,33 +7,33 @@
         <div class="code-area">
           <div id="code-area-header-box">
 
-              <div id="code-tab">
-                <div id="editor">
-                </div>
+            <div id="code-tab">
+              <div id="editor">
+              </div>
 
-                <div id="comments-tab" class="hidden">
-                  <div id="comments-tab-top-menu">
-                    <ul class="list-group">
+              <div id="comments-tab" class="hidden">
+                <div id="comments-tab-top-menu">
+                  <ul class="list-group">
 
-                      <li class="list-group-item">
-                        <a>
-                          <img id="make-code-comment" width="18px" height="18px" src="/static/img/speech-bubble.png"/>
-                        </a>
-                      </li>
-                      <li v-on:click="makeSnippetFromSelection()" class="list-group-item">
-                        <a>
-                          <img id="save-code-snippet" width="18px" height="18px" src="/static/img/push-pin.png"/>
-                        </a>
-                      </li>
-                      <li class="list-group-item">
-                        <a>
-                          <img id="like-code-section" width="15px" height="15px" src="/static/img/heart.png"/>
-                        </a>
-                      </li>
-                    </ul>
-                  </div>
+                    <li class="list-group-item">
+                      <a>
+                        <img id="make-code-comment" width="18px" height="18px" src="/static/img/speech-bubble.png"/>
+                      </a>
+                    </li>
+                    <li v-on:click="makeSnippetFromSelection()" class="list-group-item">
+                      <a>
+                        <img id="save-code-snippet" width="18px" height="18px" src="/static/img/push-pin.png"/>
+                      </a>
+                    </li>
+                    <li class="list-group-item">
+                      <a>
+                        <img id="like-code-section" width="15px" height="15px" src="/static/img/heart.png"/>
+                      </a>
+                    </li>
+                  </ul>
                 </div>
               </div>
+            </div>
           </div>
         </div>
       </div>
@@ -271,6 +271,7 @@
           }
         }
       },
+
         vm.user = firebase.auth().currentUser;
       if (vm.user) {
         vm.userName = this.user.displayName;
@@ -283,11 +284,17 @@
     mounted () {
       this.initEditorEvents()
       this.initWebRtc(this.userName, this.photo, this.email, this.userId)
-      this.updateUserInfoForLab(this.userId, this.userName, this.labName)
+      this.updateUserInfoForLab(this.userId, this.userName, this.photo, this.labName)
 
-    //  this.subscribeToChange(fbpaths().currentLabUsers(), )
+        this.subscribeToUsersChange(fbpaths().currentLabUsers(),'users', function (snapshot) {
+          snapshot.forEach(function (childSnap) {
+            addMessageToLabStream('is also here', childSnap.name, childSnap.photo, '', childSnap.userId, 'right', childSnap.sessionId)
+          })
+        })
+
       //todo maybe save in local storage the last problem within this lab that the user was in and use that here to
       //todo determine the default lab problem that firebase should sync with the editor.
+
       let probId = '0'
       this.initEditor()
       this.syncEditorWithUsersLastCodeEntry(this.labName, this.userName, probId)
@@ -332,15 +339,15 @@
           'border-radius': '6px'
         }, 400)
       },
-      subscribeToChange: function (path, key, cb) {
-        let friendsRef = fb.database().ref(path)
+      subscribeToUsersChange: function (path, key, cb) {
+        let ref = fb.database().ref(path)
 
-        friendsRef.on('value', function (snapshot) {
-            if (snapshot.key === key) {
-              cb(key)
-            }
-          })
-          },
+        ref.on('value', function (snapshot) {
+          if (snapshot.key === key) {
+            cb(snapshot)
+          }
+        })
+      },
       initEditorEvents: function () {
         editor = ace.edit("editor");
 
@@ -369,7 +376,7 @@
           'last-updated': new Date().toTimeString(),
           text: codeEntry,
         };
-        let codeEntryPath = fbpaths().getCodeEntryByLabAndProblemId(labName, userName, probId)
+        let codeEntryPath = fbpaths().codeEntryByLabAndProblemId(labName, userName, probId)
         // console.log('saving code :', fb.database().ref())
         fb.database().ref().child(codeEntryPath).update(codeToSubmit)
       },
@@ -448,21 +455,30 @@
 
           console.log('joined room')
           console.log('adding joined message to stream')
-          addMessageToLabStream('joined :)', nick, photo, email, userId, 'left', sessionId)
+          addMessageToLabStream('is in the lab', nick, photo, email, userId, 'left', sessionId)
 
           if (isCreator !== undefined && isCreator) {
             this.addSessionIdToDb(sessionId)
           }
         })
 
+        webrtc.on('createdPeer', function (peer) {
+            console.log('peer connected')
+
+          //todo get the users information from the users object associated with this
+          //todo lab then use it to fill out the signature of the below method
+
+         // addMessageToLabStream('is in the lab', peer.nick, photo, email, userId, 'left', sessionId)
+        })
+
         webrtc.on('readyToCall', function () {
-          addMessageToLabStream('joined :)', nick, photo, email, userId, 'left', sessionId)
+          addMessageToLabStream('is in the lab', nick, photo, email, userId, 'left', sessionId)
         });
 
         // a peer video has been added
         webrtc.on('videoAdded', function (video, peer) {
 
-          addMessageToLabStream('joined :)', peer.nick, photo, email, userId, 'right', sessionId)
+          addMessageToLabStream('is in the lab', peer.nick, photo, email, userId, 'right', sessionId)
 
 //          console.log('video added', peer);
 //          console.log('video added', peer.nick);
@@ -556,12 +572,14 @@
         let labInfoPath = fbpaths().currentLabs()
         fb.database().ref(labInfoPath).update(info)
       },
-      updateUserInfoForLab: function (userId, userName, labName) {
+      updateUserInfoForLab: function (userId, userName, photo, labName) {
         let user = {
-          userName: userName,
-          userId: userId
+          userName: userName || 'guest',
+          userId: userId || '0',
+          photo: photo || '',
+          loginTime : new Date().toTimeString()
         }
-        let usersPath = fbpaths().currentLabUsers(labName)
+        let usersPath = fbpaths().currentLabUsers(labName) + '/' + userName + '/'
         fb.database().ref(usersPath).update(user)
       },
       getTemplateForLanguage: function (langId) {
@@ -571,7 +589,7 @@
 
       },
       initEditor: function () {
-        let ed =  $('#editor')
+        let ed = $('#editor')
         let hgt = calCulateWindowHeight()
         ed.css('height', hgt - 100)
         ed.css({'font-size': '13px'})
@@ -587,11 +605,11 @@
 
       },
       syncEditorWithUsersLastCodeEntry: function (labName, userName, probId) {
-        let ref = fb.database().ref(fbpaths().getCodeEntryByLabAndProblemId(labName, userName, probId))
+        let ref = fb.database().ref(fbpaths().codeEntryByLabAndProblemId(labName, userName, probId))
         ref.on('value', function (snapshot) {
-          if (snapshot.key === probId) {
+          if (snapshot && snapshot.key && snapshot.key === probId) {
             snapshot.forEach(function (childSnapshot) {
-              if (childSnapshot.key === 'text') {
+              if (childSnapshot && childSnapshot && childSnapshot.key === 'text') {
                 let v = childSnapshot.val()
 
                 editor = editor || ace.edit('editor')
@@ -603,7 +621,7 @@
                 return true
               }
             });
-           // updateUserLabStream(message, type)
+            // updateUserLabStream(message, type)
           }
         })
       },
@@ -631,11 +649,11 @@
     components: {}
   }
 
-  function calCulateWindowHeight () {
+  function calCulateWindowHeight() {
     return $(window).height()
   }
 
-  function addMessageToLabStream (text, name, photo, email, uId, side, sessionId) {
+  function addMessageToLabStream(text, name, photo, email, uId, side, sessionId) {
     var $messages, message;
     if (text.trim() === '' || name.trim() === '') {
       return;
@@ -680,7 +698,7 @@
   }
 
   //todo  type determines size, color, animation etc...
-  function updateUserLabStream (message, type) {
+  function updateUserLabStream(message, type) {
 
   }
 
@@ -703,19 +721,19 @@
     overflow-x: hidden; /* Disable horizontal scroll */
     transition: 0.5s; /* 0.5 second transition effect to slide in the sidenav */
   }
-  .control-sidebar-settings{
+
+  .control-sidebar-settings {
     z-index: 3;
     background-color: whitesmoke;
   }
 
-  .control-sidebar-comments{
+  .control-sidebar-comments {
     width: 40%; /* 0 width - change this with JavaScript */
     z-index: 1;
     background-color: #212733;
   }
 
-
-  #lab{
+  #lab {
     margin-top: 0px;
   }
 
@@ -805,11 +823,11 @@
     position: relative;
     background-color: #212733;
   }
-  #code-area-header-box  {
-    background: transparent;
-    height:auto;
-  }
 
+  #code-area-header-box {
+    background: transparent;
+    height: auto;
+  }
 
   .code-tab {
     background-color: whitesmoke;

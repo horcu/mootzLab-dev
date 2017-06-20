@@ -7,7 +7,7 @@
               <span id="lab-prefix" class="pull-left">
                   <span class="pull-left text-white">lab/</span>
                 <input class="pull-left" id="lab-path-input" type="text" placeholder="lab name" value=""/>
-                <img id="lg-go" height="128" width="110" class="btn btn-flat pull-right" v-on:click="navigateToLab('lab')"src="/static/img/next_lab.png" />
+                <img id="lg-go" height="128" width="110" class="btn btn-flat pull-right" v-on:click="preNavigateLabCheck()"src="/static/img/next_lab.png" />
               </span>
             </div>
 
@@ -43,18 +43,82 @@
 
   export default {
     name: 'app',
-    data() {
+    data: function() {
       return {
         labSessions:{},
+        user: {},
         userName:'',
         email:'',
         photo:'',
-        uId: ''
+        userId: '',
+        labName:''
       }
     },
     methods: {
       isLoggedIn: function () {
         return true
+      },
+      preNavigateLabCheck: function(){
+
+          let vm = this
+          let labName = this.getLabId()
+
+        if(!labName || labName.trim() === ''){
+              alert('enter a lab name')
+        }
+        if(!this.userName){
+          alert('no user name')
+          return false
+        }
+
+        if(!this.userId){
+          alert('no user id')
+          return false
+        }
+
+        let ref = fb.database().ref(fbpaths().labs())
+        ref.once('value', function (snapshot) {
+          if(!snapshot.val()){
+              //todo new lab so set user as the owner then navigate there
+              vm.setUserAsLabOwner(userId, userName)
+              vm.navigate('lab')
+          }
+          else {
+              //todo existing lab so check if user can attend before navigating
+            vm.checkLabUsersInvitationList(labName, userId, vm.navigateToLab)
+          }
+        })
+      },
+      setUserAsLabOwner : function () {
+        let ref = fb.database().ref(fbpaths().currentLabInfo(labName))
+        let info = {
+            owner: this.userId,
+            ownerName: this.userName,
+        }
+        ref.update(info)
+      },
+      checkLabUsersInvitationList: function (labName, userId, cb) {
+        let ref = fb.database().ref(fbpaths().currentLabsInvitees(labName))
+        ref.once('value', function (snapshot) {
+            if(!snapshot.val()){
+                //todo nobody invited yet... pass in a failed callback which could do something like alert the user and give them more options
+            }else{
+                snapshot.forEach(function (childSnapshot) {
+                  if(childSnapshot.val() === userId){
+                      cb(labName)
+                    return
+                  }
+                })
+            }
+            //todo not invited so let the user know
+          console.log('user is not invited')
+        })
+      },
+      navigate: function (where) {
+
+          if(where === 'lab'){
+              this.navigateToLab(labName)
+          }
       },
       navigateToLab: function (labName) {
 
@@ -88,12 +152,13 @@
       }
     },
   created() {
-    this.user = firebase.auth().currentUser;
-    if (this.user) {
-      this.userName = this.user.displayName;
-      this.email = this.user.email;
-      this.photo = this.user.photoURL;
-      this.uId = this.user.uid;
+    let vm = this
+    vm.user = firebase.auth().currentUser;
+    if (vm.user) {
+      vm.userName = this.user.displayName;
+      vm.email = this.user.email;
+      vm.photo = this.user.photoURL;
+      vm.userId = this.user.uid;
     }
   },
     mounted(){
@@ -109,8 +174,8 @@
 <style>
   @import '/static/bootstrap/css/bootstrap.min.css';
   @import '/static/bootstrap/css/bootstrap-theme.css';
-  @import '/static/css/skins/_all-skins.css';
-  @import '/static/css/skins/skin-green-light.css';
+  /*@import '/static/css/skins/_all-skins.css';*/
+  /*@import '/static/css/skins/skin-green-light.css';*/
   @import '/static/css/peez.css';
   @import "/static/css/firebaseui.css";
 

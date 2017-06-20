@@ -27,7 +27,7 @@
             </li>
 
             <!--build code-->
-            <li v-show="isLabPage()" class="pull-left" v-on:click="saveCodeToFirebase('', '', '0')"
+            <li v-show="isLabPage()" class="pull-left" v-on:click="saveCode('', '', '0')"
                 data-toggle=" tooltip
                 " data-placement="bottom" title="build">
               <a> <img id="code-editor-controls-play" width="15px" height="15px"
@@ -35,11 +35,6 @@
               /></a>
 
             </li>
-
-
-
-
-
 
           </ul>
 
@@ -380,6 +375,9 @@
     },
 
     methods: {
+        saveCode(labName, userName, probId){
+            Lab.methods.saveCodeToFirebase(labName, userName, probId)
+        },
       logOut() {
         firebase.auth().signOut();
       },
