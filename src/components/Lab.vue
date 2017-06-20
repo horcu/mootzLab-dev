@@ -81,17 +81,12 @@
                 </button>
               </div>
             </div>
-
           </div>
 
           <div id="remote-vids">
-
           </div>
-
         </div>
-
       </aside>
-
       <!-- comments Control Sidebar -->
       <aside id="sidebar-comments" class="control-sidebar-comments">
         <div class="chat_window">
@@ -135,7 +130,7 @@
 
 <script>
   import Vue from 'Vue'
-  import App from '../App'
+  import App from '../Home'
   import firebase from 'firebase'
   import ace from 'jenkins-ace-editor'
   import $ from 'jquery'
@@ -144,14 +139,6 @@
   //import 'slick-carousel'
   import fbpaths from 'src/fbPaths'
   var webrtc
-
-  //  require('../../static/ace/mode-csharp')
-  //  require('../../static/ace/mode-java')
-  //  require('../../static/ace/mode-javascript')
-  //  require('../../static/ace/mode-python')
-  //  require('../../static/ace/mode-golang')
-
-  let roomName = '0'
   let editor
 
   ace.config.set('basePath', './static/ace/');
@@ -160,8 +147,6 @@
     let commentsSection = $('#sidebar-comments')
     let sendMessageBx = $('#enter-message')
     let labPathInput = $('#lab-path-input')
-
-    //watchInput(labPathInput, handleLabRoute)
 
     commentsSection.on('mouseover', function () {
       sendMessageBx.stop().delay(750).removeClass('hidden').fadeIn(750)
@@ -173,6 +158,7 @@
 
   export default {
     name: 'lab',
+    template: a => a(Lab),
     prop: {
       content: ''
     },
@@ -282,21 +268,22 @@
       }
     },
     mounted () {
+      this.initEditor()
       this.initEditorEvents()
       this.initWebRtc(this.userName, this.photo, this.email, this.userId)
       this.updateUserInfoForLab(this.userId, this.userName, this.photo, this.labName)
 
-        this.subscribeToUsersChange(fbpaths().currentLabUsers(),'users', function (snapshot) {
-          snapshot.forEach(function (childSnap) {
-            addMessageToLabStream('is also here', childSnap.name, childSnap.photo, '', childSnap.userId, 'right', childSnap.sessionId)
-          })
-        })
+//      this.subscribeToUsersChange(fbpaths().currentLabUsers(),'users', function (snapshot) {
+//          snapshot.forEach(function (childSnap) {
+//            addMessageToLabStream('is also here', childSnap.name, childSnap.photo, '', childSnap.userId, 'right', childSnap.sessionId)
+//          })
+//        })
 
       //todo maybe save in local storage the last problem within this lab that the user was in and use that here to
       //todo determine the default lab problem that firebase should sync with the editor.
 
       let probId = '0'
-      this.initEditor()
+
       this.syncEditorWithUsersLastCodeEntry(this.labName, this.userName, probId)
     },
     methods: {
@@ -349,7 +336,7 @@
         })
       },
       initEditorEvents: function () {
-        editor = ace.edit("editor");
+        editor = editor ||  ace.edit("editor");
 
         editor.getSession().on('change', function (e) {
         });
@@ -654,8 +641,8 @@
   }
 
   function addMessageToLabStream(text, name, photo, email, uId, side, sessionId) {
-    var $messages, message;
-    if (text.trim() === '' || name.trim() === '') {
+    let $messages, message;
+    if (!text || text.trim() === '' || ! name || name.trim() === '') {
       return;
     }
 

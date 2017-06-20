@@ -1,5 +1,5 @@
 <template>
-    <div id="main" v-show="isLoggedIn()">
+    <div id="app" v-show="!isLogin()">
 
       <div id="labs-list">
 
@@ -16,6 +16,8 @@
         <!--</ul>-->
       </div>
 
+      <lab v-show="isLabPage()"></lab>
+
       <aside class="hidden">
         <div id="users-list" class="col-lg-4">
           <a href="#" class="list-group-item">
@@ -31,7 +33,6 @@
         </div>
       </aside>
     </div>
-
 </template>
 <script>
 
@@ -40,8 +41,11 @@
   import fb from 'src/fb-config'
   import firebaseui from 'firebaseui'
   import fbpaths from 'src/fbPaths'
+  import Home from 'src/Home.vue'
+  import Lab from './components/Lab'
 
   export default {
+    components: {Lab},
     name: 'app',
     data: function() {
       return {
@@ -54,9 +58,30 @@
         labName:''
       }
     },
+    template: a => a(Home),
+    created() {
+      let vm = this
+      vm.user = firebase.auth().currentUser;
+      if (vm.user) {
+        vm.userName = this.user.displayName;
+        vm.email = this.user.email;
+        vm.photo = this.user.photoURL;
+        vm.userId = this.user.uid;
+      }
+    },
+    mounted(){
+      $("#lab-path-input").keydown(function(event){
+        if(event.keyCode === 13){
+          navigateToLab('lab')
+        }
+      });
+    },
     methods: {
-      isLoggedIn: function () {
-        return true
+      isLabPage: function () {
+        return this.$route.name === 'lab'
+      },
+      isLogin: function () {
+        return this.$route.name === 'auth'
       },
       preNavigateLabCheck: function(){
 
@@ -66,26 +91,38 @@
         if(!labName || labName.trim() === ''){
               alert('enter a lab name')
         }
-        if(!this.userName){
+        if(!vm.userName){
           alert('no user name')
           return false
         }
 
-        if(!this.userId){
+        if(!vm.userId){
           alert('no user id')
           return false
         }
 
         let ref = fb.database().ref(fbpaths().labs())
         ref.once('value', function (snapshot) {
-          if(!snapshot.val()){
-              //todo new lab so set user as the owner then navigate there
-              vm.setUserAsLabOwner(userId, userName)
+          if(snapshot.key === 'labs'){
+            if(snapshot.val()){
+              //existing lab so check if user can attend before navigating
+              snapshot.forEach(function (child) {
+                if(child.key === labName){
+                  //that lab was found.. check if user is allowed in
+                  vm.checkLabUsersInvitationList(labName, vm.userId, vm.navigateToLab)
+                }else{
+                  //no lab found with this name so its new
+                  console.log(labName + ' was not found')
+                  vm.setUserAsLabOwner(vm.userId, vm.userName)
+                  vm.navigate('lab')
+                }
+              })
+            }else {
+              //no lab found with this name so its new
+              vm.setUserAsLabOwner(vm.userId, vm.userName)
               vm.navigate('lab')
-          }
-          else {
-              //todo existing lab so check if user can attend before navigating
-            vm.checkLabUsersInvitationList(labName, userId, vm.navigateToLab)
+            }
+
           }
         })
       },
@@ -101,17 +138,26 @@
         let ref = fb.database().ref(fbpaths().currentLabsInvitees(labName))
         ref.once('value', function (snapshot) {
             if(!snapshot.val()){
-                //todo nobody invited yet... pass in a failed callback which could do something like alert the user and give them more options
+              //todo not invited so let the user know
+              console.log('no one has been invited')
             }else{
+              let found = false
                 snapshot.forEach(function (childSnapshot) {
-                  if(childSnapshot.val() === userId){
-                      cb(labName)
-                    return
+                  let user = childSnapshot.val()
+                  if(user.userId === userId){
+                    found = true
                   }
                 })
+              if(found){
+                cb('lab')
+                //todo not invited so let the user know
+                console.log('user found and was invited')
+              }else {
+                //todo not invited so let the user know
+                console.log('user not found on invite list')
+              }
             }
-            //todo not invited so let the user know
-          console.log('user is not invited')
+
         })
       },
       navigate: function (where) {
@@ -132,9 +178,9 @@
 
         this.$router.push(rObj,
           function () {
-            console.log('navigated to ' + labName + '/' + id)
+            console.log('navigated to '  + id)
           }, function () {
-            console.log("couldn't navigated to " + labName + '/' + id)
+            console.log("couldn't navigated to " + id)
           })
       },
       getLabId : function () {
@@ -150,23 +196,6 @@
         readyCallback: function () {},
         asObject: false
       }
-    },
-  created() {
-    let vm = this
-    vm.user = firebase.auth().currentUser;
-    if (vm.user) {
-      vm.userName = this.user.displayName;
-      vm.email = this.user.email;
-      vm.photo = this.user.photoURL;
-      vm.userId = this.user.uid;
-    }
-  },
-    mounted(){
-      $("#lab-path-input").keydown(function(event){
-        if(event.keyCode === 13){
-          navigateToLab('lab')
-        }
-      });
     }
   }
 
@@ -186,7 +215,7 @@
     background-color: #212733;
   }
 
-  #main{
+  #app{
     background-color: #212733;
     position: absolute;
     width : 100%;

@@ -8,8 +8,7 @@ import Vue from 'vue'
 
 import VueFire from 'vuefire'
 
-//import the App component
-import App from './App'
+
 //import the vue router
 import VueRouter from 'vue-router'
 //tell vue to use the router
@@ -18,9 +17,10 @@ Vue.use(VueFire)
 
 import fb from 'src/fb-config'
 
-/* eslint-disable no-new */
+//import the App component
+import Home from './Home'
 //import the hello component
-import Hello from './components/Hello'
+import Auth from './components/Auth'
 //import the about component
 import About from './components/About'
 //import the ;lab component
@@ -35,9 +35,9 @@ require('bootstrap')
 //define your routes
 const routes = [
   //route for the home route of the webpage
-  {name: 'home' ,path: '/', component: App},
+  {name: 'home' ,path: '/', component: Home},
   //route for the home route of the webpage
-  {name: 'auth' ,path: '/auth', component: Hello},
+  {name: 'auth' ,path: '/auth', component: Auth},
   //route for the about route of the webpage
   {path: '/about', component: About},
   //route for the labs
@@ -59,9 +59,9 @@ new Vue({
   //define the selector for the root component
   el: '#app',
   //pass the template to the root component
-  render: a => a(Hello),
+  render: a => a(Auth),
   //declare components that the root component can access
-  components: {Hello, Lab,App, jQuery},
+  components: {Auth, Lab, Home, jQuery},
   //pass in the router to the vue instance
   router,
   created() {
