@@ -377,7 +377,7 @@
 
     methods: {
         saveCode(labName, userName, probId){
-            Lab.methods.saveCodeToFirebase(labName, userName, probId)
+            Lab.methods.saveCodeToFirebase()
         },
       logOut() {
         firebase.auth().signOut();

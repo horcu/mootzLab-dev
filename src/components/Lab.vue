@@ -152,7 +152,7 @@
   $(function () {
     let commentsSection = $('#sidebar-comments')
     let sendMessageBx = $('#enter-message')
-    let labPathInput = $('#lab-path-input')
+
 
 
     commentsSection.on('mouseover', function () {
@@ -171,6 +171,7 @@
     data: function () {
       return {
         labName: '',
+        labId: '',
         photo: '',
         userId: '',
         userName: fb.auth().currentUser.displayName,
@@ -191,7 +192,7 @@
       vm.firebase = function () {
         return {
           currentLab: {
-            source: fb.database().ref(fbpaths().labs() + vm.labName),
+            source: fb.database().ref(fbpaths().labs() + vm.labId),
             cancelCallback: function () {
             },
             readyCallback: function () {
@@ -199,7 +200,7 @@
             asObject: true
           },
           currentLabUsers: {
-            source: fb.database().ref(fbpaths() + vm.labName + '/users'),
+            source: fb.database().ref(fbpaths() + vm.labId + '/users'),
             cancelCallback: function () {
             },
             readyCallback: function () {
@@ -270,21 +271,23 @@
         vm.photo = this.user.photoURL;
         vm.userId = this.user.uid;
         vm.labName = this.$route.params.id
+        vm.labId = this.$route.params.labKey
+        vm.probId = 0
       }
     },
     mounted () {
+
+      this.initEditor()
       this.initEditorEvents()
       this.initWebRtc(this.userName, this.photo, this.email, this.userId)
-      this.updateUserInfoForLab(this.userId, this.userName, this.photo, this.labName)
+      this.updateUserInfoForLab(this.userId, this.userName, this.photo, this.labName, this.labId)
 
-        this.subscribeToUsersChange(fbpaths().currentLabUsers())
-
-      //todo maybe save in local storage the last problem within this lab that the user was in and use that here to
-      //todo determine the default lab problem that firebase should sync with the editor.
+      this.subscribeToUsersChange(fbpaths().currentLabUsers())
 
       let probId = '0'
-      this.initEditor()
-      this.syncEditorWithUsersLastCodeEntry(this.labName, this.userName, probId)
+      this.syncEditorWithUsersLastCodeEntry()
+
+
     },
     methods: {
 
@@ -347,15 +350,9 @@
         editor.getSession().selection.on('changeCursor', function (e) {
         });
       },
-      saveCodeToFirebase: function (labName, userName, probId) {
+      saveCodeToFirebase: function () {
 
         let vm = this
-        if (labName === '') {
-          labName = vm.labName
-        }
-        if (userName === '') {
-          userName = vm.userName
-        }
         //_say('saveCodeToFirebase', editor)
         let codeEntry = editor.getSession().getValue()
         let codeToSubmit = {
@@ -450,12 +447,12 @@
         })
 
         webrtc.on('createdPeer', function (peer) {
-            console.log('peer connected')
+          console.log('peer connected')
 
           //todo get the users information from the users object associated with this
           //todo lab then use it to fill out the signature of the below method
 
-         // addMessageToLabStream('is in the lab', peer.nick, photo, email, userId, 'left', sessionId)
+          // addMessageToLabStream('is in the lab', peer.nick, photo, email, userId, 'left', sessionId)
         })
 
         webrtc.on('readyToCall', function () {
@@ -559,13 +556,13 @@
         let labInfoPath = fbpaths().currentLabs()
         fb.database().ref(labInfoPath).update(info)
       },
-      updateUserInfoForLab: function (userId, userName, photo, labName) {
+      updateUserInfoForLab: function () {
         let user = {
-          userName: userName || 'guest',
-          userId: userId || '0',
-          photo: photo || ''
+          userName: this.userName || 'guest',
+          userId: this.userId || '0',
+          photo: this.photo || ''
         }
-        let usersPath = fbpaths().currentLabUsers(labName)
+        let usersPath = fbpaths().currentLabUsers(this.labId)
         fb.database().ref(usersPath).update(user)
       },
       getTemplateForLanguage: function (langId) {
@@ -590,10 +587,10 @@
         console.log('editor', 'editor created and styled')
 
       },
-      syncEditorWithUsersLastCodeEntry: function (labName, userName, probId) {
-        let ref = fb.database().ref(fbpaths().getCodeEntryByLabAndProblemId(labName, userName, probId))
+      syncEditorWithUsersLastCodeEntry: function () {
+        let ref = fb.database().ref(fbpaths().getCodeEntryByLabAndProblemId())
         ref.on('value', function (snapshot) {
-          if (snapshot && snapshot.key && snapshot.key === probId) {
+          if (snapshot && snapshot.key && snapshot.key === this.probId) {
             snapshot.forEach(function (childSnapshot) {
               if (childSnapshot && childSnapshot.key && childSnapshot.key === 'text') {
                 let v = childSnapshot.val()

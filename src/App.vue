@@ -1,36 +1,37 @@
 <template>
-    <div id="main" v-show="isLoggedIn()">
+  <div id="main" v-show="isLoggedIn()">
 
-      <div id="labs-list">
+    <div id="labs-list">
 
-            <div class="pull-left" id="div-input-path">
+      <div class="pull-left" id="div-input-path">
               <span id="lab-prefix" class="pull-left">
                   <span class="pull-left text-white">lab/</span>
                 <input class="pull-left" id="lab-path-input" type="text" placeholder="enter lab" value=""/>
-                <img id="lg-go" height="128" width="110" class="btn btn-flat pull-right" v-on:click="navigateToLab('lab')"src="/static/img/next_lab.png" />
+                <img id="lg-go" height="128" width="110" class="btn btn-flat pull-right"
+                     v-on:click="createNewLab()" src="/static/img/next_lab.png"/>
               </span>
-            </div>
-
-        <!--<ul class="list-group">-->
-          <!--<li v-for="item in labSessions" class="list-group-item"> {{item.code}}</li>-->
-        <!--</ul>-->
       </div>
 
-      <aside class="hidden">
-        <div id="users-list" class="col-lg-4">
-          <a href="#" class="list-group-item">
-            <h4 class="list-group-item-heading">Users</h4>
-          </a>
-          <ul class="list-group">
-            <li class="list-group-item list-group-item-success">Mootz</li>
-            <li class="list-group-item">kaisa</li>
-            <li class="list-group-item">Cohen</li>
-            <li class="list-group-item">Horatio</li>
-            <li class="list-group-item">Jess</li>
-          </ul>
-        </div>
-      </aside>
+      <!--<ul class="list-group">-->
+      <!--<li v-for="item in labSessions" class="list-group-item"> {{item.code}}</li>-->
+      <!--</ul>-->
     </div>
+
+    <aside class="hidden">
+      <div id="users-list" class="col-lg-4">
+        <a href="#" class="list-group-item">
+          <h4 class="list-group-item-heading">Users</h4>
+        </a>
+        <ul class="list-group">
+          <li class="list-group-item list-group-item-success">Mootz</li>
+          <li class="list-group-item">kaisa</li>
+          <li class="list-group-item">Cohen</li>
+          <li class="list-group-item">Horatio</li>
+          <li class="list-group-item">Jess</li>
+        </ul>
+      </div>
+    </aside>
+  </div>
 
 </template>
 <script>
@@ -41,39 +42,63 @@
   import firebaseui from 'firebaseui'
   import fbpaths from 'src/fbPaths'
 
+
   export default {
     name: 'app',
     data() {
       return {
-        labSessions:{},
-        userName:'',
-        email:'',
-        photo:'',
-        uId: ''
+        labSessions: {},
+        user: {},
+        userName: '',
+        email: '',
+        photo: '',
+        userId: ''
       }
     },
     methods: {
+      doSearch: function (entry) {
+        let results = []
+//        this.labSessions.forEeach(function (item) {
+//          if (item.key().indexOf(entry) > 0)
+//            results.push(l)
+//        })
+
+        console.log(results)
+        return results
+      },
       isLoggedIn: function () {
         return true
       },
-      navigateToLab: function (labName) {
+      requestInvite: function () {
+        //todo find the lab by its name in the mapping table then send a request [with your id, and name??] to the person to add you to the list
+      },
+      createNewLab: function () {
 
-        if(!labName || labName.trim() === ''){
+        let ref = firebase.database().ref(fbpaths().labs()).push()
+        let key = ref.key;
+        this.labName = this.getLabId()
+        //this.updateUserInfoForLab(this.userId, this.userName, this.photo, this.labName)
+        this.navigateToLab(this.labName, key)
+
+      },
+      navigateToLab: function (labName, labKey) {
+
+        if (!labName || labName.trim() === '') {
           alert('enter a lab name')
           return false
         }
 
-        let id = this.getLabId()
-        let rObj = { name: labName, params: { id: id }}
+        let rObj = {name: 'lab', params: {id: labName, labKey: labKey}}
 
         this.$router.push(rObj,
           function () {
-            console.log('navigated to ' + labName + '/' + id)
+            console.log('navigated to ' + labName )
           }, function () {
-            console.log("couldn't navigated to " + labName + '/' + id)
+            console.log("couldn't navigated to " + labName )
           })
       },
-      getLabId : function () {
+
+      getLabId: function () {
         let labInput = $('#lab-path-input')
         return labInput.val()
       }
@@ -83,22 +108,41 @@
         source: fb.database().ref(fbpaths().labs()),
         cancelCallback: function () {
         },
-        readyCallback: function () {},
+        readyCallback: function () {
+        },
         asObject: false
       }
     },
-  created() {
-    this.user = firebase.auth().currentUser;
-    if (this.user) {
-      this.userName = this.user.displayName;
-      this.email = this.user.email;
-      this.photo = this.user.photoURL;
-      this.uId = this.user.uid;
-    }
-  },
+    created() {
+        let vm = this
+      vm.user = firebase.auth().currentUser;
+      if (vm.user) {
+        vm.userName = this.user.displayName;
+        vm.email = this.user.email;
+        vm.photo = this.user.photoURL;
+        vm.userId = this.user.uid;
+      }
+    },
     mounted(){
-      $("#lab-path-input").keydown(function(event){
-        if(event.keyCode === 13){
+      let vm = this
+      let labPathInput = $('#lab-path-input')
+      $(function () {
+        labPathInput.on("change paste keyup", function () {
+          let curr = labPathInput.val()
+
+          //alert('changed')
+          if (curr.length < 2) {
+            return false
+          }
+
+          // this.clearOptions()
+          vm.doSearch(curr)
+        })
+      })
+
+
+      $("#lab-path-input").on('keydown', function (event) {
+        if (event.keyCode === 13) {
           navigateToLab('lab')
         }
       });
@@ -114,62 +158,61 @@
   @import '/static/css/peez.css';
   @import "/static/css/firebaseui.css";
 
-  html{
+  html {
     color: #898E91;
   }
-  body{
+
+  body {
     background-color: #212733;
   }
 
-  #main{
+  #main {
     background-color: #212733;
     position: absolute;
-    width : 100%;
+    width: 100%;
     height: 100%;
 
   }
 
-
-  #labs-list, #users-list{
+  #labs-list, #users-list {
     position: absolute;
     width: 100%;
-    height:100%;
+    height: 100%;
     min-height: 400px;
     margin-top: 10px;
     min-width: 400px;
     background-color: #212733
   }
 
-
-  #div-input-path{
+  #div-input-path {
     position: relative;
     margin-left: 20px;
-    height:40%;
+    height: 40%;
     width: 100%;
     margin-top: 50px;
     border: 1px solid transparent;
     background-color: transparent;
   }
 
-  #lg-go{
+  #lg-go {
     position: absolute;
     margin-top: 80px;
     height: 100px;
 
   }
 
-  #lab-prefix{
+  #lab-prefix {
     text-decoration: none;
     font-size: 160px;
   }
 
-  #lab-path-input{
+  #lab-path-input {
     position: relative;
     border: 1px solid transparent;
     border-radius: 6px;
-    height:265px;
+    height: 265px;
     background-color: transparent;
-    padding:0;
+    padding: 0;
     padding-left: 20px;
     margin-top: 0px;
     margin-left: 10px;
@@ -182,24 +225,27 @@
   ::-webkit-input-placeholder {
     font-style: italic;
   }
+
   :-moz-placeholder {
     font-style: italic;
   }
+
   ::-moz-placeholder {
     font-style: italic;
   }
+
   :-ms-input-placeholder {
     font-style: italic;
   }
 
-  #lab-path-input:active,   #lab-path-input:focus {
-  border: 1px solid transparent;
+  #lab-path-input:active, #lab-path-input:focus {
+    border: 1px solid transparent;
     outline: none;
     background-color: transparent;
     color: whitesmoke;
   }
 
-  #sign-in-div{
+  #sign-in-div {
     margin-top: 60px;
   }
 
@@ -223,24 +269,23 @@
     font-family: 'zocial', sans-serif;
   }
 
-  .form-signin{
+  .form-signin {
     max-width: 330px;
     padding: 15px;
     margin: 0 auto;
   }
-
 
   .login-input {
     margin-bottom: -1px;
     border-bottom-left-radius: 0;
     border-bottom-right-radius: 0;
   }
+
   .login-input-pass {
     margin-bottom: 10px;
     border-top-left-radius: 0;
     border-top-right-radius: 0;
   }
-
 
   .signup-input {
     margin-bottom: -1px;
@@ -253,8 +298,6 @@
     border-top-left-radius: 0;
     border-top-right-radius: 0;
   }
-
-
 
   .create-account {
     text-align: center;
@@ -272,7 +315,7 @@
     box-sizing: border-box;
   }
 
-  .btn-center{
+  .btn-center {
     width: 50%;
     text-align: center;
     margin: inherit;
@@ -293,7 +336,8 @@
     background-color: #da573b;
     border-color: #be5238;
   }
-  .social-google:hover{
+
+  .social-google:hover {
     background-color: #be5238;
     border-color: #9b4631;
   }
@@ -302,6 +346,7 @@
     background-color: #1daee3;
     border-color: #3997ba;
   }
+
   .social-twitter:hover {
     background-color: #3997ba;
     border-color: #347b95;
@@ -311,6 +356,7 @@
     background-color: #4c699e;
     border-color: #47618d;
   }
+
   .social-facebook:hover {
     background-color: #47618d;
     border-color: #3c5173;
@@ -320,29 +366,31 @@
     background-color: #4875B4;
     border-color: #466b99;
   }
+
   .social-linkedin:hover {
     background-color: #466b99;
     border-color: #3b5a7c;
   }
 
-  #editor-controls li.go-lab input{
+  #editor-controls li.go-lab input {
     margin-top: 5px;
     margin-left: 3px;
     width: 225px;
   }
 
   #editor-controls li.go-lab input:hover {
-  background-color: whitesmoke;
+    background-color: whitesmoke;
     border: 1px solid transparent;
 
   }
-  #editor-controls li.go-lab a{
+
+  #editor-controls li.go-lab a {
     text-decoration: none;
   }
-  #editor-controls li.go-lab a:hover{
+
+  #editor-controls li.go-lab a:hover {
     cursor: none;
   }
-
 
   .main-header a.logo {
     text-decoration: none;
@@ -355,12 +403,12 @@
   }
 
   /*#app {*/
-    /*font-family: 'Avenir', Helvetica, Arial, sans-serif;*/
-    /*-webkit-font-smoothing: antialiased;*/
-    /*-moz-osx-font-smoothing: grayscale;*/
-    /*text-align: center;*/
-    /*color: #2c3e50;*/
-    /*margin-top: 60px;*}/
+  /*font-family: 'Avenir', Helvetica, Arial, sans-serif;*/
+  /*-webkit-font-smoothing: antialiased;*/
+  /*-moz-osx-font-smoothing: grayscale;*/
+  /*text-align: center;*/
+  /*color: #2c3e50;*/
+  /*margin-top: 60px;*}/
 
-     */
+   */
 </style>
