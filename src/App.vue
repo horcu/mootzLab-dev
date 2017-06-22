@@ -1,38 +1,7 @@
 <template>
-  <div id="main" v-show="isLoggedIn()">
+<router-view>
 
-    <div id="labs-list">
-
-      <div class="pull-left" id="div-input-path">
-              <span id="lab-prefix" class="pull-left">
-                  <span class="pull-left text-white">lab/</span>
-                <input class="pull-left" id="lab-path-input" type="text" placeholder="enter lab" value=""/>
-                <img id="lg-go" height="128" width="110" class="btn btn-flat pull-right"
-                     v-on:click="createNewLab()" src="/static/img/next_lab.png"/>
-              </span>
-      </div>
-
-      <!--<ul class="list-group">-->
-      <!--<li v-for="item in labSessions" class="list-group-item"> {{item.code}}</li>-->
-      <!--</ul>-->
-    </div>
-
-    <aside class="hidden">
-      <div id="users-list" class="col-lg-4">
-        <a href="#" class="list-group-item">
-          <h4 class="list-group-item-heading">Users</h4>
-        </a>
-        <ul class="list-group">
-          <li class="list-group-item list-group-item-success">Mootz</li>
-          <li class="list-group-item">kaisa</li>
-          <li class="list-group-item">Cohen</li>
-          <li class="list-group-item">Horatio</li>
-          <li class="list-group-item">Jess</li>
-        </ul>
-      </div>
-    </aside>
-  </div>
-
+</router-view>
 </template>
 <script>
 
@@ -41,13 +10,19 @@
   import fb from 'src/fb-config'
   import firebaseui from 'firebaseui'
   import fbpaths from 'src/fbPaths'
-
+  import Lab from './components/Lab'
+  import Top from './components/Top.vue'
+  import Settings from './components/Settings.vue'
+  import Users from './components/Users.vue'
+  import Search from './components/Search.vue'
 
   export default {
-    name: 'app',
+    components: {Lab, Top, Settings, Users, Search},
+    name: 'main',
     data() {
       return {
         labSessions: {},
+        searchResults: [],
         user: {},
         userName: '',
         email: '',
@@ -55,31 +30,103 @@
         userId: ''
       }
     },
-    methods: {
-      doSearch: function (entry) {
-        let results = []
-//        this.labSessions.forEeach(function (item) {
-//          if (item.key().indexOf(entry) > 0)
-//            results.push(l)
-//        })
+    created() {
 
-        console.log(results)
-        return results
+    },
+
+    mounted(){
+      let vm = this
+      vm.user = fb.auth().currentUser;
+      if (vm.user) {
+        vm.userName = this.user.displayName;
+        vm.email = this.user.email;
+        vm.photo = this.user.photoURL;
+        vm.userId = this.user.uid;
+      }
+
+      let labPathInput = $('#lab-path-input')
+      labPathInput.on("change paste keyup", function () {
+        let searchText = labPathInput.val()
+        //alert('changed')
+        if (searchText.length < 2) {
+          return false
+        }
+        vm.doSearch(searchText, vm)
+          .then(function (results) {
+            vm.parseFoundLabsCallback(results, vm.userId)
+          })
+          .catch(function () {
+            vm.noSearchResultsCallback()
+          })
+      })
+
+      $("#lab-path-input").on('keydown', function (event) {
+        if (event.keyCode === 13) {
+          navigateToLab('lab')
+        }
+      });
+    },
+    methods: {
+      doSearch: function (entry, vm) {
+        return new Promise(function (resolve, reject) {
+          let results = []
+          let labs = vm.labSessions
+          $(labs).each(function (index, item) {
+            let currentLabName = item['name']
+            if (currentLabName.includes(entry)) {
+              results.push(item)
+            }
+          })
+          if (results.length > 0) {
+            resolve(results)
+            return true
+          } else {
+            reject()
+            return false
+          }
+        })
+      },
+
+      parseFoundLabsCallback: function (results, userId) {
+
+        let tempSearchResults = []
+        for (let i = 0; i < results.length; i++) {
+          let invitees = results[i]['invitees']
+          let guest = {}
+          guest.invited = false
+          for (let x = 0; x < invitees.length; x++) {
+            if (invitees[x].userId === userId) {
+              guest.invited = true
+            }
+          }
+          tempSearchResults.push(guest)
+        }
+        searchResults = tempSearchResults
+      },
+      noSearchResultsCallback: function () {
+        // this.createNewLab()
       },
       isLoggedIn: function () {
         return true
       },
-      requestInvite: function () {
-        //todo find the lab by its name in the mapping table then send a request [with your id, and name??] to the person to add you to the list
+      requestLabInvitation: function () {
+        // todo find the lab by its name in the mapping table then send a request
+        // todo [with your id, and name??] to the person to add you to the list
       },
+      logOut() {
+        firebase.auth().signOut();
+      },
+      isLogin: function () {
+        console.log('app', 'entering lab: ' + this.$route.name)
+        return this.$route.name === 'auth'
+      },
+      isLabPage: function () {
+        return this.$route.name === 'lab'
+      },
+
       createNewLab: function () {
-
-        let ref = firebase.database().ref(fbpaths().labs()).push()
-        let key = ref.key;
-        this.labName = this.getLabId()
-        //this.updateUserInfoForLab(this.userId, this.userName, this.photo, this.labName)
-        this.navigateToLab(this.labName, key)
-
+        labKey = firebase.database().ref(fbpaths().labs()).push().key
+        this.navigateToLab(this.labName, labKey)
       },
       navigateToLab: function (labName, labKey) {
 
@@ -92,9 +139,9 @@
 
         this.$router.push(rObj,
           function () {
-            console.log('navigated to ' + labName )
+            console.log('navigated to ' + labName)
           }, function () {
-            console.log("couldn't navigated to " + labName )
+            console.log("couldn't navigated to " + labName)
           })
       },
 
@@ -113,40 +160,6 @@
         asObject: false
       }
     },
-    created() {
-        let vm = this
-      vm.user = firebase.auth().currentUser;
-      if (vm.user) {
-        vm.userName = this.user.displayName;
-        vm.email = this.user.email;
-        vm.photo = this.user.photoURL;
-        vm.userId = this.user.uid;
-      }
-    },
-    mounted(){
-      let vm = this
-      let labPathInput = $('#lab-path-input')
-      $(function () {
-        labPathInput.on("change paste keyup", function () {
-          let curr = labPathInput.val()
-
-          //alert('changed')
-          if (curr.length < 2) {
-            return false
-          }
-
-          // this.clearOptions()
-          vm.doSearch(curr)
-        })
-      })
-
-
-      $("#lab-path-input").on('keydown', function (event) {
-        if (event.keyCode === 13) {
-          navigateToLab('lab')
-        }
-      });
-    }
   }
 
 </script>
@@ -176,11 +189,9 @@
 
   #labs-list, #users-list {
     position: absolute;
-    width: 100%;
-    height: 100%;
-    min-height: 400px;
+    width: auto;
+    height: auto;
     margin-top: 10px;
-    min-width: 400px;
     background-color: #212733
   }
 
@@ -192,6 +203,27 @@
     margin-top: 50px;
     border: 1px solid transparent;
     background-color: transparent;
+  }
+
+  #results-list {
+    position: relative;
+    margin-left: 0;
+    height: auto;
+    width: 100%;
+    margin-top: calc(20% + 30px);
+    border: 1px solid transparent;
+    background-color: #212733
+  }
+
+  #results-list li {
+    background-color: #212733;
+    border: 1px solid transparent;
+    height: 50px;
+    color: whitesmoke;
+  }
+
+  #results-list li:hover {
+    cursor: pointer;
   }
 
   #lg-go {

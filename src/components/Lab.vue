@@ -562,8 +562,28 @@
           userId: this.userId || '0',
           photo: this.photo || ''
         }
+        this.addOrUpdateUserInLab(user)
+      },
+      addOrUpdateUserInLab: function (user) {
+
         let usersPath = fbpaths().currentLabUsers(this.labId)
-        fb.database().ref(usersPath).update(user)
+        let usersRef = firebase.database().ref(usersPath)
+        let foundUser = false
+        let foundUserKey = ''
+        usersRef.once('value', function (snapshot) {
+          snapshot.forEach(function (childSnapshot) {
+            if(childSnapshot.userId === this.userId){
+            foundUser = true
+              foundUserKey = childSnapshot.key
+            }
+          })
+        })
+        if(foundUser){
+          fb.database().ref(usersPath + '/' + foundUserKey).update(user)
+        }else{
+          fb.database().ref(usersPath).push(user)
+        }
+
       },
       getTemplateForLanguage: function (langId) {
         let prefix = 'https://cors-anywhere.herokuapp.com/'
