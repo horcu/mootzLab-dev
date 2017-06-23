@@ -62,11 +62,11 @@ code.html {
 
 
 
-div.ace_content {
-  height: 100%;
-  width: 100%;
-  margin-top: -20px;
-}
+/*div.ace_content {*/
+  /*height: 100%;*/
+  /*width: 100%;*/
+  /*margin-top: -20px;*/
+/*}*/
 
 .code-tab a {
   height: 45px;

@@ -34,6 +34,8 @@ import Search from './components/Search.vue'
 import Settings from './components/Settings.vue'
 import jQuery from 'jquery'
 
+import { modal } from 'vueboot';
+
 global.jQuery = jQuery
 
 require('bootstrap')
@@ -71,7 +73,7 @@ new Vue({
   //pass the template to the root component
   render: a => a(App),
   //declare components that the root component can access
-  components: {Lab, Hello, App, Search, Settings, About, Top, Bottom},
+  components: {Lab, Hello, App, Search, Settings, About, Top, Bottom, modal},
   //pass in the router to the vue instance
   router,
   created() {

@@ -1,7 +1,7 @@
 <template>
   <header class="main-header box box-widget with-border">
   <!-- Logo -->
-  <a href="index.html" class="logo">
+  <a href="/l" class="logo">
 
   <span class="logo-sm"><b>Mootz</b>LAB</span>
   </a>

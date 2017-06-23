@@ -26,9 +26,9 @@
               </ul>
             </div>
             <div id="code-tab">
-              <div id="editor">
-              </div>
-
+              <!--<div id="editor">-->
+              <!--</div>-->
+              <editor id="editor" v-model="codeContent" @init="editorInit();" lang="csharp" theme="ambiance" ></editor>
               <div id="comments-tab" class="hidden">
                 <div id="comments-tab-top-menu">
                   <ul class="list-group">
@@ -148,6 +148,9 @@
       </aside>
     </section>
 
+    <!--<alert type="danger">-->
+     <!--<strong>{{errAlertText}}</strong>-->
+    <!--</alert>-->
   </div>
 </template>
 
@@ -155,31 +158,34 @@
   import Vue from 'Vue'
   import App from '../App'
   import firebase from 'firebase'
-  import ace from 'jenkins-ace-editor'
+  //import ace from 'jenkins-ace-editor'
   import $ from 'jquery'
   import fb from 'src/fb-config'
   import Lab from 'src/components/Lab.vue'
+  //import {modal, alert} from 'vueboot';
   //import 'slick-carousel'
   import fbpaths from 'src/fbPaths'
-  import 'ayu-ace'
 
-  // Or import them one by one
-  import 'ayu-ace/light'
-  import 'ayu-ace/mirage'
-  import 'ayu-ace/dark'
+  //require ('/node_modules/ayu-ace/mirage')
+
   var webrtc
-
-  let editor
-
-  ace.config.set('basePath', '../../node_modules/ayu-ace');
+  var editor
 
   export default {
     name: 'lab',
+    components: {
+      editor:require('vue2-ace-editor'),
+     // alert: alert,
+     // modal: modal
+    },
     prop: {
       content: ''
     },
     data: function () {
       return {
+        codeContent: 'type your code here...',
+        errAlert: false,
+        errAlertText : '',
         labName: '',
         labId: '',
         photo: '',
@@ -280,7 +286,6 @@
       vm.probId = 0
 
     },
-
     mounted () {
       let vm = this
       vm.initMessageEntry()
@@ -288,15 +293,37 @@
       if (!vm.user && vm.userName) {
         vm.setUser()
       }
+
+      editor = ace.edit('editor')
       vm.initEditor()
-      vm.initEditorEvents()
+     // vm.initEditorEvents()
       vm.initWebRtc()
       vm.updateUserPresenceInLab()
       vm.subscribeToUsersChange(fbpaths().currentLabUsers(this.labId))
       vm.syncEditorWithUsersLastCodeEntry()
 
+      vm.colorEditor()
     },
     methods: {
+      editorInit:function () {
+        require('../../node_modules/brace/mode/java');
+        require('../../node_modules/brace/mode/csharp');
+        require('../../node_modules/brace/mode/python');
+        require('../../node_modules/brace/mode/golang');
+        require('../../node_modules/brace/mode/javascript');
+        require('../../node_modules/brace/mode/less');
+        require('../../node_modules/brace/theme/katzenmilch');
+        require('../../node_modules/brace/theme/idle_fingers');
+        require('../../node_modules/brace/theme/chaos');
+        require('../../node_modules/brace/theme/ambiance');
+        require('../../node_modules/ayu-ace/mirage');
+      },
+      showAlert: function () {
+        this.errAlert = true
+      },
+      colorEditor: function () {
+
+      },
       find: function (word, dir) {
         //editor = ace.edit("editor");
         editor.find(word, {
@@ -367,8 +394,6 @@
         })
       },
       initEditorEvents: function () {
-        editor = ace.edit("editor");
-
         editor.getSession().on('change', function (e) {
         });
 
@@ -622,12 +647,11 @@
         let ed = $('#editor')
         let hgt = calculateWindowHeight()
         ed.css('height', hgt - 90)
-        ed.css({'font-size': '13px'})
-        editor = ace.edit('editor')
-        editor.setTheme('ayu-ace/mirage')
-        editor.getSession().setMode("/ace/mode/csharp");
-
-        editor.getSession().setUseWorker(true);
+        ed.css({'font-size': '16px'})
+       // editor.setTheme('/static/ace/ayu-ace/ayu-mirage')
+        editor.getSession().setMode("/static/ace/mode/javascript");
+//
+        editor.getSession().setUseWorker(false);
         editor.setHighlightActiveLine(true);
         editor.getSession().setUseSoftTabs(true);
         editor.setShowPrintMargin(false);
@@ -636,16 +660,28 @@
       },
       syncEditorWithUsersLastCodeEntry: function () {
         let vm = this
-        let ref = fb.database().ref(fbpaths().currentLabUserCodeEntries())
+        if(!vm.labId){
+          vm.labId = this.$route.params.labName
+        }
+
+        if(!vm.probId){
+          vm.probId = '0'
+        }
+        if(!vm.userName){
+          vm.setUser()
+        }
+
+        let ref = fb.database().ref(fbpaths().currentLabUserCodeEntries(vm.labId, vm.userName, vm.probId))
         ref.on('value', function (snapshot) {
           if (snapshot && snapshot.key && snapshot.key === vm.probId) {
             snapshot.forEach(function (childSnapshot) {
               if (childSnapshot && childSnapshot.key && childSnapshot.key === 'text') {
                 let v = childSnapshot.val()
 
-                editor = ace.edit('editor')
+               // editor = editor || ace.edit('editor')
                 console.log('setting editor content')
-                editor.setValue(v);
+                vm.codeContent = v
+                // editor.setValue(v);
                 editor.clearSelection();
                 console.log(editor)
                 console.log(ace)
@@ -677,7 +713,7 @@
         editor.setReadOnly(false);
       }
     },
-    components: {}
+
   }
 
   function calculateWindowHeight () {
@@ -750,6 +786,11 @@
     z-index: 10001;
     padding-left: 7px;
     background-color: whitesmoke;
+  }
+
+  .ace-ambiance {
+    color: #E6E1DC;
+     background-color: #212733;
   }
 
   .control-sidebar-videos, .control-sidebar-assignments, .control-sidebar-settings, .control-sidebar-comments {
@@ -895,19 +936,19 @@
     border: 1px dotted #b4b4b4;
   }
 
-  #editor {
-    position: absolute;
+  .ace_editor {
+    position: fixed;
     /*background-color: whitesmoke;*/
     top: 0;
     right: 0;
     bottom: 0;
     left: 0;
-    margin-top: 0;
+    margin-top: 50px;
     margin-bottom: 0;
-    padding-top: 20px;
+    padding-top: 30px;
     padding-bottom: 0;
-    height: 100%;
-    width: 100%;
+    height: 400px;
+    width: 400px;
     min-width: 800px;
     text-align: left;
     overflow-y: hidden;
@@ -1023,6 +1064,10 @@
     opacity: 0;
   }
 
+  .messages .message.left .avatar {
+    background-color: transparent;
+    float: left;
+  }
   .messages .message.left .avatar {
     background-color: transparent;
     float: left;
@@ -1180,7 +1225,5 @@
     background-color: transparent;
   }
 
-  #editor div.ace_content div.ace_text-layer div.ace_line span.ace_identifier {
-  }
 
 </style>
