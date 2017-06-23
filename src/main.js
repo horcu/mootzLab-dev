@@ -21,6 +21,10 @@ import fb from 'src/fb-config'
 /* eslint-disable no-new */
 //import the hello component
 import Hello from './components/Hello'
+//import the hello component
+import Top from './components/Top'
+//import the hello component
+import Bottom from './components/Bottom'
 //import the about component
 import About from './components/About'
 //import the ;lab component
@@ -49,7 +53,7 @@ const routes = [
   //route for the labs
  // {name: 'lab', path: '/lab', component: Lab},
   //route for a lab with a given id
-  {name: 'lab', path: '/l/:id', component: Lab}
+  {name: 'lab', path: '/l/:labName', component: Lab}
 ]
 
 // Create the router instance and pass the `routes` option
@@ -67,7 +71,7 @@ new Vue({
   //pass the template to the root component
   render: a => a(App),
   //declare components that the root component can access
-  components: {Lab, Hello, App, Search, Settings, About},
+  components: {Lab, Hello, App, Search, Settings, About, Top, Bottom},
   //pass in the router to the vue instance
   router,
   created() {

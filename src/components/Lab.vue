@@ -1,12 +1,30 @@
 <template>
-  <div id="lab" class="lab content-wrapper">
+  <div id="app" class="lab content-wrapper">
 
     <section class="main-sect">
       <div class="row main-row">
         <!-- Code Box -->
         <div class="code-area">
-          <div id="code-area-header-box">
 
+          <div id="code-area-header-box">
+            <div id="lab-problem-tools" class="pull-left">
+              <ul class="nav navbar-nav pull-left">
+                <li  data-toggle="tooltip" data-placement="bottom" title="stop" class="pull-left">
+                  <a> <img id="code-editor-controls-stop" width="15px" height="15px" src="/static/img/stop.png"
+                           alt="build"/></a>
+                </li>
+
+                <!--save code-->
+                <li  class="pull-left" v-on:click="saveCodeToFirebase()"
+                     data-toggle=" tooltip
+  " data-placement="bottom" title="build">
+                  <a> <img id="code-editor-controls-play" width="15px" height="15px"
+                           src="/static/img/play-button%20(1).png" alt="build"
+                  /></a>
+
+                </li>
+              </ul>
+            </div>
             <div id="code-tab">
               <div id="editor">
               </div>
@@ -143,25 +161,17 @@
   import Lab from 'src/components/Lab.vue'
   //import 'slick-carousel'
   import fbpaths from 'src/fbPaths'
+  import 'ayu-ace'
+
+  // Or import them one by one
+  import 'ayu-ace/light'
+  import 'ayu-ace/mirage'
+  import 'ayu-ace/dark'
   var webrtc
 
   let editor
 
-  ace.config.set('basePath', '/static/ace/');
-
-  $(function () {
-    let commentsSection = $('#sidebar-comments')
-    let sendMessageBx = $('#enter-message')
-
-
-
-    commentsSection.on('mouseover', function () {
-      sendMessageBx.stop().delay(750).removeClass('hidden').fadeIn(750)
-    }).on('mouseout', function () {
-      sendMessageBx.stop().delay(750).addClass('hidden').fadeOut(500)
-    })
-
-  })
+  ace.config.set('basePath', '../../node_modules/ayu-ace');
 
   export default {
     name: 'lab',
@@ -174,7 +184,7 @@
         labId: '',
         photo: '',
         userId: '',
-        userName: fb.auth().currentUser.displayName,
+        userName: '',
         email: '',
         user: {},
         currentLab: {},
@@ -264,33 +274,26 @@
           }
         }
       },
-      vm.setUser()
-        vm.labName = this.$route.params.id
-        vm.labId = this.$route.params.labKey
-        vm.probId = 0
+        vm.setUser()
+      vm.labName = this.$route.params.id
+      vm.labId = this.$route.params.labKey
+      vm.probId = 0
 
     },
-    setUser: function () {
-      let vm = this
-      vm.user = fb.auth().currentUser;
-      if (vm.user) {
-        vm.userName = this.user.displayName;
-        vm.email = this.user.email;
-        vm.photo = this.user.photoURL;
-        vm.userId = this.user.uid;
-      }
-    },
+
     mounted () {
-        let vm = this
-        if(!vm.user && vm.userName){
-            vm.setUser()
-        }
-      this.initEditor()
-      this.initEditorEvents()
-      this.initWebRtc()
-      this.updateUserInfoForLab(this.userId, this.userName, this.photo, this.labName, this.labId)
-      this.subscribeToUsersChange(fbpaths().currentLabUsers())
-      this.syncEditorWithUsersLastCodeEntry()
+      let vm = this
+      vm.initMessageEntry()
+      vm
+      if (!vm.user && vm.userName) {
+        vm.setUser()
+      }
+      vm.initEditor()
+      vm.initEditorEvents()
+      vm.initWebRtc()
+      vm.updateUserPresenceInLab()
+      vm.subscribeToUsersChange(fbpaths().currentLabUsers(this.labId))
+      vm.syncEditorWithUsersLastCodeEntry()
 
     },
     methods: {
@@ -318,7 +321,18 @@
           vm.email = this.user.email;
           vm.photo = this.user.photoURL;
           vm.userId = this.user.uid;
+          vm.labName = this.$route.params.labName,
+            vm.labId = this.$route.params.labId
         }
+      },
+      initMessageEntry: function () {
+        let commentsSection = $('#sidebar-comments')
+        let sendMessageBx = $('#enter-message')
+        commentsSection.on('mouseover', function () {
+          sendMessageBx.stop().delay(750).removeClass('hidden').fadeIn(750)
+        }).on('mouseout', function () {
+          sendMessageBx.stop().delay(750).addClass('hidden').fadeOut(500)
+        })
       },
       getLiveCode: function () {
         return this.liveCode[0]
@@ -343,10 +357,11 @@
         }, 400)
       },
       subscribeToUsersChange: function (path) {
+        let vm = this
         let ref = fb.database().ref(path)
 
         ref.on('value', function (snapshot) {
-          if (snapshot.key === key) {
+          if (snapshot !== vm.userId) {
 
           }
         })
@@ -363,17 +378,26 @@
         editor.getSession().selection.on('changeCursor', function (e) {
         });
       },
+      getVm: function () {
+        return this
+      },
       saveCodeToFirebase: function () {
-
         let vm = this
-        //_say('saveCodeToFirebase', editor)
+        if(!vm.labId){
+          vm.labId = vm.$route.params.labId
+        }
+
+        if(!vm.userName){
+        vm.userName = vm.user.userName
+        }
         let codeEntry = editor.getSession().getValue()
         let codeToSubmit = {
-          'problem-id': vm.probId,
+          'problem-id': vm.probId || 0,
           'last-updated': new Date().toTimeString(),
           text: codeEntry,
         };
-        let codeEntryPath = fbpaths().getCodeEntryByLabAndProblemId(vm.labName, vm.userName, vm.probId)
+
+        let codeEntryPath = fbpaths().currentLabUserCodeEntries(vm.labId, vm.userName, vm.probId)
         // console.log('saving code :', fb.database().ref())
         fb.database().ref().child(codeEntryPath).update(codeToSubmit)
       },
@@ -434,6 +458,7 @@
       },
       initWebRtc: function () {
         let vm = this
+        let createdTime = new Date().toTimeString()
         console.log('webrtc', 'building objects')
 
         let webrtc = new SimpleWebRTC({
@@ -454,13 +479,13 @@
           console.log('adding joined message to stream')
           addMessageToLabStream('is in the lab', vm.userName, vm.photo, vm.email, vm.userId, 'left', sessionId)
 
-          if (vm.userIsLabCreator()) {
-            vm.addSessionIdToDb(sessionId)
-          }
+//          if (vm.userIsLabCreator()) {
+//            vm.addSessionIdToDb(sessionId, createdTime, vm.userId)
+//          }
         })
 
         webrtc.on('createdPeer', function (peer) {
-          console.log('peer connected')
+          console.log('connection created')
 
           //todo get the users information from the users object associated with this
           //todo lab then use it to fill out the signature of the below method
@@ -475,7 +500,7 @@
         // a peer video has been added
         webrtc.on('videoAdded', function (video, peer) {
 
-            //todo go get the user data from the db
+          //todo go get the user data from the db
           addMessageToLabStream('is in the lab', peer.nick, '', '', '', 'right', 0)
 
 //          console.log('video added', peer);
@@ -562,46 +587,29 @@
         console.log('webrtc', 'done setting up events')
       },
       addSessionIdToDb: function (sessionId, createdTime, creator) {
-        let info = {
-          sessionId: sessionId,
-          created: createdTime,
-          created_by: creator
-        }
-        let labInfoPath = fbpaths().currentLabs()
-        fb.database().ref(labInfoPath).update(info)
-      },
-      updateUserInfoForLab: function () {
-          let vm = this
-        let user = {
-          userName: vm.userName || 'guest',
-          userId: vm.userId || '0',
-          photo: vm.photo || ''
-        }
-        this.addOrUpdateUserInLab(user)
-      },
-      addOrUpdateUserInLab: function (user) {
         let vm = this
-        let usersPath = fbpaths().currentLabUsers(vm.labId)
-        let usersRef = firebase.database().ref(usersPath)
-        let foundUser = false
-        let foundUserKey = ''
-        usersRef.once('value', function (snapshot) {
-          snapshot.forEach(function (childSnapshot) {
-            if(childSnapshot.userId === vm.userId){
-            foundUser = true
-              foundUserKey = childSnapshot.key
-            }
-          })
-        })
-        if(foundUser){
-          fb.database().ref(usersPath + '/' + foundUserKey).update(user)
-        }else{
-          fb.database().ref(usersPath).push(user)
+        let info = {
+          sessionId: sessionId || 'no auth',
+          created: createdTime,
+          created_by: creator || 'anon',
+          ended: false
         }
-
+        let labInfoPath = fbpaths().currentLabSession(vm.labName)
+        fb.database().ref(labInfoPath).push(info)
       },
-      userIsLabCreator : function () {
-          //todo
+      updateUserPresenceInLab: function () {
+        let vm = this
+
+        if(!vm.labId){
+          vm.labId = this.$route.params.labId
+        }
+        if(vm.userId){
+          let usersPath = fbpaths().currentLabUsers(vm.labId)
+          fb.database().ref(usersPath + '/' + vm.userId).set(true)
+        }
+      },
+      userIsLabCreator: function () {
+        //todo
         return true
       },
       getTemplateForLanguage: function (langId) {
@@ -613,11 +621,11 @@
       initEditor: function () {
         let ed = $('#editor')
         let hgt = calculateWindowHeight()
-        ed.css('height', hgt - 100)
+        ed.css('height', hgt - 90)
         ed.css({'font-size': '13px'})
         editor = ace.edit('editor')
-        editor.setTheme('ace/theme/ayu-mirage')
-        editor.getSession().setMode("ace/mode/csharp");
+        editor.setTheme('ayu-ace/mirage')
+        editor.getSession().setMode("/ace/mode/csharp");
 
         editor.getSession().setUseWorker(true);
         editor.setHighlightActiveLine(true);
@@ -627,8 +635,8 @@
 
       },
       syncEditorWithUsersLastCodeEntry: function () {
-          let vm = this
-        let ref = fb.database().ref(fbpaths().getCodeEntryByLabAndProblemId())
+        let vm = this
+        let ref = fb.database().ref(fbpaths().currentLabUserCodeEntries())
         ref.on('value', function (snapshot) {
           if (snapshot && snapshot.key && snapshot.key === vm.probId) {
             snapshot.forEach(function (childSnapshot) {
@@ -672,11 +680,11 @@
     components: {}
   }
 
-  function calculateWindowHeight() {
+  function calculateWindowHeight () {
     return $(window).height()
   }
 
-  function addMessageToLabStream(text, name, photo, email, uId, side, sessionId) {
+  function addMessageToLabStream (text, name, photo, email, uId, side, sessionId) {
     var $messages, message;
     if (text.trim() === '' || name.trim() === '') {
       return;
@@ -721,13 +729,28 @@
   }
 
   //todo  type determines size, color, animation etc...
-  function updateUserLabStream(message, type) {
+  function updateUserLabStream (message, type) {
 
   }
 
 </script>
 
 <style scoped>
+  @import '/static/bootstrap/css/bootstrap.min.css';
+  @import '/static/bootstrap/css/bootstrap-theme.css';
+  @import '/static/css/skins/_all-skins.css';
+  @import '/static/css/skins/skin-green-light.css';
+  @import '/static/css/peez.css';
+  #lab-problem-tools{
+    position: absolute;
+    margin-top: 0;
+    width: 100px;
+    margin-left: calc(60% - 105px);
+    height: auto;
+    z-index: 10001;
+    padding-left: 7px;
+    background-color: whitesmoke;
+  }
 
   .control-sidebar-videos, .control-sidebar-assignments, .control-sidebar-settings, .control-sidebar-comments {
     position: fixed;
@@ -881,7 +904,7 @@
     left: 0;
     margin-top: 0;
     margin-bottom: 0;
-    padding-top: 10px;
+    padding-top: 20px;
     padding-bottom: 0;
     height: 100%;
     width: 100%;

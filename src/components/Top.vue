@@ -1,37 +1,24 @@
 <template>
-  <div class="main-header box box-widget">
+  <header class="main-header box box-widget with-border">
   <!-- Logo -->
   <a href="index.html" class="logo">
 
   <span class="logo-sm"><b>Mootz</b>LAB</span>
   </a>
 
-  <nav id="headNav" class="navbar navbar-static-top fixed sidebar-collapse" role="navigation">
+  <nav id="headNav" class="navbar navbar-static-top fixed" role="navigation">
 
   <ul id="editor-controls" class="nav navbar-nav pull-left">
 
   <li class="pull-left">
   <a>
-  <strong v-if="$route.params.id !== null || $route.params.id !== undefined"> {{$route.params.id}}</strong>
+  <!--<strong v-if="$route.params.id !== null || $route.params.id !== undefined"> {{$route.params.id}}</strong>-->
   </a>
   </li>
 
 
   <!--stop build-->
-  <li  data-toggle="tooltip" data-placement="bottom" title="stop" class="pull-left">
-  <a> <img id="code-editor-controls-stop" width="15px" height="15px" src="/static/img/stop.png"
-  alt="build"/></a>
-  </li>
 
-  <!--build code-->
-  <li  class="pull-left" v-on:click="saveCode('', '', '0')"
-  data-toggle=" tooltip
-  " data-placement="bottom" title="build">
-  <a> <img id="code-editor-controls-play" width="15px" height="15px"
-  src="/static/img/play-button%20(1).png" alt="build"
-  /></a>
-
-  </li>
 
   </ul>
 
@@ -77,12 +64,15 @@
   <!--</div>-->
   </nav>
 
-  </div>
+  </header>
 </template>
 
 <script>
+
+  import Lab from '../components/Lab'
   export default {
     name: 'top',
+    components:{Lab},
     methods: {
       saveCode(labName, userName, probId){
         Lab.methods.saveCodeToFirebase()
@@ -164,6 +154,17 @@
   }
 </script>
 
-<style>
+<style scoped>
+  @import '/static/bootstrap/css/bootstrap.min.css';
+  @import '/static/bootstrap/css/bootstrap-theme.css';
+  @import '/static/css/skins/_all-skins.css';
+  @import '/static/css/skins/skin-green-light.css';
+  @import '/static/css/peez.css';
 
+  .main-header {
+    height: 50px;
+    width: 100%;
+    background-color: #ffffff;
+    border-radius: 0 ;
+  }
 </style>

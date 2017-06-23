@@ -1,7 +1,10 @@
 <template>
+  <div>
+  <top></top>
 <router-view>
-
 </router-view>
+  <bottom></bottom>
+  </div>
 </template>
 <script>
 
@@ -15,9 +18,12 @@
   import Settings from './components/Settings.vue'
   import Users from './components/Users.vue'
   import Search from './components/Search.vue'
+  import Bottom from './components/Bottom'
 
   export default {
-    components: {Lab, Top, Settings, Users, Search},
+    components: {
+      Bottom,
+      Lab, Top, Settings, Users, Search},
     name: 'main',
     data() {
       return {

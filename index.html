@@ -38,66 +38,52 @@
   </head>
   <body  class="hold-transition fixed sidebar-collapse all-skins">
   <!-- Left side column. contains the sidebar -->
-  <aside class="main-sidebar">
-    <!-- sidebar: style can be found in sidebar.less -->
-    <section class="sidebar">
-      <!-- Sidebar user panel -->
-      <div class="user-panel">
-        <div class="pull-left image">
-          <img src="static/img/user.png" class="img-circle small-img" alt="User Image">
-        </div>
-        <div class="pull-left info">
-          <p>Dis.iz.peez</p>
-          <a href="#"><i class="fa fa-circle text-success"></i> Online</a>
-        </div>
-      </div>
-      <ul class="sidebar-menu">
+  <!--<aside class="main-sidebar">-->
+    <!--&lt;!&ndash; sidebar: style can be found in sidebar.less &ndash;&gt;-->
+    <!--<section class="sidebar">-->
+      <!--&lt;!&ndash; Sidebar user panel &ndash;&gt;-->
+      <!--<div class="user-panel">-->
+        <!--<div class="pull-left image">-->
+          <!--<img src="static/img/user.png" class="img-circle small-img" alt="User Image">-->
+        <!--</div>-->
+        <!--<div class="pull-left info">-->
+          <!--<p>Dis.iz.peez</p>-->
+          <!--<a href="#"><i class="fa fa-circle text-success"></i> Online</a>-->
+        <!--</div>-->
+      <!--</div>-->
+      <!--<ul class="sidebar-menu">-->
 
+        <!--&lt;!&ndash;</li>&ndash;&gt;-->
+        <!--<h5 style="text-align: center; font-variant-caps: all-small-caps">Language</h5>-->
+        <!--<li class="treeview lang-tree">-->
+          <!--<a class="langs-a" href="#"></a>-->
+          <!--<ul class="treeview-menu">-->
+            <!--&lt;!&ndash;<li  v-for="item in langsArray">&ndash;&gt;-->
+              <!--&lt;!&ndash;<a href="#" v-on:click="selectLanguage(item.value, item.name)">&ndash;&gt;-->
+                <!--&lt;!&ndash;{{item.name}};&ndash;&gt;-->
+              <!--&lt;!&ndash;</a>&ndash;&gt;-->
+            <!--&lt;!&ndash;</li>&ndash;&gt;-->
+          <!--</ul>-->
         <!--</li>-->
-        <h5 style="text-align: center; font-variant-caps: all-small-caps">Language</h5>
-        <li class="treeview lang-tree">
-          <a class="langs-a" href="#"></a>
-          <ul class="treeview-menu">
-            <!--<li  v-for="item in langsArray">-->
-              <!--<a href="#" v-on:click="selectLanguage(item.value, item.name)">-->
-                <!--{{item.name}};-->
-              <!--</a>-->
-            <!--</li>-->
-          </ul>
-        </li>
-        <li>
-          <h5 style="text-align: center; font-variant-caps: all-small-caps">Theme</h5>
-        <li class="treeview theme-tree">
-          <a class="theme-a" href="#"></a>
-          <ul class="treeview-menu">
-            <!--<li v-for="item in themesArray">-->
-              <!--<a href="#" v-on:click="selectTheme(item.value)" >{{item.name}}</a>-->
-            <!--</li>-->
-          </ul>
-        </li>
-      </ul>
-    </section>
-    <!-- /.sidebar -->
-  </aside>
+        <!--<li>-->
+          <!--<h5 style="text-align: center; font-variant-caps: all-small-caps">Theme</h5>-->
+        <!--<li class="treeview theme-tree">-->
+          <!--<a class="theme-a" href="#"></a>-->
+          <!--<ul class="treeview-menu">-->
+            <!--&lt;!&ndash;<li v-for="item in themesArray">&ndash;&gt;-->
+              <!--&lt;!&ndash;<a href="#" v-on:click="selectTheme(item.value)" >{{item.name}}</a>&ndash;&gt;-->
+            <!--&lt;!&ndash;</li>&ndash;&gt;-->
+          <!--</ul>-->
+        <!--</li>-->
+      <!--</ul>-->
+    <!--</section>-->
+    <!--&lt;!&ndash; /.sidebar &ndash;&gt;-->
+  <!--</aside>-->
 
   <div id="app"></div>
     <!-- built files will be auto injected -->
 
-  <footer  class="main-footer">
-    <ul class="nav navbar-nav pull-left">
-      <li v-show="!isLabPage()">
-        <div id="code-file-dd" class="dropdown">
-              <img width="18px" height="18px" src="/static/img/gear.png" alt="file(s)"/>&nbsp; options
-        </div>
-      </li>
-      <!--<li v-show="isLabPage()">-->
-        <!--<div>-->
-          <!--<img id="err-img" width="15px" height="15px" src="/static/img/warning.png" alt="exception"/>-->
-        <!--</div>-->
-        <!--&lt;!&ndash;</span>&ndash;&gt;-->
-      <!--</li>-->
-    </ul>
-  </footer>
+
 
    <!--<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.0.0-alpha.6/css/bootstrap.min.css" ></script>-->
   <!--<script src="https://unpkg.com/vuefire/dist/vuefire.js"></script>-->

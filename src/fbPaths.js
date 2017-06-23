@@ -25,25 +25,21 @@ function fbpaths () {
     labs: function () {
       return 'labs/'
     },
-    currentLabs: function (labName) {
-      return this.labs() + labName
+    currentLabSession: function (labName) {
+      return this.labs() + labName + '/sessions'
     },
 
     // user specific paths
-    currentLabUserCodeEntries: function (labName, userName) {
-      return '/labs/' + labName + '/' + userName + '/'
+    currentLabUserCodeEntries: function (labKey, userName, probId) {
+      return '/lab-entries/' + labKey + '/' + userName + '/' + probId + '/'
     },
 
     // user specific paths
     inviteeListForLab: function (labKey) {
       return '/labs/' + labKey + '/' + '/invitees/'
     },
-    getCodeEntryByLabAndProblemId: function (labName, userName, probId) {
-      return '/labs/' + labName + '/' + userName + '/' + probId + '/'
-    },
-
-    currentLabUsers: function (labName) {
-      return '/labs/' + labName + '/users/'
+    currentLabUsers: function (labId) {
+      return '/labs/' + labId + '/users/'
     },
     chalkboard: function () {
       return this.getUserSpecificPath('chalkboard/')

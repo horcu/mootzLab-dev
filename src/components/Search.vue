@@ -13,7 +13,7 @@
       <li v-for='item in searchResults'>
         <div id="result-item">
           <span class="lab-info-text pull-left">{{item.name}} : {{item.description}}
-         <img v-if="item.userIsInvited" class="pull-right lg-go" v-on:click="navigateToLab(item.name, item.lab_key)"
+         <img v-if="item.userIsInvited" class="pull-right lg-go" v-on:click="navigateToLab(item.name, item.labid)"
               src="/static/img/enter_lab.png"/>
          <img v-else-if="!item.userIsInvited" class="pull-right lg-go" v-on:click="requestInvitation()"
               src="/static/img/invite_lab.png"/>
@@ -29,11 +29,14 @@
 <script>
 
   import Vue from 'Vue'
+  import Top from '../components/Top.vue'
+  import Bottom from '../components/Bottom.vue'
   import fb from 'src/fb-config'
   import fbpaths from 'src/fbPaths'
   import $ from 'jquery'
 
   export default {
+    components :{Top, Bottom},
     name: 'search',
     data: function () {
       return {
@@ -44,6 +47,7 @@
         email: '',
         photo: '',
         userId: ''
+
       }
     },
     methods: {
@@ -96,10 +100,9 @@
 
       },
 
-      navigateToLab: function (labName, labKey) {
+      navigateToLab: function (labName, labId) {
 
-
-        let rObj = {name: 'lab', params: {id: labName, labKey: labKey}}
+        let rObj = {name: 'lab', params: {labName: labName, labId: labId}}
 
         this.$router.push(rObj,
           function () {
@@ -183,7 +186,7 @@
     position: absolute;
     width: auto;
     height: auto;
-    margin-top: 0;
+    margin-top: 50px;
     background-color: #212733
   }
 
