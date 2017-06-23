@@ -34,6 +34,10 @@ function fbpaths () {
       return '/labs/' + labName + '/' + userName + '/'
     },
 
+    // user specific paths
+    inviteeListForLab: function (labKey) {
+      return '/labs/' + labKey + '/' + '/invitees/'
+    },
     getCodeEntryByLabAndProblemId: function (labName, userName, probId) {
       return '/labs/' + labName + '/' + userName + '/' + probId + '/'
     },

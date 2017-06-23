@@ -4,16 +4,19 @@
               <span id="lab-prefix" class="pull-left">
                   <span class="lab-text pull-left text-white">l/</span>
                 <input class="pull-left" id="lab-path-input" type="text" placeholder="lab name" value=""/>
-                <img v-if="searchResults.length < 1" class="pull-left lg-go-first"  v-on:click="requestInvitation()" src="/static/img/new_lab.png"/>
+                <img v-if="searchResults.length < 1" class="pull-left lg-go-first" v-on:click="requestInvitation()"
+                     src="/static/img/new_lab.png"/>
               </span>
     </div>
 
     <ul id="results-list">
-      <li v-for='item in searchResults' >
+      <li v-for='item in searchResults'>
         <div id="result-item">
           <span class="lab-info-text pull-left">{{item.name}} : {{item.description}}
-         <img v-if="item.userIsInvited" class="pull-right lg-go"  v-on:click="createNewLab()" src="/static/img/enter_lab.png"/>
-         <img v-else-if="!item.userIsInvited" class="pull-right lg-go" v-on:click="requestInvitation()" src="/static/img/invite_lab.png"/>
+         <img v-if="item.userIsInvited" class="pull-right lg-go" v-on:click="createNewLab()"
+              src="/static/img/enter_lab.png"/>
+         <img v-else-if="!item.userIsInvited" class="pull-right lg-go" v-on:click="requestInvitation()"
+              src="/static/img/invite_lab.png"/>
            </span>
         </div>
         <div style="clear: both;"></div>
@@ -45,29 +48,34 @@
     },
     methods: {
       doSearch: function (entry, vm) {
-          vm.searchResults =[]
+        vm.searchResults = []
         if (!vm.userName) {
           vm.setUser()
         }
         return new Promise(function (resolve, reject) {
           let results = []
           let labs = vm.labs
+          $.when(
           $(labs).each(function (index, item) {
             let currentLabName = item['name']
             if (currentLabName.includes(entry)) {
-
-
               //todo check for invitation here
               let invitees = item['invitees']
-              $(invitees).each(function (index, it) {
-                  if(it.userId === vm.userId){
-                    item.isUserInvited = true
-                  }
-              })
+              item.userIsInvited = false
+              let key = Object.keys(labs[index].val())[0];
 
+              let ref = fb.database().ref(fbpaths().inviteeListForLab(key))
+              ref.once('value', function (snapshot) {
+                snapshot.forEach(function (childSnapshot) {
+                  if (childSnapshot.userId === vm.userId) {
+                    item.userInsInvited = true;
+                  }
+                })
+              })
               results.push(item)
             }
           })
+        .then(function(){
           if (results.length > 0) {
             resolve(results)
             return true
@@ -75,6 +83,7 @@
             reject()
             return false
           }
+        }))
         })
       },
       parseFoundLabsCallback: function (results, vm) {
@@ -82,7 +91,7 @@
         vm.searchResults = results
       },
       noSearchResultsCallback: function () {
-          let vm = this
+        let vm = this
         vm.searchResults = []
       },
       isLabPage: function () {
@@ -92,7 +101,7 @@
         labKey = firebase.database().ref(fbpaths().labs()).push().key
         this.navigateToLab(this.labName, labKey)
       },
-      requestInvitation : function () {
+      requestInvitation: function () {
 
       },
       navigateToLab: function (labName, labKey) {
@@ -171,7 +180,7 @@
 
 <style scoped>
 
-  .lab-info-text{
+  .lab-info-text {
     width: 100%;
 
   }
@@ -190,7 +199,7 @@
     background-color: #212733
   }
 
-  #result-item{
+  #result-item {
     border: 1px solid transparent;
     height: auto;
     width: auto;
@@ -223,7 +232,7 @@
 
   #results-list li span {
     color: white;
-    font-family: "Comic Sans MS",monospace;
+    font-family: "Comic Sans MS", monospace;
     font-size: 35px;
   }
 
@@ -231,7 +240,7 @@
     cursor: pointer;
   }
 
-  .lg-go , .lg-go-first{
+  .lg-go, .lg-go-first {
     position: absolute;
     margin-top: 0;
     width: 50px;
@@ -239,7 +248,7 @@
 
   }
 
-  .lg-go{
+  .lg-go {
     margin-left: 40px;
   }
 
