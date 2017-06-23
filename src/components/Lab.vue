@@ -147,7 +147,7 @@
 
   let editor
 
-  ace.config.set('basePath', './static/ace/');
+  ace.config.set('basePath', '/static/ace/');
 
   $(function () {
     let commentsSection = $('#sidebar-comments')
@@ -285,20 +285,15 @@
         if(!vm.user && vm.userName){
             vm.setUser()
         }
-
       this.initEditor()
       this.initEditorEvents()
-      this.initWebRtc(this.userName, this.photo, this.email, this.userId)
+      this.initWebRtc()
       this.updateUserInfoForLab(this.userId, this.userName, this.photo, this.labName, this.labId)
-
       this.subscribeToUsersChange(fbpaths().currentLabUsers())
-
       this.syncEditorWithUsersLastCodeEntry()
-
 
     },
     methods: {
-
       find: function (word, dir) {
         //editor = ace.edit("editor");
         editor.find(word, {
@@ -314,6 +309,16 @@
       readOnly: function (val) {
         //  editor = ace.edit("editor");
         editor.setReadOnly(val);
+      },
+      setUser: function () {
+        let vm = this
+        vm.user = fb.auth().currentUser;
+        if (vm.user) {
+          vm.userName = this.user.displayName;
+          vm.email = this.user.email;
+          vm.photo = this.user.photoURL;
+          vm.userId = this.user.uid;
+        }
       },
       getLiveCode: function () {
         return this.liveCode[0]
@@ -427,15 +432,15 @@
           ]
         });
       },
-      initWebRtc: function (nick, photo, email, userId, isCreator) {
-
+      initWebRtc: function () {
+        let vm = this
         console.log('webrtc', 'building objects')
 
         let webrtc = new SimpleWebRTC({
           localVideoEl: 'local-vid',
           remoteVideosEl: 'remote-vids',
           autoRequestMedia: false,
-          nick: nick
+          nick: vm.userName
         });
 
         console.log('webrtc', 'setting up events')
@@ -443,14 +448,14 @@
         webrtc.on('connectionReady', function (sessionId) {
           console.log('joining room')
 
-          webrtc.joinRoom(this.labName);
+          webrtc.joinRoom(vm.labName);
 
           console.log('joined room')
           console.log('adding joined message to stream')
-          addMessageToLabStream('is in the lab', nick, photo, email, userId, 'left', sessionId)
+          addMessageToLabStream('is in the lab', vm.userName, vm.photo, vm.email, vm.userId, 'left', sessionId)
 
-          if (isCreator !== undefined && isCreator) {
-            this.addSessionIdToDb(sessionId)
+          if (vm.userIsLabCreator()) {
+            vm.addSessionIdToDb(sessionId)
           }
         })
 
@@ -464,13 +469,14 @@
         })
 
         webrtc.on('readyToCall', function () {
-          addMessageToLabStream('is in the lab', nick, photo, email, userId, 'left', sessionId)
+          addMessageToLabStream('is in the lab', vm.userName, vm.photo, vm.email, vm.userId, 'left', sessionId)
         });
 
         // a peer video has been added
         webrtc.on('videoAdded', function (video, peer) {
 
-          addMessageToLabStream('is in the lab', peer.nick, photo, email, userId, 'right', sessionId)
+            //todo go get the user data from the db
+          addMessageToLabStream('is in the lab', peer.nick, '', '', '', 'right', 0)
 
 //          console.log('video added', peer);
 //          console.log('video added', peer.nick);
@@ -565,22 +571,23 @@
         fb.database().ref(labInfoPath).update(info)
       },
       updateUserInfoForLab: function () {
+          let vm = this
         let user = {
-          userName: this.userName || 'guest',
-          userId: this.userId || '0',
-          photo: this.photo || ''
+          userName: vm.userName || 'guest',
+          userId: vm.userId || '0',
+          photo: vm.photo || ''
         }
         this.addOrUpdateUserInLab(user)
       },
       addOrUpdateUserInLab: function (user) {
-
-        let usersPath = fbpaths().currentLabUsers(this.labId)
+        let vm = this
+        let usersPath = fbpaths().currentLabUsers(vm.labId)
         let usersRef = firebase.database().ref(usersPath)
         let foundUser = false
         let foundUserKey = ''
         usersRef.once('value', function (snapshot) {
           snapshot.forEach(function (childSnapshot) {
-            if(childSnapshot.userId === this.userId){
+            if(childSnapshot.userId === vm.userId){
             foundUser = true
               foundUserKey = childSnapshot.key
             }
@@ -593,6 +600,10 @@
         }
 
       },
+      userIsLabCreator : function () {
+          //todo
+        return true
+      },
       getTemplateForLanguage: function (langId) {
         let prefix = 'https://cors-anywhere.herokuapp.com/'
         let templatesUrl = 'http://cloudcompiler.esy.es/api/languages/template/' + langId
@@ -604,7 +615,7 @@
         let hgt = calculateWindowHeight()
         ed.css('height', hgt - 100)
         ed.css({'font-size': '13px'})
-        editor = editor || ace.edit('editor')
+        editor = ace.edit('editor')
         editor.setTheme('ace/theme/ayu-mirage')
         editor.getSession().setMode("ace/mode/csharp");
 
@@ -624,7 +635,7 @@
               if (childSnapshot && childSnapshot.key && childSnapshot.key === 'text') {
                 let v = childSnapshot.val()
 
-                editor = editor || ace.edit('editor')
+                editor = ace.edit('editor')
                 console.log('setting editor content')
                 editor.setValue(v);
                 editor.clearSelection();
