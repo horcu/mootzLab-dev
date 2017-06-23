@@ -34,10 +34,7 @@
       isLoggedIn: function () {
         return true
       },
-      requestLabInvitation: function () {
-        // todo find the lab by its name in the mapping table then send a request
-        // todo [with your id, and name??] to the person to add you to the list
-      },
+
       logOut() {
         firebase.auth().signOut();
       },

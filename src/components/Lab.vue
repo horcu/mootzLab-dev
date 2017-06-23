@@ -264,18 +264,27 @@
           }
         }
       },
-        vm.user = firebase.auth().currentUser;
+      vm.setUser()
+        vm.labName = this.$route.params.id
+        vm.labId = this.$route.params.labKey
+        vm.probId = 0
+
+    },
+    setUser: function () {
+      let vm = this
+      vm.user = fb.auth().currentUser;
       if (vm.user) {
         vm.userName = this.user.displayName;
         vm.email = this.user.email;
         vm.photo = this.user.photoURL;
         vm.userId = this.user.uid;
-        vm.labName = this.$route.params.id
-        vm.labId = this.$route.params.labKey
-        vm.probId = 0
       }
     },
     mounted () {
+        let vm = this
+        if(!vm.user && vm.userName){
+            vm.setUser()
+        }
 
       this.initEditor()
       this.initEditorEvents()
@@ -284,7 +293,6 @@
 
       this.subscribeToUsersChange(fbpaths().currentLabUsers())
 
-      let probId = '0'
       this.syncEditorWithUsersLastCodeEntry()
 
 
@@ -356,11 +364,11 @@
         //_say('saveCodeToFirebase', editor)
         let codeEntry = editor.getSession().getValue()
         let codeToSubmit = {
-          'problem-id': probId,
+          'problem-id': vm.probId,
           'last-updated': new Date().toTimeString(),
           text: codeEntry,
         };
-        let codeEntryPath = fbpaths().getCodeEntryByLabAndProblemId(labName, userName, probId)
+        let codeEntryPath = fbpaths().getCodeEntryByLabAndProblemId(vm.labName, vm.userName, vm.probId)
         // console.log('saving code :', fb.database().ref())
         fb.database().ref().child(codeEntryPath).update(codeToSubmit)
       },
@@ -593,7 +601,7 @@
       },
       initEditor: function () {
         let ed = $('#editor')
-        let hgt = calCulateWindowHeight()
+        let hgt = calculateWindowHeight()
         ed.css('height', hgt - 100)
         ed.css({'font-size': '13px'})
         editor = editor || ace.edit('editor')
@@ -608,9 +616,10 @@
 
       },
       syncEditorWithUsersLastCodeEntry: function () {
+          let vm = this
         let ref = fb.database().ref(fbpaths().getCodeEntryByLabAndProblemId())
         ref.on('value', function (snapshot) {
-          if (snapshot && snapshot.key && snapshot.key === this.probId) {
+          if (snapshot && snapshot.key && snapshot.key === vm.probId) {
             snapshot.forEach(function (childSnapshot) {
               if (childSnapshot && childSnapshot.key && childSnapshot.key === 'text') {
                 let v = childSnapshot.val()
@@ -652,7 +661,7 @@
     components: {}
   }
 
-  function calCulateWindowHeight() {
+  function calculateWindowHeight() {
     return $(window).height()
   }
 

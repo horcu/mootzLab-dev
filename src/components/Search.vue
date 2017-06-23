@@ -13,7 +13,7 @@
       <li v-for='item in searchResults'>
         <div id="result-item">
           <span class="lab-info-text pull-left">{{item.name}} : {{item.description}}
-         <img v-if="item.userIsInvited" class="pull-right lg-go" v-on:click="createNewLab()"
+         <img v-if="item.userIsInvited" class="pull-right lg-go" v-on:click="navigateToLab(item.name, item.lab_key)"
               src="/static/img/enter_lab.png"/>
          <img v-else-if="!item.userIsInvited" class="pull-right lg-go" v-on:click="requestInvitation()"
               src="/static/img/invite_lab.png"/>
@@ -55,27 +55,19 @@
         return new Promise(function (resolve, reject) {
           let results = []
           let labs = vm.labs
-          $.when(
-          $(labs).each(function (index, item) {
-            let currentLabName = item['name']
-            if (currentLabName.includes(entry)) {
-              //todo check for invitation here
-              let invitees = item['invitees']
-              item.userIsInvited = false
-              let key = Object.keys(labs[index].val())[0];
 
-              let ref = fb.database().ref(fbpaths().inviteeListForLab(key))
-              ref.once('value', function (snapshot) {
-                snapshot.forEach(function (childSnapshot) {
-                  if (childSnapshot.userId === vm.userId) {
-                    item.userInsInvited = true;
-                  }
-                })
-              })
+          $(labs).each(function (index, item) {
+            if (item['name'].includes(entry)) {
+              item.userIsInvited = false
+              for(let invite in item['invitees']) {
+                if(invite === vm.userId){
+                  item.userIsInvited = true
+                }
+              }
               results.push(item)
             }
           })
-        .then(function(){
+
           if (results.length > 0) {
             resolve(results)
             return true
@@ -83,7 +75,6 @@
             reject()
             return false
           }
-        }))
         })
       },
       parseFoundLabsCallback: function (results, vm) {
@@ -104,12 +95,9 @@
       requestInvitation: function () {
 
       },
+
       navigateToLab: function (labName, labKey) {
 
-        if (!labName || labName.trim() === '') {
-          alert('enter a lab name')
-          return false
-        }
 
         let rObj = {name: 'lab', params: {id: labName, labKey: labKey}}
 
@@ -120,7 +108,7 @@
             console.log("couldn't navigated to " + labName)
           })
       },
-      getLabId: function () {
+      getLabName: function () {
         let labInput = $('#lab-path-input')
         return labInput.val()
       },
