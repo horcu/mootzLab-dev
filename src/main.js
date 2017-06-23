@@ -36,20 +36,20 @@ require('bootstrap')
 
 //define your routes
 const routes = [
-  //route for the home route of the webpage
-  {name: 'home' ,path: '/', component: App},
+  // //route for the home route of the webpage
+  // {name: 'home' ,path: '/', component: App},
   //route for the home route of the webpage
   {name: 'auth' ,path: '/auth', component: Hello},
   //route for the about route of the webpage
   {path: '/about', component: About},
   //route for the search route of the webpage
-  {name: 'search', path: '/search', component: Search},
+  {name: 'search', path: '/l', component: Search},
  //settings component
   {name: 'settings', path: '/settings', component: Settings},
   //route for the labs
  // {name: 'lab', path: '/lab', component: Lab},
   //route for a lab with a given id
-  {name: 'lab', path: '/lab/:id', component: Lab}
+  {name: 'lab', path: '/l/:id', component: Lab}
 ]
 
 // Create the router instance and pass the `routes` option
@@ -67,13 +67,13 @@ new Vue({
   //pass the template to the root component
   render: a => a(App),
   //declare components that the root component can access
-  components: {Lab, Hello, Search, Settings, About},
+  components: {Lab, Hello, App, Search, Settings, About},
   //pass in the router to the vue instance
   router,
   created() {
     fb.auth().onAuthStateChanged((user) => {
       if(user) {
-        this.$router.push('/search')
+        this.$router.push('/l')
       } else {
         this.$router.push('/auth')
       }

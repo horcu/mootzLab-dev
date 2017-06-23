@@ -21,91 +21,16 @@
     name: 'main',
     data() {
       return {
-        labSessions: {},
-        searchResults: [],
-        user: {},
+
+        user: fb.auth().currentUser,
         userName: '',
         email: '',
         photo: '',
         userId: ''
       }
     },
-    created() {
 
-    },
-
-    mounted(){
-      let vm = this
-      vm.user = fb.auth().currentUser;
-      if (vm.user) {
-        vm.userName = this.user.displayName;
-        vm.email = this.user.email;
-        vm.photo = this.user.photoURL;
-        vm.userId = this.user.uid;
-      }
-
-      let labPathInput = $('#lab-path-input')
-      labPathInput.on("change paste keyup", function () {
-        let searchText = labPathInput.val()
-        //alert('changed')
-        if (searchText.length < 2) {
-          return false
-        }
-        vm.doSearch(searchText, vm)
-          .then(function (results) {
-            vm.parseFoundLabsCallback(results, vm.userId)
-          })
-          .catch(function () {
-            vm.noSearchResultsCallback()
-          })
-      })
-
-      $("#lab-path-input").on('keydown', function (event) {
-        if (event.keyCode === 13) {
-          navigateToLab('lab')
-        }
-      });
-    },
     methods: {
-      doSearch: function (entry, vm) {
-        return new Promise(function (resolve, reject) {
-          let results = []
-          let labs = vm.labSessions
-          $(labs).each(function (index, item) {
-            let currentLabName = item['name']
-            if (currentLabName.includes(entry)) {
-              results.push(item)
-            }
-          })
-          if (results.length > 0) {
-            resolve(results)
-            return true
-          } else {
-            reject()
-            return false
-          }
-        })
-      },
-
-      parseFoundLabsCallback: function (results, userId) {
-
-        let tempSearchResults = []
-        for (let i = 0; i < results.length; i++) {
-          let invitees = results[i]['invitees']
-          let guest = {}
-          guest.invited = false
-          for (let x = 0; x < invitees.length; x++) {
-            if (invitees[x].userId === userId) {
-              guest.invited = true
-            }
-          }
-          tempSearchResults.push(guest)
-        }
-        searchResults = tempSearchResults
-      },
-      noSearchResultsCallback: function () {
-        // this.createNewLab()
-      },
       isLoggedIn: function () {
         return true
       },
@@ -120,46 +45,9 @@
         console.log('app', 'entering lab: ' + this.$route.name)
         return this.$route.name === 'auth'
       },
-      isLabPage: function () {
-        return this.$route.name === 'lab'
-      },
 
-      createNewLab: function () {
-        labKey = firebase.database().ref(fbpaths().labs()).push().key
-        this.navigateToLab(this.labName, labKey)
-      },
-      navigateToLab: function (labName, labKey) {
-
-        if (!labName || labName.trim() === '') {
-          alert('enter a lab name')
-          return false
-        }
-
-        let rObj = {name: 'lab', params: {id: labName, labKey: labKey}}
-
-        this.$router.push(rObj,
-          function () {
-            console.log('navigated to ' + labName)
-          }, function () {
-            console.log("couldn't navigated to " + labName)
-          })
-      },
-
-      getLabId: function () {
-        let labInput = $('#lab-path-input')
-        return labInput.val()
-      }
     },
-    firebase: {
-      labSessions: {
-        source: fb.database().ref(fbpaths().labs()),
-        cancelCallback: function () {
-        },
-        readyCallback: function () {
-        },
-        asObject: false
-      }
-    },
+
   }
 
 </script>
@@ -187,72 +75,6 @@
 
   }
 
-  #labs-list, #users-list {
-    position: absolute;
-    width: auto;
-    height: auto;
-    margin-top: 10px;
-    background-color: #212733
-  }
-
-  #div-input-path {
-    position: relative;
-    margin-left: 20px;
-    height: 40%;
-    width: 100%;
-    margin-top: 50px;
-    border: 1px solid transparent;
-    background-color: transparent;
-  }
-
-  #results-list {
-    position: relative;
-    margin-left: 0;
-    height: auto;
-    width: 100%;
-    margin-top: calc(20% + 30px);
-    border: 1px solid transparent;
-    background-color: #212733
-  }
-
-  #results-list li {
-    background-color: #212733;
-    border: 1px solid transparent;
-    height: 50px;
-    color: whitesmoke;
-  }
-
-  #results-list li:hover {
-    cursor: pointer;
-  }
-
-  #lg-go {
-    position: absolute;
-    margin-top: 80px;
-    height: 100px;
-
-  }
-
-  #lab-prefix {
-    text-decoration: none;
-    font-size: 160px;
-  }
-
-  #lab-path-input {
-    position: relative;
-    border: 1px solid transparent;
-    border-radius: 6px;
-    height: 265px;
-    background-color: transparent;
-    padding: 0;
-    padding-left: 20px;
-    margin-top: 0px;
-    margin-left: 10px;
-    font-size: 100px;
-    font-style: italic;
-    font-family: 'Courier New', Monospace;
-    width: 60%;
-  }
 
   ::-webkit-input-placeholder {
     font-style: italic;
