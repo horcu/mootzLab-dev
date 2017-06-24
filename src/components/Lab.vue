@@ -15,20 +15,19 @@
                 </li>
 
                 <!--save code-->
-                <li  class="pull-left" v-on:click="saveCodeToFirebase()"
-                     data-toggle=" tooltip
-  " data-placement="bottom" title="build">
-                  <a> <img id="code-editor-controls-play" width="15px" height="15px"
-                           src="/static/img/play-button%20(1).png" alt="build"
-                  /></a>
-
+                <li  class="pull-left" v-on:click="saveCodeToFirebase()" data-toggle="tooltip" data-placement="bottom" title="build">
+                  <a>
+                    <img id="code-editor-controls-play" width="15px" height="15px" src="/static/img/play-button%20(1).png" alt="build"/>
+                  </a>
                 </li>
               </ul>
             </div>
             <div id="code-tab">
               <!--<div id="editor">-->
               <!--</div>-->
-              <editor id="editor" v-model="codeContent" @init="editorInit();" lang="csharp" theme="ambiance" ></editor>
+              <editor id="editor" v-model="codeContent" @init="editorInit();" lang="csharp" theme="ambiance">
+
+              </editor>
               <div id="comments-tab" class="hidden">
                 <div id="comments-tab-top-menu">
                   <ul class="list-group">
@@ -296,7 +295,7 @@
 
       editor = ace.edit('editor')
       vm.initEditor()
-     // vm.initEditorEvents()
+      vm.initEditorEvents(this)
       vm.initWebRtc()
       vm.updateUserPresenceInLab()
       vm.subscribeToUsersChange(fbpaths().currentLabUsers(this.labId))
@@ -388,13 +387,18 @@
         let ref = fb.database().ref(path)
 
         ref.on('value', function (snapshot) {
-          if (snapshot !== vm.userId) {
+          if (snapshot == 'users') {
+              let value = snapshot.val()
+            if(value.userId === vm.userId){
 
+            }
           }
         })
       },
       initEditorEvents: function () {
+        let vm = this
         editor.getSession().on('change', function (e) {
+           updateUserLabStream(' is coding....', vm.userId, 'coding')
         });
 
         editor.getSession().selection.on('changeSelection', function (e) {
@@ -528,56 +532,6 @@
           //todo go get the user data from the db
           addMessageToLabStream('is in the lab', peer.nick, '', '', '', 'right', 0)
 
-//          console.log('video added', peer);
-//          console.log('video added', peer.nick);
-//
-//          let remotes = document.getElementById('remote-vids');
-//          if (remotes) {
-//
-//            let container = document.createElement('div')
-//            container.className = 'videoContainer';
-//            container.id = 'container_' + webrtc.getDomId(peer);
-//            container.appendChild(video);
-//
-//            let htmlWrapper = '<div class="box-body l-vid-box"><button id="local-vid-popper" type="button" class="btn btn-default btn-circle btn-lg" data-toggle="popover">P</button><div id="panel-local-vid" class="hidden panel panel-default"><div class="panel-body">'
-//              + container
-//              + '</div>div class="small-box small-box-footer"><button type="button" class="btn btn-box-tool pull-right" data-toggle="tooltip"title="Contacts" data-widget="chat-pane-toggle">'
-//              + '<i class="fa fa-comments"></i></button><button type="button" class="btn btn-box-tool pull-right" data-toggle="tooltip" title="video" data-widget="chat-pane-toggle">'
-//              + '<i class="fa fa-video-camera"></i></button></div></div></div>';
-//
-//            // suppress contextmenu
-//            video.oncontextmenu = function () {
-//              return false;
-//            };
-//
-//            remotes.appendChild(htmlWrapper);
-//
-//            // show the ice connection state
-//            if (peer && peer.pc) {
-//              let connstate = document.createElement('div');
-//              connstate.className = 'connectionstate';
-//              container.appendChild(connstate);
-//              peer.pc.on('iceConnectionStateChange', function (event) {
-//                switch (peer.pc.iceConnectionState) {
-//                  case 'checking':
-//                    connstate.innerText = 'Connecting to peer...';
-//                    break;
-//                  case 'connected':
-//                  case 'completed': // on caller side
-//                    connstate.innerText = 'Connection established.';
-//                    break;
-//                  case 'disconnected':
-//                    connstate.innerText = 'Disconnected.';
-//                    break;
-//                  case 'failed':
-//                    break;
-//                  case 'closed':
-//                    connstate.innerText = 'Connection closed.';
-//                    break;
-//                }
-//              });
-//            }
-          // }
         });
 
         // a peer has been removed
@@ -646,11 +600,13 @@
       initEditor: function () {
         let ed = $('#editor')
         let hgt = calculateWindowHeight()
+        let wd = 75%
         ed.css('height', hgt - 90)
+        ed.css('width', wd)
         ed.css({'font-size': '16px'})
-       // editor.setTheme('/static/ace/ayu-ace/ayu-mirage')
+        editor.setTheme('/static/ace/ayu-ace/ayu-mirage')
         editor.getSession().setMode("/static/ace/mode/javascript");
-//
+
         editor.getSession().setUseWorker(false);
         editor.setHighlightActiveLine(true);
         editor.getSession().setUseSoftTabs(true);
@@ -753,20 +709,42 @@
       return function () {
         let $message;
         $message = $($('.message_template').clone().html());
+        $message.attr('id', uId)
         $message.addClass(side).find('.text').html(text);
         $message.find('#user-img').attr('src', photo);
         $('.messages').append($message);
         return setTimeout(function () {
-          return $message.addClass('appeared');
+          $message.addClass('appeared');
+          setTimeout(function () {
+            return $message.stop().find('div.text_wrapper').stop().addClass('hidden');
+          }, 4000);
         }, 0);
       };
     }(this);
+
     return this;
   }
 
   //todo  type determines size, color, animation etc...
-  function updateUserLabStream (message, type) {
+  function updateUserLabStream (txt, uId, type) {
+    var $messages, message;
+    if (txt.trim() === '' || txt.trim() === '') {
+      return;
+    }
 
+    $('.message_input').val('');
+    $messages = $('.messages');
+    message = $messages.find('#' + uId )
+
+    setTimeout(function () {
+      message.find('.text').html(txt)
+      return message.stop().find('div.text_wrapper').stop().removeClass('hidden');
+    }, 1000);
+
+
+    setTimeout(function () {
+      return message.stop().find('div.text_wrapper').stop().addClass('hidden');
+    }, 4000);
   }
 
 </script>
@@ -777,15 +755,16 @@
   @import '/static/css/skins/_all-skins.css';
   @import '/static/css/skins/skin-green-light.css';
   @import '/static/css/peez.css';
+
   #lab-problem-tools{
     position: absolute;
     margin-top: 0;
     width: 100px;
-    margin-left: calc(60% - 105px);
+    margin-left: calc(65% - 105px);
     height: auto;
     z-index: 10001;
     padding-left: 7px;
-    background-color: whitesmoke;
+    background-color: transparent;
   }
 
   .ace-ambiance {
@@ -815,7 +794,7 @@
   }
 
   .control-sidebar-comments {
-    width: 40%; /* 0 width - change this with JavaScript */
+    width: 35%; /* 0 width - change this with JavaScript */
     z-index: 1;
     background-color: #212733;
   }
@@ -986,7 +965,7 @@
 
   .chat_window {
     position: fixed;
-    width: 40%;
+    width: 35%;
     right: 0;
     top: 50px;
     bottom: 44px;
@@ -1050,8 +1029,8 @@
   }
 
   div.avatar img {
-    width: 60px;
-    height: 60px;
+    width: 50px;
+    height: 50px;
   }
 
   .messages .message {
