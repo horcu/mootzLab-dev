@@ -547,3 +547,17 @@ div.slim-footer button {
   margin-left: 10px;
 }
 
+.ace_keyword {
+  color: #cda869;
+}
+
+.ace_identifier {
+}
+
+.ace_paren {
+  color: #24C2C7;
+}
+
+.ace_punctuation.ace_operator {
+  color: #fa8d6a;
+}

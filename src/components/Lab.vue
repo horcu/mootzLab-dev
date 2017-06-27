@@ -19,7 +19,8 @@
                     </li>
 
                     <!--save code-->
-                    <li class="pull-left" v-on:click="saveCodeToFirebase()" data-toggle="tooltip" data-placement="bottom"
+                    <li class="pull-left" v-on:click="saveCodeToFirebase()" data-toggle="tooltip"
+                        data-placement="bottom"
                         title="build">
                       <a>
                         <img id="code-editor-controls-play" width="15px" height="15px" src="/static/img/push-pin.png"
@@ -31,7 +32,8 @@
                 <div id="code-tab">
                   <!--<div id="editor">-->
                   <!--</div>-->
-                  <editor id="editor" v-model="codeContent" @init="editorInit();" >
+                  <editor id="editor" v-model="codeContent" @init="editorInit();" theme="/static/ace/chrome"
+                          lang="csharp">
 
                   </editor>
 
@@ -61,16 +63,16 @@
   import fb from 'src/fb-config'
   import Lab from 'src/components/Lab.vue'
   import fbpaths from 'src/fbPaths'
-  import 'bootstrap'
 
-  var webrtc
-  var editor
+
+  let webrtc = null
+  let editor = null
 
   export default {
     name: 'lab',
     components: {
       editor: require('vue2-ace-editor'),
-      stream
+      stream,
 
     },
     prop: {
@@ -78,6 +80,7 @@
     },
     data: function () {
       return {
+
         codeContent: 'type your code here...',
         errAlert: false,
         errAlertText: '',
@@ -200,11 +203,11 @@
       vm.syncEditorWithUsersLastCodeEntry()
 
       vm.colorEditor()
-      vm.inintJqueryUi()
     },
     methods: {
+
       editorInit: function () {
-        require('../../node_modules/brace/mode/java');
+
         require('../../node_modules/brace/mode/csharp');
         require('../../node_modules/brace/mode/python');
         require('../../node_modules/brace/mode/golang');
@@ -213,24 +216,13 @@
         require('../../node_modules/brace/theme/katzenmilch');
         require('../../node_modules/brace/theme/idle_fingers');
         require('../../node_modules/brace/theme/chaos');
-        require('../../node_modules/brace/theme/ambiance');
-        require('../../node_modules/ayu-ace/mirage');
-        require('../../node_modules/jquery-ui/ui/sortable');
-        require('../../node_modules/jquery-ui/ui/resizable');
+        require('../../static/ace/theme-ambiance.css');
+        require('../../static/ace/theme-mirage');
       },
       showAlert: function () {
         this.errAlert = true
       },
       colorEditor: function () {
-
-      },
-      inintJqueryUi: function () {
-        $(".ace_content").resizable({
-          handles: 'e',
-          resize: function() {
-            $("#editor-rside").outerWidth($("#app").innerWidth() - $(".ace_content").outerWidth());
-          }
-        });
 
       },
       find: function (word, dir) {
@@ -549,10 +541,10 @@
       updateUserPresenceInLab: function () {
         let vm = this
 
-        if(!vm.labId){
+        if (!vm.labId) {
           vm.labId = this.$route.params.labId
         }
-        if(vm.userId){
+        if (vm.userId) {
           let usersPath = fbpaths().currentLabUsers(vm.labId)
           fb.database().ref(usersPath + '/' + vm.userId).set(true)
         }
@@ -573,30 +565,28 @@
         let wd = 75 %
           ed.css('height', hgt - 90)
         ed.css('width', wd)
-        ed.css({'font-size': '16px'})
+        ed.css({'font-size': '18px'})
+        ed.css({'font-family': 'consolas'})
 
-        let rside = $('#editor-rside .tab-content')
+        let rside = $('#editor-rside')
+        // let rsideCont = rside.find('.tab-content')
         let rwd = 20 %
-        rside.css('height', hgt - 90)
+          rside.css('height', hgt - 90)
         rside.css('width', rwd)
 
-
-        //ace.config.set('basePath', '/node_modules/brace/');
+        ace.config.set('basePath', '/static/ace/');
         editor.getSession().setUseWorker(true);
 
-        //editor.setTheme('theme/mirage')
-        //editor.getSession().setMode("mode/javascript");
+        //editor.setTheme('monokai')
+        editor.getSession().setMode("javascript");
 
-
-        editor.setHighlightActiveLine(true);
+        editor.setHighlightActiveLine(false);
         editor.getSession().setUseSoftTabs(true);
-        editor.setShowPrintMargin(false);
-
-        let rSideDiv = $('#editor-rside')
+        editor.setShowPrintMargin(true);
 
         let scr = ed.find('div.ace_scroller')
-        scr.append(rSideDiv)
-        $(rSideDiv).removeClass('hidden')
+        scr.append(rside)
+        $(rside).removeClass('hidden')
         console.log('editor', 'editor created and styled')
 
       },
@@ -658,11 +648,11 @@
 
   }
 
-  function calculateWindowHeight() {
+  function calculateWindowHeight () {
     return $(window).height()
   }
 
-  function addMessageToLabStream(text, name, photo, email, uId, side, sessionId) {
+  function addMessageToLabStream (text, name, photo, email, uId, side, sessionId) {
     var $messages, message;
     if (text.trim() === '' || name.trim() === '') {
       return;
@@ -713,7 +703,7 @@
   }
 
   //todo  type determines size, color, animation etc...
-  function updateUserLabStream(txt, uId, type) {
+  function updateUserLabStream (txt, uId, type) {
     var $messages, message;
     if (txt.trim() === '' || txt.trim() === '') {
       return;
@@ -728,7 +718,6 @@
       message.stop().find('div.avatar').stop().animate({right: '0'})
       return message.stop().find('div.text_wrapper').stop().removeClass('hidden');
     }, 1000);
-
 
     setTimeout(function () {
       message.stop().find('div.message-box').stop().animate({right: '20'})
@@ -748,18 +737,20 @@
   * {
     box-sizing: border-box;
   }
-  .ace_content, #editor-rside{
+
+  .ace_content, #editor-rside {
     height: 100%;
     position: absolute;
     padding: 10px;
   }
 
-  .ace_content{
+  .ace_content {
     width: 75%;
   }
 
-  .active { display: block; }
-
+  .active {
+    display: block;
+  }
 
   .list-group {
     width: 100%;
@@ -768,8 +759,6 @@
   .list-group-item {
     height: 50px;
   }
-
-
 
   #lab-problem-tools {
     position: absolute;
@@ -822,11 +811,6 @@
     padding: 0px;
   }
 
-  #user-img {
-    border: 1px solid transparent;
-    border-radius: 24px
-  }
-
   #comments-tab {
     position: absolute;
     right: 0;
@@ -847,7 +831,6 @@
     margin-left: 15px;
     margin-right: 15px;
   }
-
 
   .comment-btn {
     border: 1px solid ghostwhite;
@@ -926,18 +909,18 @@
 
   }
 
-  .ace-ambiance .ace_keyword {
+  .ace_keyword {
     color: #cda869;
   }
 
-  .ace-ambiance .ace_identifier {
+  .ace_identifier {
   }
 
-  .ace-ambiance .ace_paren {
+  .ace_paren {
     color: #24C2C7;
   }
 
-  .ace-ambiance .ace_punctuation.ace_operator {
+  .ace_punctuation.ace_operator {
     color: #fa8d6a;
   }
 
@@ -1081,8 +1064,6 @@
     display: inline-block;
     line-height: 48px;
   }
-
-
 
 
 </style>

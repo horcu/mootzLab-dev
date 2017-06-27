@@ -2,28 +2,12 @@
   <header class="main-header box box-widget with-border">
   <!-- Logo -->
   <a href="/l" class="logo">
-
-  <span class="logo-sm"><b>Mootz</b>LAB</span>
+  <span><b>Mootz</b>LAB</span>
   </a>
 
   <nav id="headNav" class="navbar navbar-static-top fixed" role="navigation">
 
-  <ul id="editor-controls" class="nav navbar-nav pull-left">
-
-  <li class="pull-left">
-  <a>
-  <!--<strong v-if="$route.params.id !== null || $route.params.id !== undefined"> {{$route.params.id}}</strong>-->
-  </a>
-  </li>
-
-
-  <!--stop build-->
-
-
-  </ul>
-
-  <ul class="nav navbar-nav pull-right">
-
+  <ul class="top-nav nav navbar-nav">
 
   <li  class="pull-left">
   <a>share &nbsp <img src="/static/img/share.png"/></a>
@@ -155,12 +139,10 @@
 </script>
 
 <style scoped>
-  @import '/static/bootstrap/css/bootstrap.min.css';
-  @import '/static/bootstrap/css/bootstrap-theme.css';
-  @import '/static/css/skins/_all-skins.css';
-  @import '/static/css/skins/skin-green-light.css';
-  @import '/static/css/peez.css';
 
+  .top-nav{
+    width: 100%;
+  }
   .main-header {
     height: 50px;
     width: 100%;

@@ -32,11 +32,13 @@ import Lab from './components/Lab'
 import Search from './components/Search.vue'
 
 import Settings from './components/Settings.vue'
-import jQuery from 'jquery'
 
-//import { modal } from 'vueboot';
-
-global.jQuery = jQuery
+ import $ from 'jquery'
+//
+// //import { modal } from 'vueboot';
+//
+ global.jQuery = $
+// global.$ = $
 
 require('bootstrap')
 

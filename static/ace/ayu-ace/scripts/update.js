@@ -44,8 +44,8 @@ const template = (name, css) => {
 (async () => {
 	try {
 		rimraf.sync('light.js')
-		rimraf.sync('mirage.js')
-		rimraf.sync('dark.js')
+		rimraf.sync('theme-mirage.js')
+		rimraf.sync('theme-dark.js')
 
 		await execa('git', ['clone', 'https://github.com/ajaxorg/ace', '--depth=1'])
 		await execa('git', ['clone', 'https://github.com/dempfi/ayu', '--depth=1'])
@@ -86,8 +86,8 @@ const template = (name, css) => {
 		const dark = template('ayu-dark', fs.readFileSync('ayu-dark.css', 'utf-8'))
 
 		fs.writeFileSync('light.js', light, 'utf-8')
-		fs.writeFileSync('mirage.js', mirage, 'utf-8')
-		fs.writeFileSync('dark.js', dark, 'utf-8')
+		fs.writeFileSync('theme-mirage.js', mirage, 'utf-8')
+		fs.writeFileSync('theme-dark.js', dark, 'utf-8')
 
 		rimraf.sync('ace')
 		rimraf.sync('ayu')
@@ -95,9 +95,9 @@ const template = (name, css) => {
 		rimraf.sync('ayu-light.css')
 		rimraf.sync('ayu-mirage.css')
 		rimraf.sync('ayu-dark.css')
-		rimraf.sync('ayu-light.js')
-		rimraf.sync('ayu-mirage.js')
-		rimraf.sync('ayu-dark.js')
+		rimraf.sync('ayu-theme-light.js')
+		rimraf.sync('ayu-theme-mirage.js')
+		rimraf.sync('ayu-theme-dark.js')
 	} catch (error) {
 		console.log(error);
 	}

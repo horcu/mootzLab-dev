@@ -13,9 +13,6 @@
     "start": "node server.js"
   },
   "dependencies": {
-    "ace-builds": "^1.2.6",
-    "ayu": "^3.0.0",
-    "ayu-ace": "^2.0.3",
     "bootstrap": "^3.3.7",
     "bootstrap-loader": "^2.1.0",
     "bootstrap-sass": "^3.3.7",
@@ -31,6 +28,7 @@
     "vue": "^2.1.0",
     "vue-ace-editor": "^1.0.3",
     "vue-router": "^2.2.0",
+    "vue-slick": "^1.1.6",
     "vueboot": "^0.4.5",
     "vuefire": "^1.4.3",
     "webpack": "^1.15.0"

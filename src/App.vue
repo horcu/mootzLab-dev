@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div id="app">
   <top></top>
 <router-view>
 </router-view>
@@ -55,11 +55,13 @@
 
 </script>
 <style>
+  @import '/static/css/mootz.css';
+  @import '/static/css/peez.css';
   @import '/static/bootstrap/css/bootstrap.min.css';
   @import '/static/bootstrap/css/bootstrap-theme.css';
-  @import '/static/css/skins/_all-skins.css';
-  @import '/static/css/skins/skin-green-light.css';
-  @import '/static/css/peez.css';
+  /*@import '/static/css/skins/_all-skins.css';*/
+  /*@import '/static/css/skins/skin-green-light.css';*/
+
   @import "/static/css/firebaseui.css";
 
   html {

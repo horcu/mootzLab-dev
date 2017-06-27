@@ -1,3 +1,3 @@
-require('./light.js')
-require('./mirage.js')
-require('./dark.js')
+require('../theme-light.js')
+require('../theme-mirage.js')
+require('../theme-dark.js')

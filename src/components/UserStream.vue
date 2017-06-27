@@ -14,18 +14,27 @@
       <!--</li>-->
     <!--</div>-->
 
-    <ul class="users-ul">
-      <li v-for="user in streamUsers"  class="message" data-toggle="popover" :title="user.uname" data-placement="bottom" :data-content="user.bio">
-          <img class="user-img" :src="user.photo"  />
-      </li>
-    </ul>
+    <div id="slick-box">
 
-    <!--<div  class="tab-content">-->
-      <!--<div v-for="user in streamUsers" class="tab-pane users-info-tab" :id="user.userId">-->
-        <!--<p>{{user.bio}}</p>-->
-      <!--</div>-->
-    <!--</div>-->
+    <div class="slick-dir slick-dir-left pull-left" v-on:click="slick_prev()" >
+      <a>
+        <img src="/static/img/expand-left.png" alt="go left" />
+      </a>
+    </div>
 
+      <div class="slick-dir slick-dir-right pull-right" v-on:click="slick_next()">
+        <a>
+          <img src="/static/img/expand-right.png" alt="go left" />
+        </a>
+      </div>
+    <slick ref="slick" options="slickOptions">
+      <a v-for="user in streamUsers"  class="message" data-toggle="popover" :title="user.uname" data-placement="bottom" :data-content="user.bio">
+        <img class="user-img" :src="user.photo"  />
+      </a>
+    </slick>
+
+
+    </div>
     </div>
 </template>
 
@@ -36,24 +45,36 @@
   import $ from 'jquery'
   import fb from 'src/fb-config'
   import fbpaths from 'src/fbPaths'
+  import slick from 'vue-slick'
+
   //import {tab, tabset } from 'vueboot';
-  import 'bootstrap'
 
   export default {
       components:{
-//        tabset,
-//        tab
+        slick
       },
       data: function(){
           return {
-            streamUsers: {}
+            streamUsers: {},
+            slickOptions: {
+              slidesToShow: 5,
+              // Any other options that can be got from plugin documentation
+            }
           }
       },
     mounted(){
-      $('[data-toggle="popover"]').popover();
     },
     methods: {
-
+      slick_next() {
+        this.slick.next();
+      },
+      slick_prev() {
+        this.$refs.slick.prev();
+      },
+      slick_reInit() {
+        // Helpful if you have to deal with v-for to update dynamic lists
+        this.$refs.slick.reSlick();
+      },
     },
     firebase :{
       streamUsers : {
@@ -65,11 +86,23 @@
     asObject: false
   },
     }
-
   }
 </script>
 
 <style scoped>
+  @import '../../node_modules/slick-carousel/slick/slick.css';
+  .slick-dir{
+    margin-top: 7px;
+  }
+
+#slick-box{
+  position: relative;
+  width: 100%;
+}
+
+#slick-box a img:hover{
+  cursor: pointer;
+}
 
   li.message{
     float: none;
@@ -77,8 +110,8 @@
   }
 
   img.user-img{
-    width: 55px;
-    height: 55px;
+    width: 50px;
+    height: 50px;
   }
 
   img.user-img:hover{
@@ -96,15 +129,6 @@
     z-index: 2000;
     background: whitesmoke url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMgAAADICAQAAAAHUWYVAABFFUlEQ…ga9bnBq3fEVltKfO5IaSTmGjjc4J0otcP7QsJUSQM8pEj5/wCuUuC2DWz8AAAAAElFTkSuQmCC);
   }
-
-
-  ul.users-ul{
-    z-index: 2000;
-    float: none;
-    width: auto;
-    height: 100%;
-  }
-
 
   .nav-tabs>li.active>a,li.message>a:hover, .nav-tabs>li.active>a:focus, .nav-tabs>li.active>a:hover ,.nav-tabs>li.active, .nav-tabs>li:focus, .nav-tabs>li:hover{
     background: none;
