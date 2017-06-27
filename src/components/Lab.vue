@@ -31,7 +31,7 @@
                 <div id="code-tab">
                   <!--<div id="editor">-->
                   <!--</div>-->
-                  <editor id="editor" v-model="codeContent" @init="editorInit();" theme="ambiance" lang="csharp">
+                  <editor id="editor" v-model="codeContent" @init="editorInit();" >
 
                   </editor>
 
@@ -61,6 +61,7 @@
   import fb from 'src/fb-config'
   import Lab from 'src/components/Lab.vue'
   import fbpaths from 'src/fbPaths'
+  import 'bootstrap'
 
   var webrtc
   var editor
@@ -199,6 +200,7 @@
       vm.syncEditorWithUsersLastCodeEntry()
 
       vm.colorEditor()
+      vm.inintJqueryUi()
     },
     methods: {
       editorInit: function () {
@@ -213,11 +215,22 @@
         require('../../node_modules/brace/theme/chaos');
         require('../../node_modules/brace/theme/ambiance');
         require('../../node_modules/ayu-ace/mirage');
+        require('../../node_modules/jquery-ui/ui/sortable');
+        require('../../node_modules/jquery-ui/ui/resizable');
       },
       showAlert: function () {
         this.errAlert = true
       },
       colorEditor: function () {
+
+      },
+      inintJqueryUi: function () {
+        $(".ace_content").resizable({
+          handles: 'e',
+          resize: function() {
+            $("#editor-rside").outerWidth($("#app").innerWidth() - $(".ace_content").outerWidth());
+          }
+        });
 
       },
       find: function (word, dir) {
@@ -555,7 +568,7 @@
 
       },
       initEditor: function () {
-        let ed = $('#editor')
+        let ed = $('.ace_editor')
         let hgt = calculateWindowHeight()
         let wd = 75 %
           ed.css('height', hgt - 90)
@@ -563,18 +576,23 @@
         ed.css({'font-size': '16px'})
 
         let rside = $('#editor-rside .tab-content')
+        let rwd = 20 %
         rside.css('height', hgt - 90)
+        rside.css('width', rwd)
 
-         editor.setTheme('/static/ace/ayu-ace/ayu-mirage')
-        editor.getSession().setMode("/static/ace/mode/javascript");
 
-        editor.getSession().setUseWorker(false);
+        //ace.config.set('basePath', '/node_modules/brace/');
+        editor.getSession().setUseWorker(true);
+
+        //editor.setTheme('theme/mirage')
+        //editor.getSession().setMode("mode/javascript");
+
+
         editor.setHighlightActiveLine(true);
         editor.getSession().setUseSoftTabs(true);
         editor.setShowPrintMargin(false);
 
         let rSideDiv = $('#editor-rside')
-        let rsideCloned = $(rSideDiv.clone().html());
 
         let scr = ed.find('div.ace_scroller')
         scr.append(rSideDiv)
@@ -727,8 +745,17 @@
   @import '/static/css/skins/skin-green-light.css';
   @import '/static/css/peez.css';
 
-  #editor{
-    margin-right: 50px;
+  * {
+    box-sizing: border-box;
+  }
+  .ace_content, #editor-rside{
+    height: 100%;
+    position: absolute;
+    padding: 10px;
+  }
+
+  .ace_content{
+    width: 75%;
   }
 
   .active { display: block; }
@@ -741,6 +768,7 @@
   .list-group-item {
     height: 50px;
   }
+
 
 
   #lab-problem-tools {

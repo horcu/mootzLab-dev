@@ -1,5 +1,5 @@
 <template>
-  <div id="editor-rside" class="tabbable hidden">
+  <div id="editor-rside" class="hidden">
     <!--<div class="message_template">-->
       <!--<li v-for="user in streamUsers" class="message">-->
         <!--<div class="message-block">-->
@@ -15,10 +15,8 @@
     <!--</div>-->
 
     <ul class="users-ul">
-      <li v-for="user in streamUsers"  class="message">
-        <a  data-toggle="popover" title="user.uname" data-content="user.bio">
-          <img class="user-img" width="40" height="40" :src="user.photo"/>
-      </a>
+      <li v-for="user in streamUsers"  class="message" data-toggle="popover" :title="user.uname" data-placement="bottom" :data-content="user.bio">
+          <img class="user-img" :src="user.photo"  />
       </li>
     </ul>
 
@@ -38,12 +36,13 @@
   import $ from 'jquery'
   import fb from 'src/fb-config'
   import fbpaths from 'src/fbPaths'
-  import {tab, tabset } from 'vueboot';
+  //import {tab, tabset } from 'vueboot';
+  import 'bootstrap'
 
   export default {
       components:{
-        tabset,
-        tab
+//        tabset,
+//        tab
       },
       data: function(){
           return {
@@ -72,26 +71,40 @@
 
 <style scoped>
 
+  li.message{
+    float: none;
+    list-style-type: none;
+  }
+
+  img.user-img{
+    width: 55px;
+    height: 55px;
+  }
+
+  img.user-img:hover{
+    cursor: pointer;
+  }
+
   #editor-rside {
     position: fixed;
     height: 100%;
     right: 0;
     min-height: 50px;
-    width: auto;
+    width: 25%;
     min-width: 50px;
-    margin-top: 10px;
     margin-bottom: 70px;
-    background-color: transparent;
-  }
-
-  users-ul{
     z-index: 2000;
+    background: whitesmoke url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMgAAADICAQAAAAHUWYVAABFFUlEQ…ga9bnBq3fEVltKfO5IaSTmGjjc4J0otcP7QsJUSQM8pEj5/wCuUuC2DWz8AAAAAElFTkSuQmCC);
   }
 
-  .message {
-    text-decoration: none;
-    background: none;
+
+  ul.users-ul{
+    z-index: 2000;
+    float: none;
+    width: auto;
+    height: 100%;
   }
+
 
   .nav-tabs>li.active>a,li.message>a:hover, .nav-tabs>li.active>a:focus, .nav-tabs>li.active>a:hover ,.nav-tabs>li.active, .nav-tabs>li:focus, .nav-tabs>li:hover{
     background: none;
@@ -134,10 +147,6 @@
     overflow-y: auto;
   }
 
-
-  li.message {
-    list-style-type: none;
-  }
 
   .message_template li {
     list-style-type: none;
