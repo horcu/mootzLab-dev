@@ -413,7 +413,7 @@
 
           console.log('joined room')
           console.log('adding joined message to stream')
-          //addMessageToLabStream('is in the lab', vm.userName, vm.photo, vm.email, vm.userId, 'left', sessionId)
+          addMessageToLabStream('is in the lab', vm.userName, vm.photo, vm.email, vm.userId, 'left', sessionId)
 
 //          if (vm.userIsLabCreator()) {
 //            vm.addSessionIdToDb(sessionId, createdTime, vm.userId)
@@ -439,6 +439,56 @@
           //todo go get the user data from the db
           addMessageToLabStream('is in the lab', peer.nick, '', '', '', 'right', 0)
 
+//          console.log('video added', peer);
+//          console.log('video added', peer.nick);
+//
+//          let remotes = document.getElementById('remote-vids');
+//          if (remotes) {
+//
+//            let container = document.createElement('div')
+//            container.className = 'videoContainer';
+//            container.id = 'container_' + webrtc.getDomId(peer);
+//            container.appendChild(video);
+//
+//            let htmlWrapper = '<div class="box-body l-vid-box"><button id="local-vid-popper" type="button" class="btn btn-default btn-circle btn-lg" data-toggle="popover">P</button><div id="panel-local-vid" class="hidden panel panel-default"><div class="panel-body">'
+//              + container
+//              + '</div>div class="small-box small-box-footer"><button type="button" class="btn btn-box-tool pull-right" data-toggle="tooltip"title="Contacts" data-widget="chat-pane-toggle">'
+//              + '<i class="fa fa-comments"></i></button><button type="button" class="btn btn-box-tool pull-right" data-toggle="tooltip" title="video" data-widget="chat-pane-toggle">'
+//              + '<i class="fa fa-video-camera"></i></button></div></div></div>';
+//
+//            // suppress contextmenu
+//            video.oncontextmenu = function () {
+//              return false;
+//            };
+//
+//            remotes.appendChild(htmlWrapper);
+//
+//            // show the ice connection state
+//            if (peer && peer.pc) {
+//              let connstate = document.createElement('div');
+//              connstate.className = 'connectionstate';
+//              container.appendChild(connstate);
+//              peer.pc.on('iceConnectionStateChange', function (event) {
+//                switch (peer.pc.iceConnectionState) {
+//                  case 'checking':
+//                    connstate.innerText = 'Connecting to peer...';
+//                    break;
+//                  case 'connected':
+//                  case 'completed': // on caller side
+//                    connstate.innerText = 'Connection established.';
+//                    break;
+//                  case 'disconnected':
+//                    connstate.innerText = 'Disconnected.';
+//                    break;
+//                  case 'failed':
+//                    break;
+//                  case 'closed':
+//                    connstate.innerText = 'Connection closed.';
+//                    break;
+//                }
+//              });
+//            }
+          // }
         });
 
         // a peer has been removed
@@ -486,10 +536,10 @@
       updateUserPresenceInLab: function () {
         let vm = this
 
-        if (!vm.labId) {
+        if(!vm.labId){
           vm.labId = this.$route.params.labId
         }
-        if (vm.userId) {
+        if(vm.userId){
           let usersPath = fbpaths().currentLabUsers(vm.labId)
           fb.database().ref(usersPath + '/' + vm.userId).set(true)
         }
@@ -731,13 +781,22 @@
   }
 
   .control-sidebar-comments {
-    width: 35%; /* 0 width - change this with JavaScript */
+    width: 40%; /* 0 width - change this with JavaScript */
     z-index: 1;
     background-color: #212733;
   }
 
+  #lab {
+    margin-top: 0px;
+  }
+
   .panel-body {
     padding: 0px;
+  }
+
+  #user-img {
+    border: 1px solid transparent;
+    border-radius: 24px
   }
 
   #comments-tab {
