@@ -3,51 +3,38 @@
 
     <section class="main-sect">
       <div class="row main-row">
-        <!-- Code Box -->
-        <div class="code-area">
 
-          <div id="code-area-header-box">
-            <div id="lab-problem-tools" class="pull-left">
-              <ul class="nav navbar-nav pull-left">
-                <li  data-toggle="tooltip" data-placement="bottom" title="stop" class="pull-left">
-                  <a> <img id="code-editor-controls-stop" width="15px" height="15px" src="/static/img/stop.png"
-                           alt="build"/></a>
-                </li>
+        <div class="tab-content">
+          <div class="tab-pane active" id="ab">
+            <div class="code-area">
 
-                <!--save code-->
-                <li  class="pull-left" v-on:click="saveCodeToFirebase()" data-toggle="tooltip" data-placement="bottom" title="build">
-                  <a>
-                    <img id="code-editor-controls-play" width="15px" height="15px" src="/static/img/play-button%20(1).png" alt="build"/>
-                  </a>
-                </li>
-              </ul>
-            </div>
-            <div id="code-tab">
-              <!--<div id="editor">-->
-              <!--</div>-->
-              <editor id="editor" v-model="codeContent" @init="editorInit();" lang="csharp" theme="ambiance">
-
-              </editor>
-              <div id="comments-tab" class="hidden">
-                <div id="comments-tab-top-menu">
-                  <ul class="list-group">
-
-                    <li class="list-group-item">
+              <div id="code-area-header-box">
+                <div id="lab-problem-tools" class="pull-left">
+                  <ul class="nav navbar-nav pull-left">
+                    <li data-toggle="tooltip" data-placement="bottom" title="switch" class="pull-left">
                       <a>
-                        <img id="make-code-comment" width="18px" height="18px" src="/static/img/speech-bubble.png"/>
+                        <img id="code-editor-controls-stop" width="15px" height="15px" src="/static/img/change.png"
+                             alt="build"/>
                       </a>
                     </li>
-                    <li v-on:click="makeSnippetFromSelection()" class="list-group-item">
+
+                    <!--save code-->
+                    <li class="pull-left" v-on:click="saveCodeToFirebase()" data-toggle="tooltip" data-placement="bottom"
+                        title="build">
                       <a>
-                        <img id="save-code-snippet" width="18px" height="18px" src="/static/img/push-pin.png"/>
-                      </a>
-                    </li>
-                    <li class="list-group-item">
-                      <a>
-                        <img id="like-code-section" width="15px" height="15px" src="/static/img/heart.png"/>
+                        <img id="code-editor-controls-play" width="15px" height="15px" src="/static/img/push-pin.png"
+                             alt="build"/>
                       </a>
                     </li>
                   </ul>
+                </div>
+                <div id="code-tab">
+                  <!--<div id="editor">-->
+                  <!--</div>-->
+                  <editor id="editor" v-model="codeContent" @init="editorInit();" theme="ambiance" lang="csharp">
+
+                  </editor>
+
                 </div>
               </div>
             </div>
@@ -55,100 +42,12 @@
         </div>
       </div>
 
-      <!--assignment control sidebar-->
-      <aside id="sidebar-assignments" class="hidden control-sidebar-assignments">
-        <ul class="nav nav-pills no-padding no-margin">
+      <stream></stream>
 
-          <li v-on:click="toggleAssignmentNav" data-toggle="tooltip" data-placement="bottom" title="hide"
-              class="pull-right">
-            <a> <img id="close-assignment-window" width="12px" height="12px" src="/static/img/cancel.png"
-                     alt="build"/></a>
-          </li>
-        </ul>
-
-      </aside>
-
-      <!-- Videos Control Sidebar -->
-      <aside id="sidebar-videos" class="hidden control-sidebar-videos">
-        <ul class="nav nav-pills no-padding no-margin">
-          <li v-on:click="toggleSessionsNav" data-toggle="tooltip" data-placement="bottom" title="hide"
-              class="pull-right">
-            <a> <img id="close-videos-window" width="12px" height="12px" src="/static/img/cancel.png"
-                     alt="build"/></a>
-          </li>
-        </ul>
-
-        <div id="video-section">
-
-          <div class="box-body l-vid-box">
-
-            <div id="panel-local-vid" class="hidden panel panel-default">
-              <div class="panel-body">
-                <div class="hidden" id="local-vid"></div>
-              </div>
-              <!--video section footer with icons-->
-              <div class="small-box small-box-footer">
-                <button type="button" class="btn btn-box-tool pull-right" data-toggle="tooltip"
-                        title="Contacts" data-widget="chat-pane-toggle">
-                  <i class="fa fa-comments"></i>
-                </button>
-                <button type="button" class="btn btn-box-tool pull-right" data-toggle="tooltip"
-                        title="video" data-widget="chat-pane-toggle">
-                  <i class="fa fa-video-camera"></i>
-                </button>
-              </div>
-            </div>
-
-          </div>
-
-          <div id="remote-vids">
-
-          </div>
-
-        </div>
-
-      </aside>
-
-      <!-- comments Control Sidebar -->
-      <aside id="sidebar-comments" class="control-sidebar-comments">
-        <div class="chat_window">
-          <div class="top_menu pull-right">
-            <div class="buttons">
-              <div class="button close"></div>
-              <div class="button minimize"></div>
-              <div class="button maximize">
-              </div>
-            </div>
-            <div class="title"></div>
-          </div>
-          <ul class="messages"></ul>
-          <div id="enter-message" class="hidden bottom_wrapper clearfix">
-            <div class="message_input_wrapper">
-              <input class="message_input" placeholder="Type your message here..."/>
-            </div>
-            <div class="send_message">
-              <div class="icon">
-
-              </div>
-              <div class="text">Send</div>
-            </div>
-          </div>
-        </div>
-        <div class="message_template">
-          <li class="message">
-            <div class="avatar">
-              <img id="user-img"/>
-            </div>
-            <div class="text_wrapper">
-              <div class="text"></div>
-            </div>
-          </li>
-        </div>
-      </aside>
     </section>
 
     <!--<alert type="danger">-->
-     <!--<strong>{{errAlertText}}</strong>-->
+    <!--<strong>{{errAlertText}}</strong>-->
     <!--</alert>-->
   </div>
 </template>
@@ -156,16 +55,12 @@
 <script>
   import Vue from 'Vue'
   import App from '../App'
+  import stream from 'src/components/UserStream.vue'
   import firebase from 'firebase'
-  //import ace from 'jenkins-ace-editor'
   import $ from 'jquery'
   import fb from 'src/fb-config'
   import Lab from 'src/components/Lab.vue'
-  //import {modal, alert} from 'vueboot';
-  //import 'slick-carousel'
   import fbpaths from 'src/fbPaths'
-
-  //require ('/node_modules/ayu-ace/mirage')
 
   var webrtc
   var editor
@@ -173,9 +68,9 @@
   export default {
     name: 'lab',
     components: {
-      editor:require('vue2-ace-editor'),
-     // alert: alert,
-     // modal: modal
+      editor: require('vue2-ace-editor'),
+      stream
+
     },
     prop: {
       content: ''
@@ -184,7 +79,7 @@
       return {
         codeContent: 'type your code here...',
         errAlert: false,
-        errAlertText : '',
+        errAlertText: '',
         labName: '',
         labId: '',
         photo: '',
@@ -192,6 +87,7 @@
         userName: '',
         email: '',
         user: {},
+        streamUsers: {},
         currentLab: {},
         currentLabUsers: {},
         allLabs: {},
@@ -296,6 +192,7 @@
       editor = ace.edit('editor')
       vm.initEditor()
       vm.initEditorEvents(this)
+      vm.initEditorRightSideEvents(this)
       vm.initWebRtc()
       vm.updateUserPresenceInLab()
       vm.subscribeToUsersChange(fbpaths().currentLabUsers(this.labId))
@@ -304,7 +201,7 @@
       vm.colorEditor()
     },
     methods: {
-      editorInit:function () {
+      editorInit: function () {
         require('../../node_modules/brace/mode/java');
         require('../../node_modules/brace/mode/csharp');
         require('../../node_modules/brace/mode/python');
@@ -388,17 +285,27 @@
 
         ref.on('value', function (snapshot) {
           if (snapshot == 'users') {
-              let value = snapshot.val()
-            if(value.userId === vm.userId){
+            let value = snapshot.val()
+            if (value.userId === vm.userId) {
 
             }
           }
         })
       },
+      initEditorRightSideEvents: function () {
+
+        $('div.avatar').on('mouseover',
+          function () {
+            let el = this
+            el.animate({right: '0'})
+          }).on('mouseout', function () {
+          el.animate({right: '20'})
+        })
+      },
       initEditorEvents: function () {
         let vm = this
         editor.getSession().on('change', function (e) {
-           updateUserLabStream(' is coding....', vm.userId, 'coding')
+          updateUserLabStream(' is coding....', vm.userId, 'coding')
         });
 
         editor.getSession().selection.on('changeSelection', function (e) {
@@ -412,12 +319,12 @@
       },
       saveCodeToFirebase: function () {
         let vm = this
-        if(!vm.labId){
+        if (!vm.labId) {
           vm.labId = vm.$route.params.labId
         }
 
-        if(!vm.userName){
-        vm.userName = vm.user.userName
+        if (!vm.userName) {
+          vm.userName = vm.user.userName
         }
         let codeEntry = editor.getSession().getValue()
         let codeToSubmit = {
@@ -506,7 +413,7 @@
 
           console.log('joined room')
           console.log('adding joined message to stream')
-          addMessageToLabStream('is in the lab', vm.userName, vm.photo, vm.email, vm.userId, 'left', sessionId)
+          //addMessageToLabStream('is in the lab', vm.userName, vm.photo, vm.email, vm.userId, 'left', sessionId)
 
 //          if (vm.userIsLabCreator()) {
 //            vm.addSessionIdToDb(sessionId, createdTime, vm.userId)
@@ -579,10 +486,10 @@
       updateUserPresenceInLab: function () {
         let vm = this
 
-        if(!vm.labId){
+        if (!vm.labId) {
           vm.labId = this.$route.params.labId
         }
-        if(vm.userId){
+        if (vm.userId) {
           let usersPath = fbpaths().currentLabUsers(vm.labId)
           fb.database().ref(usersPath + '/' + vm.userId).set(true)
         }
@@ -600,30 +507,41 @@
       initEditor: function () {
         let ed = $('#editor')
         let hgt = calculateWindowHeight()
-        let wd = 75%
-        ed.css('height', hgt - 90)
+        let wd = 75 %
+          ed.css('height', hgt - 90)
         ed.css('width', wd)
         ed.css({'font-size': '16px'})
-        editor.setTheme('/static/ace/ayu-ace/ayu-mirage')
+
+        let rside = $('#editor-rside .tab-content')
+        rside.css('height', hgt - 90)
+
+         editor.setTheme('/static/ace/ayu-ace/ayu-mirage')
         editor.getSession().setMode("/static/ace/mode/javascript");
 
         editor.getSession().setUseWorker(false);
         editor.setHighlightActiveLine(true);
         editor.getSession().setUseSoftTabs(true);
         editor.setShowPrintMargin(false);
+
+        let rSideDiv = $('#editor-rside')
+        let rsideCloned = $(rSideDiv.clone().html());
+
+        let scr = ed.find('div.ace_scroller')
+        scr.append(rSideDiv)
+        $(rSideDiv).removeClass('hidden')
         console.log('editor', 'editor created and styled')
 
       },
       syncEditorWithUsersLastCodeEntry: function () {
         let vm = this
-        if(!vm.labId){
+        if (!vm.labId) {
           vm.labId = this.$route.params.labName
         }
 
-        if(!vm.probId){
+        if (!vm.probId) {
           vm.probId = '0'
         }
-        if(!vm.userName){
+        if (!vm.userName) {
           vm.setUser()
         }
 
@@ -634,7 +552,7 @@
               if (childSnapshot && childSnapshot.key && childSnapshot.key === 'text') {
                 let v = childSnapshot.val()
 
-               // editor = editor || ace.edit('editor')
+                // editor = editor || ace.edit('editor')
                 console.log('setting editor content')
                 vm.codeContent = v
                 // editor.setValue(v);
@@ -672,11 +590,11 @@
 
   }
 
-  function calculateWindowHeight () {
+  function calculateWindowHeight() {
     return $(window).height()
   }
 
-  function addMessageToLabStream (text, name, photo, email, uId, side, sessionId) {
+  function addMessageToLabStream(text, name, photo, email, uId, side, sessionId) {
     var $messages, message;
     if (text.trim() === '' || name.trim() === '') {
       return;
@@ -711,11 +629,12 @@
         $message = $($('.message_template').clone().html());
         $message.attr('id', uId)
         $message.addClass(side).find('.text').html(text);
-        $message.find('#user-img').attr('src', photo);
-        $('.messages').append($message);
+        $message.find('.user-img').attr('src', photo);
+        $('#editor-rside').append($message);
         return setTimeout(function () {
           $message.addClass('appeared');
           setTimeout(function () {
+            $message.stop().find('div.message-block').stop().animate({right: '-20'})
             return $message.stop().find('div.text_wrapper').stop().addClass('hidden');
           }, 4000);
         }, 0);
@@ -726,23 +645,25 @@
   }
 
   //todo  type determines size, color, animation etc...
-  function updateUserLabStream (txt, uId, type) {
+  function updateUserLabStream(txt, uId, type) {
     var $messages, message;
     if (txt.trim() === '' || txt.trim() === '') {
       return;
     }
 
     $('.message_input').val('');
-    $messages = $('.messages');
-    message = $messages.find('#' + uId )
+    $messages = $('#editor-rside');
+    message = $messages.find('#' + uId)
 
     setTimeout(function () {
       message.find('.text').html(txt)
+      message.stop().find('div.avatar').stop().animate({right: '0'})
       return message.stop().find('div.text_wrapper').stop().removeClass('hidden');
     }, 1000);
 
 
     setTimeout(function () {
+      message.stop().find('div.message-box').stop().animate({right: '20'})
       return message.stop().find('div.text_wrapper').stop().addClass('hidden');
     }, 4000);
   }
@@ -756,9 +677,25 @@
   @import '/static/css/skins/skin-green-light.css';
   @import '/static/css/peez.css';
 
-  #lab-problem-tools{
+  #editor{
+    margin-right: 50px;
+  }
+
+  .active { display: block; }
+
+
+  .list-group {
+    width: 100%;
+  }
+
+  .list-group-item {
+    height: 50px;
+  }
+
+
+  #lab-problem-tools {
     position: absolute;
-    margin-top: 0;
+    margin-top: 5px;
     width: 100px;
     margin-left: calc(65% - 105px);
     height: auto;
@@ -769,7 +706,7 @@
 
   .ace-ambiance {
     color: #E6E1DC;
-     background-color: #212733;
+    background-color: #212733;
   }
 
   .control-sidebar-videos, .control-sidebar-assignments, .control-sidebar-settings, .control-sidebar-comments {
@@ -799,17 +736,8 @@
     background-color: #212733;
   }
 
-  #lab {
-    margin-top: 0px;
-  }
-
   .panel-body {
     padding: 0px;
-  }
-
-  #user-img {
-    border: 1px solid transparent;
-    border-radius: 24px
   }
 
   #comments-tab {
@@ -833,10 +761,6 @@
     margin-right: 15px;
   }
 
-  #comments-tab-top-menu ul.list-group li.list-group-item:hover {
-    cursor: pointer;
-    background-color: #ebebeb;
-  }
 
   .comment-btn {
     border: 1px solid ghostwhite;
@@ -845,24 +769,6 @@
 
   .comment-btn:hover {
     cursor: pointer;
-  }
-
-  .head-wrapper {
-    height: 40px;
-    padding: 0;
-    background-color: transparent;
-  }
-
-  #compiled-msg {
-    position: relative;
-    background-color: whitesmoke;
-    height: 40px;
-    min-width: 100%;
-    width: 100%;
-    border: 1px solid transparent;
-    -webkit-border-radius: 6px;
-    -moz-border-radius: 6px;
-    border-radius: 6px;
   }
 
   #compiled-msg a {
@@ -876,7 +782,6 @@
   #compiled-msg a:hover {
     cursor: pointer;
     text-decoration: none;
-    background-color: #eee;
 
   }
 
@@ -917,7 +822,7 @@
 
   .ace_editor {
     position: fixed;
-    /*background-color: whitesmoke;*/
+    background-color: whitesmoke;
     top: 0;
     right: 0;
     bottom: 0;
@@ -932,6 +837,21 @@
     text-align: left;
     overflow-y: hidden;
 
+  }
+
+  .ace-ambiance .ace_keyword {
+    color: #cda869;
+  }
+
+  .ace-ambiance .ace_identifier {
+  }
+
+  .ace-ambiance .ace_paren {
+    color: #24C2C7;
+  }
+
+  .ace-ambiance .ace_punctuation.ace_operator {
+    color: #fa8d6a;
   }
 
   #comments-tab ul li.list-group-item {
@@ -1014,127 +934,6 @@
     font-size: 20px;
   }
 
-  .messages {
-    position: absolute;
-    list-style: none;
-    padding: 20px 10px 0 10px;
-    height: auto;
-    overflow: hidden;
-    bottom: 0;
-    margin-bottom: 80px;
-  }
-
-  div.avatar {
-    margin-right: 20px;
-  }
-
-  div.avatar img {
-    width: 50px;
-    height: 50px;
-  }
-
-  .messages .message {
-    clear: both;
-    overflow: hidden;
-    height: 100%;
-    width: 100%;
-    margin-bottom: 20px;
-    transition: all 0.5s linear;
-    opacity: 0;
-  }
-
-  .messages .message.left .avatar {
-    background-color: transparent;
-    float: left;
-  }
-  .messages .message.left .avatar {
-    background-color: transparent;
-    float: left;
-  }
-
-  .messages .message.left .text_wrapper {
-    background-color: #ebebeb;
-    margin-left: 0;
-  }
-
-  .messages .message.left .text_wrapper::after, .messages .message.left .text_wrapper::before {
-    right: 100%;
-    border-right-color: #ebebeb;
-  }
-
-  .messages .message.left .text {
-    color: #c48843;
-  }
-
-  .messages .message.right .avatar {
-    background-color: #fdbf68;
-    float: right;
-  }
-
-  .messages .message.right .text_wrapper {
-    background-color: #c7eafc;
-    margin-right: 20px;
-    float: right;
-  }
-
-  .messages .message.right .text_wrapper::after, .messages .message.right .text_wrapper::before {
-    left: 100%;
-    border-left-color: #c7eafc;
-  }
-
-  .messages .message.right .text {
-    color: #45829b;
-  }
-
-  .messages .message.appeared {
-    opacity: 1;
-  }
-
-  .messages .message .avatar {
-    width: 60px;
-    height: 60px;
-    border-radius: 50px;
-    display: inline-block;
-  }
-
-  .messages .message .text_wrapper {
-    display: inline-block;
-    padding: 20px;
-    border-radius: 4px;
-    width: auto;
-    min-width: 100px;
-    position: relative;
-  }
-
-  .messages .message .text_wrapper::after, .messages .message .text_wrapper:before {
-    top: 18px;
-    border: solid transparent;
-    content: " ";
-    height: 0;
-    width: 0;
-    position: absolute;
-    pointer-events: none;
-  }
-
-  .messages .message .text_wrapper::after {
-    border-width: 13px;
-    margin-top: 0px;
-  }
-
-  .messages .message .text_wrapper::before {
-    border-width: 15px;
-    margin-top: -2px;
-  }
-
-  .messages .message .text_wrapper .text {
-    font-size: 15px;
-    font-weight: 200;
-  }
-
-  .text, .text_wrapper {
-    width: auto;
-  }
-
   .bottom_wrapper {
     position: relative;
     width: 100%;
@@ -1196,13 +995,7 @@
     line-height: 48px;
   }
 
-  .message_template {
-    display: none;
-  }
 
-  #enter-message {
-    background-color: transparent;
-  }
 
 
 </style>

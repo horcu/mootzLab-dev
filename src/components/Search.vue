@@ -99,7 +99,6 @@
       requestInvitation: function () {
 
       },
-
       navigateToLab: function (labName, labId) {
 
         let rObj = {name: 'lab', params: {labName: labName, labId: labId}}
