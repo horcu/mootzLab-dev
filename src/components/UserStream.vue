@@ -16,18 +16,7 @@
 
     <div id="slick-box">
 
-    <div class="slick-dir slick-dir-left pull-left" v-on:click="slick_prev()" >
-      <a>
-        <img src="/static/img/expand-left.png" alt="go left" />
-      </a>
-    </div>
-
-      <div class="slick-dir slick-dir-right pull-right" v-on:click="slick_next()">
-        <a>
-          <img src="/static/img/expand-right.png" alt="go left" />
-        </a>
-      </div>
-    <slick ref="slick" options="slickOptions">
+    <slick ref="slick" :options="slickOptions">
       <a v-for="user in streamUsers"  class="message" data-toggle="popover" :title="user.uname" data-placement="bottom" :data-content="user.bio">
         <img class="user-img" :src="user.photo"  />
       </a>
@@ -45,28 +34,29 @@
   import $ from 'jquery'
   import fb from 'src/fb-config'
   import fbpaths from 'src/fbPaths'
-  import slick from 'vue-slick'
+  import Slick from 'vue-slick'
 
   //import {tab, tabset } from 'vueboot';
 
   export default {
       components:{
-        slick
+        Slick
       },
       data: function(){
           return {
             streamUsers: {},
             slickOptions: {
-              slidesToShow: 5,
-              // Any other options that can be got from plugin documentation
-            }
+                slidesToShow: 1,
+                // Any other options that can be got from plugin documentation
+
+              }
           }
       },
     mounted(){
     },
     methods: {
       slick_next() {
-        this.slick.next();
+        this.$refs.slick.next();
       },
       slick_prev() {
         this.$refs.slick.prev();
@@ -92,7 +82,7 @@
 <style scoped>
   @import '../../node_modules/slick-carousel/slick/slick.css';
   .slick-dir{
-    margin-top: 7px;
+    margin-top: 16px;
   }
 
 #slick-box{
@@ -109,14 +99,7 @@
     list-style-type: none;
   }
 
-  img.user-img{
-    width: 50px;
-    height: 50px;
-  }
 
-  img.user-img:hover{
-    cursor: pointer;
-  }
 
   #editor-rside {
     position: fixed;
@@ -200,12 +183,19 @@
   div.avatar:hover , .message-block{
     cursor: pointer;
   }
-  .user-img {
-    border: 1px solid whitesmoke;
-    border-radius: 24px;
+
+  img.user-img{
+    width: 60px;
+    height: 60px;
+    margin: 3px;
     float: right;
+    border: 1px dotted wheat;
+    border-radius: 4px;
   }
 
+  img.user-img:hover{
+    cursor: pointer;
+  }
   .ace_editor{
     background: whitesmoke url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMgAAADICAQAAAAHUWYVAABFFUlEQ…ga9bnBq3fEVltKfO5IaSTmGjjc4J0otcP7QsJUSQM8pEj5/wCuUuC2DWz8AAAAAElFTkSuQmCC);
 

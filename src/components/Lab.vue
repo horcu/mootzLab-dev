@@ -64,7 +64,6 @@
   import Lab from 'src/components/Lab.vue'
   import fbpaths from 'src/fbPaths'
 
-
   let webrtc = null
   let editor = null
 
@@ -565,8 +564,8 @@
         let wd = 75 %
           ed.css('height', hgt - 90)
         ed.css('width', wd)
-        ed.css({'font-size': '18px'})
-        ed.css({'font-family': 'consolas'})
+        ed.css({'font-size': '22px'})
+        ed.css({'font-family': 'comic sans ms'})
 
         let rside = $('#editor-rside')
         // let rsideCont = rside.find('.tab-content')
