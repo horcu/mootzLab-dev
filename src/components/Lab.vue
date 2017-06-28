@@ -19,14 +19,7 @@
                     </li>
 
                     <!--save code-->
-                    <li class="pull-left" v-on:click="saveCodeToFirebase()" data-toggle="tooltip"
-                        data-placement="bottom"
-                        title="build">
-                      <a>
-                        <img id="code-editor-controls-play" width="15px" height="15px" src="/static/img/push-pin.png"
-                             alt="build"/>
-                      </a>
-                    </li>
+
                   </ul>
                 </div>
                 <div id="code-tab">
@@ -561,15 +554,16 @@
       initEditor: function () {
         let ed = $('.ace_editor')
         let hgt = calculateWindowHeight()
-        let wd = 75 %
+        let wd = 75%
           ed.css('height', hgt - 90)
         ed.css('width', wd)
         ed.css({'font-size': '22px'})
         ed.css({'font-family': 'comic sans ms'})
 
         let rside = $('#editor-rside')
+
         // let rsideCont = rside.find('.tab-content')
-        let rwd = 20 %
+        let rwd = 20%
           rside.css('height', hgt - 90)
         rside.css('width', rwd)
 
@@ -583,8 +577,8 @@
         editor.getSession().setUseSoftTabs(true);
         editor.setShowPrintMargin(true);
 
-        let scr = ed.find('div.ace_scroller')
-        scr.append(rside)
+        let container = $('#code-tab')
+        container.append(rside)
         $(rside).removeClass('hidden')
         console.log('editor', 'editor created and styled')
 
@@ -745,7 +739,10 @@
 
   .ace_content {
     width: 75%;
+    z-index: 1999;
   }
+  #editor-rside {
+    z-index: 2000;}
 
   .active {
     display: block;
@@ -905,7 +902,6 @@
     min-width: 800px;
     text-align: left;
     overflow-y: hidden;
-
   }
 
   .ace_keyword {
