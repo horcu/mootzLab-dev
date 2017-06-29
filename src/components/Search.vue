@@ -170,6 +170,10 @@
 
 <style scoped>
 
+  body{
+
+    background: whitesmoke url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMgAAADICAQAAAAHUWYVAABFFUlEQ…ga9bnBq3fEVltKfO5IaSTmGjjc4J0otcP7QsJUSQM8pEj5/wCuUuC2DWz8AAAAAElFTkSuQmCC);
+  }
   .lab-info-text {
     width: 100%;
 
@@ -177,7 +181,7 @@
 
   .lab-text {
     font-style: italic;
-    font-family: "Comic Sans MS";
+    font-family: "monospace";
     margin-top: -10px;
   }
 
@@ -186,7 +190,7 @@
     width: auto;
     height: auto;
     margin-top: 50px;
-    background-color: #212733
+    background: whitesmoke url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMgAAADICAQAAAAHUWYVAABFFUlEQ…ga9bnBq3fEVltKfO5IaSTmGjjc4J0otcP7QsJUSQM8pEj5/wCuUuC2DWz8AAAAAElFTkSuQmCC);
   }
 
   #result-item {
@@ -212,17 +216,17 @@
     width: 100%;
     margin-top: calc(20% + 10px);
     border: 1px solid transparent;
-    background-color: #212733
+    background: whitesmoke url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMgAAADICAQAAAAHUWYVAABFFUlEQ…ga9bnBq3fEVltKfO5IaSTmGjjc4J0otcP7QsJUSQM8pEj5/wCuUuC2DWz8AAAAAElFTkSuQmCC);
   }
 
   #results-list li {
-    background-color: #212733;
+    background: whitesmoke url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMgAAADICAQAAAAHUWYVAABFFUlEQ…ga9bnBq3fEVltKfO5IaSTmGjjc4J0otcP7QsJUSQM8pEj5/wCuUuC2DWz8AAAAAElFTkSuQmCC);
     height: 100px;
   }
 
   #results-list li span {
     color: white;
-    font-family: "Comic Sans MS", monospace;
+    font-family:  monospace;
     font-size: 35px;
   }
 
@@ -253,14 +257,14 @@
     border: 1px solid transparent;
     border-radius: 6px;
     height: 65px;
-    background-color: transparent;
+    background: whitesmoke url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMgAAADICAQAAAAHUWYVAABFFUlEQ…ga9bnBq3fEVltKfO5IaSTmGjjc4J0otcP7QsJUSQM8pEj5/wCuUuC2DWz8AAAAAElFTkSuQmCC);
     padding: 0;
     padding-left: 20px;
     margin-top: 0px;
     margin-left: 10px;
     font-size: 70px;
     font-style: italic;
-    font-family: "Comic Sans MS";
+    font-family: "monospace";
     width: 80%;
   }
 
