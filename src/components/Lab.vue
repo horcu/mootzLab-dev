@@ -51,6 +51,7 @@
   import Vue from 'Vue'
   import App from '../App'
   import stream from 'src/components/UserStream.vue'
+
   import firebase from 'firebase'
   import $ from 'jquery'
   import fb from 'src/fb-config'
@@ -64,8 +65,7 @@
     name: 'lab',
     components: {
       editor: require('vue2-ace-editor'),
-      stream,
-
+      stream
     },
     prop: {
       content: ''
@@ -241,8 +241,8 @@
           vm.email = this.user.email;
           vm.photo = this.user.photoURL;
           vm.userId = this.user.uid;
-          vm.labName = this.$route.params.labName,
-            vm.labId = this.$route.params.labId
+          vm.labName = this.$route.params.labName
+          vm.labId = this.$route.params.labId
         }
       },
       initMessageEntry: function () {
@@ -554,18 +554,17 @@
       initEditor: function () {
         let ed = $('.ace_editor')
         let hgt = calculateWindowHeight()
-        let wd = 75%
+        let wd = 68%
           ed.css('height', hgt - 90)
         ed.css('width', wd)
-        ed.css({'font-size': '22px'})
-        ed.css({'font-family': 'comic sans ms'})
+        ed.css({'font-size': '20px'})
+        ed.css({'font-family': 'monospace'})
 
         let rside = $('#editor-rside')
-
-        // let rsideCont = rside.find('.tab-content')
-        let rwd = 20%
+        let rwd =
           rside.css('height', hgt - 90)
-        rside.css('width', rwd)
+        rside.css('width', '30%')
+
 
         ace.config.set('basePath', '/static/ace/');
         editor.getSession().setUseWorker(true);
@@ -578,6 +577,7 @@
         editor.setShowPrintMargin(true);
 
         let container = $('#code-tab')
+
         container.append(rside)
         $(rside).removeClass('hidden')
         console.log('editor', 'editor created and styled')
@@ -741,8 +741,10 @@
     width: 75%;
     z-index: 1999;
   }
+
   #editor-rside {
-    z-index: 2000;}
+    z-index: 2000;
+  }
 
   .active {
     display: block;

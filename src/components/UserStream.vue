@@ -1,52 +1,38 @@
 <template>
   <div id="editor-rside" class="hidden">
-    <!--<div class="message_template">-->
-    <!--<li v-for="user in streamUsers" class="message">-->
-    <!--<div class="message-block">-->
-    <!--<div class="avatar pull-right">-->
-    <!--<img class="user-img" :src="user.photo"/>-->
-    <!--</div>-->
-    <!--<div class="text_wrapper pull-right">-->
-    <!--<div class="text"></div>-->
-    <!--</div>-->
-    <!--</div>-->
 
-    <!--</li>-->
-    <!--</div>-->
+    <interactive id="inter" class="pull-left"></interactive>
 
-    <!--<div id="slick-box">-->
+    <div id="editor-rside-right" class="pull-left">
+  <!--<input type="text" placeholder="search" />-->
+  <!--<img src="/static/img/search.png">-->
 
-    <!--<slick ref="slick" :options="slickOptions">-->
-    <!--<a v-for="user in streamUsers"  class="message" data-toggle="popover" :title="user.uname" data-placement="bottom" :data-content="user.bio">-->
-    <!--<img class="user-img" :src="user.photo"  />-->
-    <!--</a>-->
-    <!--</slick>-->
-<div style="width: 100%; position: relative; margin-bottom: 30px; margin-left: 100px ">
-  <input type="text" placeholder="search" />
-  <img src="/static/img/search.png">
-</div>
     <div class="stack">
       <ul id="stack-list">
         <li class="stack-list-item" v-for="user in streamUsers">
-          <div class="stack-row">
-            <div class=" hidden stack-row-toolbox pull-left">
+          <div class="stack-row" v-on:mouseover="mouseOver" v-on:mouseleave="mouseLeave">
+            <div class="hidden stack-row-toolbox pull-left">
               <a><img class="stack-row-tool" src="/static/img/envelope.png" alt="pin"/></a>
               <a><img class="stack-row-tool" src="/static/img/webcam.png" alt="pin"/></a>
               <a><img class="stack-row-tool" src="/static/img/push-pin.png" alt="pin"/></a>
               <a><img class="stack-row-tool" src="/static/img/user.png" alt="pin"/></a>
               <a><img class="stack-row-tool" src="/static/img/cancel.png" alt="pin"/></a>
             </div>
-            <div class="stack-row-item-left pull-right">
-              <span class="stack-row-item-left-txt">{{user.bio}}</span>
-            </div>
-            <div class="stack-row-item-right pull-right">
-              <img class="user-img" :src="user.photo"/>
-            </div>
+            <ul class="stack-row-toolbox-list">
+              <li class="stack-row-toolbox-list-item">
+                <div class="stack-row-item-left pull-left">
+                  <img class="user-img" :src="user.photo"/>
+                </div>
+                <div class="stack-row-item-right pull-left">
+                  <span class="stack-row-item-right-txt">{{user.bio}}</span>
+                </div>
+              </li>
+            </ul>
           </div>
         </li>
       </ul>
     </div>
-    <!--</div>-->
+    </div>
   </div>
 </template>
 
@@ -58,13 +44,15 @@
   import fb from 'src/fb-config'
   import fbpaths from 'src/fbPaths'
   import 'gridstack'
-  //import Slick from 'vue-slick'
+  import _ from 'lodash'
+  import interactive from 'src/components/UserInteractive.vue'
 
   //import {tab, tabset } from 'vueboot';
 
   export default {
+  name : 'user-stream',
     components: {
-      //Slick
+    interactive
     },
     data: function () {
       return {
@@ -72,23 +60,31 @@
       }
     },
     mounted(){
-      let options = {
-        cellHeight: 80,
-        verticalMargin: 5
-      };
-      $('.grid-stack').gridstack(options);
+    },
+    watch: {
+      streamUsers: {
+        handler: function (val, oldVal) {
+
+        },
+        deep: true
+      }
     },
     methods: {
-//      slick_next() {
-//        this.$refs.slick.next();
-//      },
-//      slick_prev() {
-//        this.$refs.slick.prev();
-//      },
-//      slick_reInit() {
-//        // Helpful if you have to deal with v-for to update dynamic lists
-//        this.$refs.slick.reSlick();
-//      },
+      mouseOver: function(el){
+        let stackRow = el
+        let toolbox = stackRow.currentTarget.children[0]
+        let vals =''
+        if(toolbox.classList.contains('hidden')) {
+            toolbox.classList.remove('hidden')
+        }
+      },
+      mouseLeave: function(el){
+        let stackRow = el
+        let toolbox = stackRow.currentTarget.children[0]
+        if(!toolbox.classList.contains('hidden')) {
+          toolbox.classList.add('hidden')
+        }
+      }
     },
     firebase: {
       streamUsers: {
@@ -96,6 +92,7 @@
         cancelCallback: function () {
         },
         readyCallback: function () {
+
         },
         asObject: false
       },
@@ -151,6 +148,14 @@
     width: 10px;
   }
 
+  .stack-row-toolbox-list-item{
+    position: absolute;
+    float: none;
+    list-style-type: none;
+    min-width: 600px;
+    height:100%;
+  }
+
   .stack-row-tool:hover {
     cursor: pointer;
   }
@@ -161,25 +166,28 @@
 
   .stack-row-item-left {
     position: relative;
-    width: 80%;
+    margin-right: 0;
     height: 44px;
+    top:0;
+    width:70px;
   }
 
 
   .stack-row-item-right {
     position: relative;
-    width: 20%;
     height: 44px;
+    width: 200px;
+    top: 0;
   }
 
-  .stack-row-item-left-txt {
+  .stack-row-item-right-txt {
     position: relative;
     height: auto;
     text-align: right;
     vertical-align: middle;
     font-size: 14px;
-    margin-top: 10px;
-    font-family: Comic Sans MS, monospace;
+    top: 10px;
+    font-family: monospace;
   }
 
   img.user-img {
@@ -214,16 +222,24 @@
     list-style-type: none;
   }
 
+
   #editor-rside {
     position: fixed;
-    height: 100%;
+    height: 600px;
     right: 0;
-    min-height: 50px;
-    width: 25%;
-    min-width: 50px;
-    margin-bottom: 70px;
-    z-index: 2000;
     background: whitesmoke url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMgAAADICAQAAAAHUWYVAABFFUlEQ…ga9bnBq3fEVltKfO5IaSTmGjjc4J0otcP7QsJUSQM8pEj5/wCuUuC2DWz8AAAAAElFTkSuQmCC);
+  }
+
+  #inter{
+    position: absolute;
+    height: 100%;
+    width: 100%;
+    left: 70px;
+    background: whitesmoke url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMgAAADICAQAAAAHUWYVAABFFUlEQ…ga9bnBq3fEVltKfO5IaSTmGjjc4J0otcP7QsJUSQM8pEj5/wCuUuC2DWz8AAAAAElFTkSuQmCC);
+  }
+
+  #editor-rside-right {
+    position: absolute;
   }
 
   .nav-tabs > li.active > a, li.message > a:hover, .nav-tabs > li.active > a:focus, .nav-tabs > li.active > a:hover, .nav-tabs > li.active, .nav-tabs > li:focus, .nav-tabs > li:hover {
