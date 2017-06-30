@@ -176,6 +176,7 @@
   }
   .lab-info-text {
     width: 100%;
+    color: #1c2d3f;
 
   }
 
@@ -183,6 +184,7 @@
     font-style: italic;
     font-family: "monospace";
     margin-top: -10px;
+    color: #1c2d3f;
   }
 
   #app {
@@ -213,6 +215,7 @@
     position: relative;
     margin-left: 20px;
     height: auto;
+    color: #1c2d3f;
     width: 100%;
     margin-top: calc(20% + 10px);
     border: 1px solid transparent;
@@ -225,7 +228,6 @@
   }
 
   #results-list li span {
-    color: white;
     font-family:  monospace;
     font-size: 35px;
   }
@@ -250,6 +252,7 @@
     margin-top: 100px;
     text-decoration: none;
     font-size: 60px;
+    color: #1c2d3f;
   }
 
   #lab-path-input {
@@ -266,6 +269,7 @@
     font-style: italic;
     font-family: "monospace";
     width: 80%;
+    color: #1c2d3f;
   }
 
 </style>

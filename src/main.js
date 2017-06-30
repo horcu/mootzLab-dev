@@ -31,6 +31,8 @@ import About from './components/About'
 import Lab from './components/Lab'
 import Search from './components/Search.vue'
 
+import Challenge from './components/Challenge.vue'
+
 import Settings from './components/Settings.vue'
 
  import $ from 'jquery'
@@ -52,12 +54,18 @@ const routes = [
   {path: '/about', component: About},
   //route for the search route of the webpage
   {name: 'search', path: '/l', component: Search},
+
+  {name: 'challenge', path: '/l', component: Challenge},
+
  //settings component
   {name: 'settings', path: '/settings', component: Settings},
   //route for the labs
  // {name: 'lab', path: '/lab', component: Lab},
   //route for a lab with a given id
-  {name: 'lab', path: '/l/:labName', component: Lab}
+  {name: 'lab', path: '/l/:labName', component: Lab},
+
+  // //route for a lab with a given id
+  // {name: 'challenge', path: '/c/:challengeName', component: Challenge}
 ]
 
 // Create the router instance and pass the `routes` option
@@ -75,13 +83,13 @@ new Vue({
   //pass the template to the root component
   render: a => a(App),
   //declare components that the root component can access
-  components: {Lab, Hello, App, Search, Settings, About, Top, Bottom},
+  components: {Lab, Hello, App, Search, Settings, About, Top, Bottom, Challenge},
   //pass in the router to the vue instance
   router,
   created() {
     fb.auth().onAuthStateChanged((user) => {
       if(user) {
-        this.$router.push('/l')
+        this.$router.push('/c')
       } else {
         this.$router.push('/auth')
       }

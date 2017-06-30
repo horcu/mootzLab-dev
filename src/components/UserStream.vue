@@ -9,15 +9,40 @@
 
     <div class="stack">
       <ul id="stack-list">
+        <li class="stack-list-item"> <a><img class="stack-row-tool" src="/static/img/push-pin.png" alt="pin"/></a></li>
         <li class="stack-list-item" v-for="user in streamUsers">
           <div class="stack-row" v-on:mouseover="mouseOver" v-on:mouseleave="mouseLeave">
-            <div class="hidden stack-row-toolbox pull-left">
+            <div class="hidden stack-row-toolbox right">
               <a><img class="stack-row-tool" src="/static/img/envelope.png" alt="pin"/></a>
               <a><img class="stack-row-tool" src="/static/img/webcam.png" alt="pin"/></a>
-              <a><img class="stack-row-tool" src="/static/img/push-pin.png" alt="pin"/></a>
+
+
+              <a><img class="stack-row-tool" src="/static/img/cancel.png" alt="pin"/></a>
+            </div>
+
+            <ul class="stack-row-toolbox-list">
+              <li class="stack-row-toolbox-list-item">
+                <div class="stack-row-item-left pull-left">
+                  <img class="user-img" :src="user.photo"/>
+                </div>
+                <div class="stack-row-item-right pull-left">
+                  <span class="stack-row-item-right-txt">{{user.bio}}</span>
+                </div>
+              </li>
+            </ul>
+          </div>
+        </li>
+        <li class="stack-list-item"><a><img class="stack-row-tool" src="/static/img/user.png" alt="pin"/></a></li>
+        <li class="stack-list-item" v-for="user in streamUsers">
+          <div class="stack-row" v-on:mouseover="mouseOver" v-on:mouseleave="mouseLeave">
+            <div class="hidden stack-row-toolbox pull-right">
+              <a><img class="stack-row-tool" src="/static/img/envelope.png" alt="pin"/></a>
+              <a><img class="stack-row-tool" src="/static/img/webcam.png" alt="pin"/></a>
+
               <a><img class="stack-row-tool" src="/static/img/user.png" alt="pin"/></a>
               <a><img class="stack-row-tool" src="/static/img/cancel.png" alt="pin"/></a>
             </div>
+
             <ul class="stack-row-toolbox-list">
               <li class="stack-row-toolbox-list-item">
                 <div class="stack-row-item-left pull-left">
@@ -154,6 +179,8 @@
     list-style-type: none;
     min-width: 600px;
     height:100%;
+    min-height: 100px;
+    margin-bottom: 2px;
   }
 
   .stack-row-tool:hover {

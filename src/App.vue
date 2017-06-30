@@ -19,11 +19,12 @@
   import Users from './components/Users.vue'
   import Search from './components/Search.vue'
   import Bottom from './components/Bottom'
+  import Challenge from './components/Challenge'
 
   export default {
     components: {
       Bottom,
-      Lab, Top, Settings, Users, Search},
+      Lab, Top, Settings, Users, Search, Challenge},
     name: 'main',
     data() {
       return {

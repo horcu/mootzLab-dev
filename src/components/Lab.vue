@@ -10,23 +10,23 @@
 
               <div id="code-area-header-box">
                 <div id="lab-problem-tools" class="pull-left">
-                  <ul class="nav navbar-nav pull-left">
-                    <li data-toggle="tooltip" data-placement="bottom" title="switch" class="pull-left">
-                      <a>
-                        <img id="code-editor-controls-stop" width="15px" height="15px" src="/static/img/change.png"
-                             alt="build"/>
-                      </a>
-                    </li>
+                  <!--<ul class="nav navbar-nav pull-left">-->
+                    <!--<li data-toggle="tooltip" data-placement="bottom" title="switch" class="pull-left">-->
+                      <!--<a>-->
+                        <!--<img id="code-editor-controls-stop" width="15px" height="15px" src="/static/img/change.png"-->
+                             <!--alt="build"/>-->
+                      <!--</a>-->
+                    <!--</li>-->
 
-                    <!--save code-->
+                    <!--&lt;!&ndash;save code&ndash;&gt;-->
 
-                  </ul>
+                  <!--</ul>-->
                 </div>
                 <div id="code-tab">
                   <!--<div id="editor">-->
                   <!--</div>-->
-                  <editor id="editor" v-model="codeContent" @init="editorInit();" theme="/static/ace/chrome"
-                          lang="csharp">
+                  <editor id="editor" v-model="codeContent" @init="editorInit();" theme="chrome"
+                          lang="javascript">
 
                   </editor>
 
@@ -557,7 +557,7 @@
         let wd = 68%
           ed.css('height', hgt - 90)
         ed.css('width', wd)
-        ed.css({'font-size': '20px'})
+        ed.css({'font-size': '16px'})
         ed.css({'font-family': 'monospace'})
 
         let rside = $('#editor-rside')
@@ -570,7 +570,7 @@
         editor.getSession().setUseWorker(true);
 
         //editor.setTheme('monokai')
-        editor.getSession().setMode("javascript");
+        //editor.getSession().setMode("javascript");
 
         editor.setHighlightActiveLine(false);
         editor.getSession().setUseSoftTabs(true);
@@ -998,7 +998,7 @@
   .top_menu .title {
     text-align: center;
     color: #bcbdc0;
-    font-size: 20px;
+    font-size: 16px;
   }
 
   .bottom_wrapper {
