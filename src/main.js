@@ -55,7 +55,7 @@ const routes = [
   //route for the search route of the webpage
   {name: 'search', path: '/l', component: Search},
 
-  {name: 'challenge', path: '/l', component: Challenge},
+  {name: 'chall', path: '/c', component: Challenge},
 
  //settings component
   {name: 'settings', path: '/settings', component: Settings},

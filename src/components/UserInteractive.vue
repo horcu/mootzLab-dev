@@ -76,7 +76,7 @@ let vm = this
         this.$refs.slick.reSlick();
       },
       getInteractiveUsers: function(){
-        return this.$root.$firebaseRefs.streamUsers
+        return this.$root.$firebaseRefs.challenges
       }
     },
   }

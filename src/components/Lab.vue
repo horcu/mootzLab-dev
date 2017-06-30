@@ -574,7 +574,7 @@
 
         editor.setHighlightActiveLine(false);
         editor.getSession().setUseSoftTabs(true);
-        editor.setShowPrintMargin(true);
+        editor.setShowPrintMargin(false);
 
         let container = $('#code-tab')
 

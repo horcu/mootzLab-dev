@@ -10,30 +10,36 @@
     <div class="stack">
       <ul id="stack-list">
         <li class="stack-list-item"> <a><img class="stack-row-tool" src="/static/img/push-pin.png" alt="pin"/></a></li>
-        <li class="stack-list-item" v-for="user in streamUsers">
-          <div class="stack-row" v-on:mouseover="mouseOver" v-on:mouseleave="mouseLeave">
-            <div class="hidden stack-row-toolbox right">
-              <a><img class="stack-row-tool" src="/static/img/envelope.png" alt="pin"/></a>
-              <a><img class="stack-row-tool" src="/static/img/webcam.png" alt="pin"/></a>
+        <li class="stack-list-item" >
+          <draggable v-model="challenges"
+                     :options="{group:'people'}"
+                     @start="drag=true" @end="drag=false">
+            <div v-for="user in challenges">{{user.name}}</div>
+            <div class="stack-row" v-on:mouseover="mouseOver" v-on:mouseleave="mouseLeave">
+              <div class="hidden stack-row-toolbox right">
+                <a><img class="stack-row-tool" src="/static/img/envelope.png" alt="pin"/></a>
+                <a><img class="stack-row-tool" src="/static/img/webcam.png" alt="pin"/></a>
 
 
-              <a><img class="stack-row-tool" src="/static/img/cancel.png" alt="pin"/></a>
+                <a><img class="stack-row-tool" src="/static/img/cancel.png" alt="pin"/></a>
+              </div>
+
+              <ul class="stack-row-toolbox-list">
+                <li class="stack-row-toolbox-list-item">
+                  <div class="stack-row-item-left pull-left">
+                    <img class="user-img" :src="user.photo"/>
+                  </div>
+                  <div class="stack-row-item-right pull-left">
+                    <span class="stack-row-item-right-txt">{{user.bio}}</span>
+                  </div>
+                </li>
+              </ul>
             </div>
+          </draggable>
 
-            <ul class="stack-row-toolbox-list">
-              <li class="stack-row-toolbox-list-item">
-                <div class="stack-row-item-left pull-left">
-                  <img class="user-img" :src="user.photo"/>
-                </div>
-                <div class="stack-row-item-right pull-left">
-                  <span class="stack-row-item-right-txt">{{user.bio}}</span>
-                </div>
-              </li>
-            </ul>
-          </div>
         </li>
         <li class="stack-list-item"><a><img class="stack-row-tool" src="/static/img/user.png" alt="pin"/></a></li>
-        <li class="stack-list-item" v-for="user in streamUsers">
+        <li class="stack-list-item" v-for="user in challenges">
           <div class="stack-row" v-on:mouseover="mouseOver" v-on:mouseleave="mouseLeave">
             <div class="hidden stack-row-toolbox pull-right">
               <a><img class="stack-row-tool" src="/static/img/envelope.png" alt="pin"/></a>
@@ -71,16 +77,19 @@
   import 'gridstack'
   import _ from 'lodash'
   import interactive from 'src/components/UserInteractive.vue'
+  import draggable from 'vuedraggable'
 
   //import {tab, tabset } from 'vueboot';
 
   export default {
   name : 'user-stream',
     components: {
+      draggable,
     interactive
     },
     data: function () {
       return {
+        people:{},
         streamUsers: {},
       }
     },
@@ -112,7 +121,7 @@
       }
     },
     firebase: {
-      streamUsers: {
+      challenges: {
         source: fb.database().ref(fbpaths().users()),
         cancelCallback: function () {
         },
