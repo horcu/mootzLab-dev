@@ -1,10 +1,16 @@
 <template>
   <div id="app" v-model="challenge">
-    <draggable class="blocks" v-model="blocks">
+    <draggable class="blocks pull-left" v-model="blocks">
         <div class="block" v-for="block in blocks" :key="block.id">
          <span>{{block.text}}</span>
         </div>
+      <div class="block" v-for="block in expected" :key="block.slot">
+        <div>[empty]</div>
+      </div>
     </draggable>
+    <!--<draggable class="blocks pull-left" v-model="expected">-->
+    <!---->
+    <!--</draggable>-->
   </div>
 </template>
 
@@ -22,7 +28,8 @@
       data: function(){
         return {
           challenge: {},
-          blocks: {}
+          blocks: {},
+          expected: {}
         }
       },
     mounted(){
@@ -38,6 +45,7 @@
         asObject: false
       },
       blocks: fb.database().ref(fbpaths().challenges() + '/0/codeBlocks'),
+      expected: fb.database().ref(fbpaths().challenges() + '/0/expectedOutput'),
     }
   }
 </script>
